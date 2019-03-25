@@ -20,26 +20,27 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-
-    this.body.setVelocityX(this.state.directionX);
-    this.body.setVelocityY(this.state.directionY);
-    this.body.velocity.normalize().scale(150);
-    // gauche ou droite et fait demi tour quand bloqué
-    if (this.body.blocked.left) {
-      this.state.directionX = 100;
-    }
-    if (this.body.blocked.right) {
-      this.state.directionX = -100;
-    }
-    if (this.state.directionY > 0) {
-      this.state.directionY += 2;
-    } else {
-      this.state.directionY -= 2;
-    }
-    if (this.body.blocked.down || this.state.directionY > 120) {
-      this.state.directionY = -1;
-    } else if (this.body.blocked.up || this.state.directionY < -120) {
-      this.state.directionY = 2;
+    if (this.active) {
+      this.body.setVelocityX(this.state.directionX);
+      this.body.setVelocityY(this.state.directionY);
+      this.body.velocity.normalize().scale(150);
+      // gauche ou droite et fait demi tour quand bloqué
+      if (this.body.blocked.left) {
+        this.state.directionX = 100;
+      }
+      if (this.body.blocked.right) {
+        this.state.directionX = -100;
+      }
+      if (this.state.directionY > 0) {
+        this.state.directionY += 2;
+      } else {
+        this.state.directionY -= 2;
+      }
+      if (this.body.blocked.down || this.state.directionY > 120) {
+        this.state.directionY = -1;
+      } else if (this.body.blocked.up || this.state.directionY < -120) {
+        this.state.directionY = 2;
+      }
     }
   }
 

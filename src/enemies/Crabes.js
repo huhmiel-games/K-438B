@@ -19,23 +19,24 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
+    if (this.active) {
+      this.body.setVelocityX(this.state.directionX);
+      this.body.setVelocityY(this.state.directionY);
 
-    this.body.setVelocityX(this.state.directionX);
-    this.body.setVelocityY(this.state.directionY);
-
-    // gauche ou droite et fait demi tour quand bloqué
-    if (this.body.blocked.left) {
-      this.state.directionX = 30;
-    }
-    if (this.body.blocked.right) {
-      this.state.directionX = -30;
-    }
-    // tombe quand rien en dessous
-    if (this.body.blocked.none) {
-      this.state.directionY = 600;
-    }
-    if (this.body.blocked.down) {
-      this.state.directionY = 0;
+      // gauche ou droite et fait demi tour quand bloqué
+      if (this.body.blocked.left) {
+        this.state.directionX = 30;
+      }
+      if (this.body.blocked.right) {
+        this.state.directionX = -30;
+      }
+      // tombe quand rien en dessous
+      if (this.body.blocked.none) {
+        this.state.directionY = 600;
+      }
+      if (this.body.blocked.down) {
+        this.state.directionY = 0;
+      }
     }
   }
 

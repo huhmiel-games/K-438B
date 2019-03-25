@@ -1,23 +1,18 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import blackPixel from '../assets/blackPixel.png';
-import transparentPixel from '../assets/transparentPixel.png';
-import atomicsc from '../assets/atomicsc.png';
-import atomicscXML from '../assets/atomicsc.xml';
-
 
 export default class DashBoard extends Scene {
   constructor() {
-    super({ key: 'dashBoard', active: false });
+    super({ key: 'dashBoard', active: true });
   }
 
   preload() {
     this.load.image('blackpixel', blackPixel);
-    this.load.image('transparentPixel', transparentPixel);
-    this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
 
   create() {
+    console.log('dashBoard loaded');
     this.mainScene = this.scene.get('playLvl1');
 
     // loading
@@ -33,6 +28,7 @@ export default class DashBoard extends Scene {
       this.Health = this.add.bitmapText(16, 464, 'atomic', '');
       this.Health.setFontSize(32);
       this.Health.text = `${this.mainScene.player.inventory.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`;
+      // this.setDepth(3000);
     });
 
     this.mainScene.events.on('setHealth', (elm) => {

@@ -2,8 +2,8 @@ import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import head from '../assets/head.png';
-// import atomicsc from '../assets/atomicsc.png';
-// import atomicscXML from '../assets/atomicsc.xml';
+import atomicsc from '../assets/atomicsc.png';
+import atomicscXML from '../assets/atomicsc.xml';
 
 export default class LoadSavedGame extends Scene {
   constructor() {
@@ -69,7 +69,7 @@ export default class LoadSavedGame extends Scene {
     if (this.lastPosition === 0 && this.loadGame) {
       this.scene.start('playLvl1', { loadSavedGame: true });
       this.scene.start('dashBoard');
-    } else {
+    } else if (this.lastPosition === 0) {
       this.scene.start('playLvl1');
       this.scene.start('dashBoard');
     }

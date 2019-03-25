@@ -14,6 +14,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       savedPositionY: null,
       gun: false,
       gunDamage: 5,
+      fireRate: 320,
       morphing: false,
       morphingBomb: false,
       jumpBooster: false,
@@ -33,7 +34,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       runSpeed: 350,
       maxSpeed: 250,
       lastFired: 0,
-      fireRate: 320,
       bulletOrientationX: 'right',
       bulletOrientationY: 'normal',
       bulletPositionY: 10,
@@ -94,7 +94,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
     const { keys } = this;
-    let animationName;// = 'stop'; //
+    let animationName;
     // if not game pause
     if (!this.state.pause) {
       // check morphing ball ability active
@@ -279,11 +279,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
     if (time > this.state.lastFired && this.inventory.gun) {
       const bullet = this.bullets.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'bullet', null, true);
       if (bullet) {
-        this.state.lastFired = time + this.state.fireRate;
+        this.state.lastFired = time + this.inventory.fireRate;
         bullet.visible = true;
         bullet.anims.play('bull', true);
         bullet.setDepth(99);
-
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
           bullet.body.velocity.x = -600;
@@ -343,5 +342,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
   addEnergy() {
     this.inventory.lifeEnergyBlock += 1;
     this.inventory.life = this.inventory.lifeEnergyBlock * 100;
+  }
+
+  addSpeedFire() {
+    this.inventory.fireRate -= 50;
   }
 }

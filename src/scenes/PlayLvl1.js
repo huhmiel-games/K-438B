@@ -4,8 +4,8 @@ import PowerUp from '../player/powerUp';
 import Crabes from '../enemies/Crabes';
 import Guepes from '../enemies/Guepes';
 import Jumpers from '../enemies/Jumpers';
+import Elevators from '../utils/Elevators';
 import U from '../utils/usefull';
-// import dashBord from './dashBoard';
 
 // Player
 import playerRun from '../assets/run.png';
@@ -41,6 +41,7 @@ import bullet from '../assets/spritesheets/Fx/shot.png';
 import impact from '../assets/spritesheets/Fx/impact.png';
 import blackPixel from '../assets/blackPixel.png';
 import saveStation from '../assets/savestation.png';
+import elevator from '../assets/elevator.png';
 import head from '../assets/head.png';
 import whitePixel from '../assets/whitePixel.png';
 import test from '../maps/map1.png';
@@ -91,6 +92,7 @@ export default class playLvl1 extends Scene {
     // save station
     this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
+    this.load.image('elevator', elevator);
 
     this.load.image('whitePixel', whitePixel);
   }
@@ -100,7 +102,7 @@ export default class playLvl1 extends Scene {
     // this.background.setOrigin(0, 0);
     // this.background.displayWidth = U.WIDTH;
     // this.background.displayHeight = U.HEIGHT;
-    this.scene.stop('loadSavedGame');
+    // this.scene.stop('loadSavedGame');
 
     this.map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
     this.tileset = this.map.addTilesetImage('tileground', 'tiles');
@@ -295,14 +297,14 @@ export default class playLvl1 extends Scene {
       }
     });
 
-    // SECTIONS ENEMIES
+    // SECTION ENEMIES
     // explode animation
     this.anims.create({
       key: 'enemyExplode',
       frames: this.anims.generateFrameNumbers('enemyExplode', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       yoyo: false,
-      repeat: 1,
+      repeat: 0,
     });
     // anims enemies
     this.anims.create({
@@ -320,7 +322,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.anims.create({
-      key: 'jumper',
+      key: 'jumperIdle',
       frames: this.anims.generateFrameNumbers('jumper', { start: 0, end: 4, first: 0 }),
       frameRate: 10,
       yoyo: false,
@@ -328,14 +330,14 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'jumperJump',
-      frames: this.anims.generateFrameNumbers('jumper', { start: 5, end: 5, first: 5 }),
+      frames: this.anims.generateFrameNumbers('jumper', { start: 5, end: 5, first: 4 }),
       frameRate: 10,
       yoyo: false,
       repeat: 0,
     });
     this.enemyGroup = [];
     console.log(this.map.objects);
-    // les crabes
+    // the crabs
     this.map.objects[2].objects.forEach((element) => {
       this[element.name] = new Crabes(this, element.x, element.y - 16, {
         key: element.properties.key,
@@ -346,8 +348,8 @@ export default class playLvl1 extends Scene {
       this[element.name].animate(element.properties.key, true);
       this.enemyGroup.push(this[element.name]);
     });
-    // les guepes
-    this.map.objects[3].objects.forEach((element) => {
+    // the wasps
+    this.map.objects[4].objects.forEach((element) => {
       this[element.name] = new Guepes(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
@@ -357,19 +359,33 @@ export default class playLvl1 extends Scene {
       this[element.name].animate(element.properties.key, true);
       this.enemyGroup.push(this[element.name]);
     });
-    // les jumpers
-    this.map.objects[4].objects.forEach((element) => {
+    // the jumpers
+    this.map.objects[5].objects.forEach((element) => {
       this[element.name] = new Jumpers(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
         damage: element.properties.damage,
       });
       this[element.name].body.setSize(31, 23);
-      this[element.name].animate(element.properties.key, true);
+      this[element.name].setScale(2, 2);
       this.enemyGroup.push(this[element.name]);
     });
 
     this.getFired = false;
+
+    // elevators
+    this.elevatorGroup = [];
+    this.map.objects[3].objects.forEach((element) => {
+      this[element.name] = new Elevators(this, element.x + 24, element.y, {
+        key: element.properties.key,
+        up: element.properties.up,
+        down: element.properties.down,
+        position: element.properties.position,
+      });
+      this[element.name].displayWidth = 48;
+      this[element.name].displayHeight = 16;
+      this.elevatorGroup.push(this[element.name]);
+    });
     // WATER
     // this.water = this.map.findObject("water", obj => obj.properties.drag );
     // this.waterBox = this.add.sprite(this.water.x , this.water.y  , 'blackPixel');
@@ -394,31 +410,13 @@ export default class playLvl1 extends Scene {
 
     //    COLLIDERS    ////
     this.solLayer.setCollisionByProperty({ collides: true });
-
     this.physics.add.collider(this.player, this.solLayer, null);
+    this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.collider(this.enemyGroup, this.solLayer, null);
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
-
-    this.physics.add.collider(
-      this.enemyGroup,
-      this.player,
-      elm => this.playerIsHit(elm), null, this,
-    );
-    this.physics.add.collider(
-      this.player.bullets,
-      this.enemyGroup,
-      (elm, bull) => this.enemyIsHit(bull, elm, this.player),
-      null,
-      this.player,
-    );
-
-    this.physics.add.collider(
-      this.player.bullets,
-      this.solLayer,
-      this.player.bulletKill,
-      null,
-      this.player.bullets,
-    );
+    this.physics.add.collider(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
+    this.physics.add.overlap(this.player.bullets, this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player.bullets);
 
 
     // MODAL
@@ -437,6 +435,7 @@ export default class playLvl1 extends Scene {
   }
 
   update() {
+    // player part
     if (!this.player.state.pause || !this.playerDead) {
       if (this.cursors.left.isDown) {
         this.player.flipX = true;
@@ -451,6 +450,7 @@ export default class playLvl1 extends Scene {
         && !(this.cursors.left.isDown || this.cursors.right.isDown)
         && !this.player.state.onMorphingBall
         && !this.player.state.jumpBoost) {
+        this.player.body.velocity.y = -0.5;
         this.player.body.setSize(10, 23, 8, 10);
         // body size for morphing
       } else if (this.player.state.onMorphingBall) {
@@ -466,14 +466,6 @@ export default class playLvl1 extends Scene {
         // this.player.body.setOffset(8, 2);
       }
     }
-    // DEBUG D
-    if (this.cursors.up.isDown) {
-      console.log(this.player.x, this.player.y);
-    }
-    if (this.player.state.pause) {
-      this.msgText.x = this.player.x;
-      this.msgText.y = this.player.y - 20;
-    }
 
     if (this.state.displayPowerUpMsg) {
       this.msgtext.x = this.player.x;
@@ -481,18 +473,14 @@ export default class playLvl1 extends Scene {
       this.msg.x = this.player.x + 150;
       this.msg.y = this.player.y - 20;
     }
-
-    // var tiles = this.map.getTilesWithinWorldXY(this.player.x , this.player.y , 16, 16);
-    // if (this.cursors.down.isDown) {
-    //   //console.log(tiles)
-    //   if (tiles[0].properties.collides) {
-    //     console.log(tiles)
-    //    }
-    // }
-    // console.log(tiles)
-    // if (tiles[0].properties.collides) {
-    //   console.log(tiles)
-    // }
+    // enemies part
+    this.enemyGroup.forEach((enemy) => {
+      if (enemy.active && enemy.body.velocity.x > 0) {
+        enemy.flipX = true;
+      } else {
+        enemy.flipX = false;
+      }
+    });
   }
 
   getPowerUp(elm) {
@@ -500,6 +488,8 @@ export default class playLvl1 extends Scene {
     if (elm.state.ability === 'energy') {
       this.player.addEnergy();
       this.events.emit('setHealth', { life: this.player.inventory.life });
+    } else if (elm.state.ability === 'speedfire') {
+      this.player.addSpeedFire();
     } else {
       this.player.inventory[elm.state.ability] = true;
     }
@@ -676,8 +666,8 @@ export default class playLvl1 extends Scene {
           },
         });
       }
-      this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
     }
+    this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
   }
 
   playerIsDead() {
@@ -702,13 +692,22 @@ export default class playLvl1 extends Scene {
           this.getFired = false;
         },
       });
-      if (elm.state.life < 0) {
-        elm.clearTint();
-        elm.anims.play('enemyExplode');
-        elm.on('animationcomplete', (currentAnim, currentFramee, sprite) => {
-          sprite.destroy();
-        });
-      }
     }
+    if (elm.state.life < 0) {
+      elm.clearTint();
+      this.enemyExplode(elm.x, elm.y);
+      this.enemyDestroy(elm);
+    }
+  }
+
+  enemyDestroy(e) {
+    e.destroy();
+  }
+
+  enemyExplode(x, y) {
+    this.explosion = this.add.sprite(x, y, 'whitePixel');
+    this.explosion.anims.play('enemyExplode').on('animationcomplete', () => {
+      this.explosion.destroy();
+    });
   }
 }

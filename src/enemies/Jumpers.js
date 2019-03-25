@@ -11,36 +11,52 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
       hited: false,
     };
 
+    this.lastAnim = null;
     this.setDepth(50);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = false;
+    this.body.allowGravity = true;
+    this.body.setGravityY(300);
     this.body.setSize(20, 20);
-    this.state.directionY = Math.sin(300 + Math.PI / 4);
+    this.flag = false;
   }
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
+    let animationName;
+    if (this.active) {
+      if (this.body.blocked.down) {
+        this.state.directionX = 0;
+        this.jumperJump();
+      }
+      if (!this.body.blocked.down) {
+        animationName = 'jumperJump';
+      } else {
+        animationName = 'jumperIdle';
+      }
+    }
+    if (this.lastAnim !== animationName) {
+      this.lastAnim = animationName;
+      this.animate(animationName, true);
+    }
+  }
 
-    this.body.setVelocityX(this.state.directionX);
-    this.body.setVelocityY(this.state.directionY);
-
-    // gauche ou droite et fait demi tour quand bloqué
-    if (this.body.blocked.left) {
-      this.state.directionX = 100;
-    }
-    if (this.body.blocked.right) {
-      this.state.directionX = -100;
-    }
-    if (this.state.directionY > 0) {
-      this.state.directionY += 1;
-    } else {
-      this.state.directionY -= 1;
-    }
-    if (this.body.blocked.down) {
-      this.state.directionY = -1;
-    } else if (this.body.blocked.up) {
-      this.state.directionY = 1;
+  jumperJump() {
+    if (!this.flag) {
+      this.flag = true;
+      this.delay = Phaser.Math.Between(0, 300);
+      this.side = Phaser.Math.Between(-100, 100);
+      this.body.setVelocity(0, 0);
+      this.scene.time.addEvent({
+        delay: this.delay * 10,
+        callback: () => {
+          if (this.active) {
+            this.body.setVelocityX(this.side);
+            this.body.setVelocityY(-this.delay);
+            this.flag = false;
+          }
+        },
+      });
     }
   }
 
