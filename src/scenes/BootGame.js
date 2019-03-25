@@ -1,50 +1,104 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
-import background from "../assets/menuBackgound.png";
+import background from '../assets/menuBackgound.png';
+import atomicsc from '../assets/atomicsc.png';
+import atomicscXML from '../assets/atomicsc.xml';
 
 
-var tween;
-var image;
-var fromColors;
-var toColors;
+let tween;
+let image;
+let fromColors;
+let toColors;
+
+function getRandomVertexColors() {
+  // Create a random color for each vertex.
+  // RandomRGB returns a Phaser.Display.Color object with random RGB values.
+  const { RandomRGB } = Phaser.Display.Color;
+  return {
+    topLeft: RandomRGB(),
+    topRight: RandomRGB(),
+    bottomLeft: RandomRGB(),
+    bottomRight: RandomRGB(),
+  };
+}
+
+function getTintColor(vertex) {
+  // Interpolate between the fromColor and toColor of the current vertex,
+  // using the current tween value.
+  const tint = Phaser.Display.Color.Interpolate.ColorWithColor(
+    fromColors[vertex],
+    toColors[vertex],
+    100,
+    tween.getValue(),
+  );
+  // Interpolate.ColorWithColor returns a Javascript object with
+  // interpolated RGB values. We convert it to a Phaser.Display.Color object
+  // in order to get the integer value of the tint color.
+  return Phaser.Display.Color.ObjectToColor(tint).color;
+}
+
+function tintTween(fromColors, toColors, callback) {
+  tween = this.tweens.addCounter({
+    from: 0,
+    to: 100,
+    duration: 5000,
+    onUpdate: () => {
+      image.setTint(
+        getTintColor('topLeft'),
+        getTintColor('topRight'),
+        getTintColor('bottomLeft'),
+        getTintColor('bottomRight'),
+      );
+    },
+    onComplete: callback,
+  });
+}
+
+function initTweens() {
+  fromColors = toColors || fromColors;
+  toColors = getRandomVertexColors();
+  tintTween(
+    fromColors,
+    toColors,
+    initTweens,
+  );
+}
 
 export default class bootGame extends Scene {
-  constructor(fromColors) {
-    super('bootGame')
-    //this.fromColors = null;
+  constructor() {
+    super('bootGame');
   }
-  
+
   // init () {
   //   var canvas = this.sys.game.canvas;
   //   var fullscreen = this.sys.game.device.fullscreen;
-    
-  
+
   //   if (!fullscreen.available) {
   //     return;
   //   }
-    
+
   //   // You don't really have to create the buttons here.
   //   // You could add them to HTML instead and then select here.
-  
+
   //   const startBtn = document.createElement('button');
   //   const stopBtn = document.createElement('button');
-  
+
   //   startBtn.textContent = 'Start Fullscreen';
   //   stopBtn.textContent = 'Stop Fullscreen';
-  
+
   //   canvas.parentNode.appendChild(startBtn);
   //   canvas.parentNode.appendChild(stopBtn);
-  
+
   //   startBtn.addEventListener('click', function () {
   //     if (document.fullscreenElement) { return; }
-  
+
   //     canvas[fullscreen.request]();
   //   });
-  
+
   //   stopBtn.addEventListener('click', function () {
   //     document[fullscreen.cancel]();
   //   });
-  
+
   //   this.events.on('shutdown', ()=>{
   //     const canvas = this.sys.game.canvas;
   //     canvas.parentNode.removeChild(startBtn);
@@ -53,7 +107,8 @@ export default class bootGame extends Scene {
   // }
 
   preload() {
-    this.load.image("background", background);
+    this.load.image('background', background);
+    this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
 
   create() {
@@ -66,7 +121,7 @@ export default class bootGame extends Scene {
       fromColors.topLeft.color,
       fromColors.topRight.color,
       fromColors.bottomLeft.color,
-      fromColors.bottomRight.color
+      fromColors.bottomRight.color,
     );
 
     // Bind the scope to tintTween so we can use this.tweens inside it.
@@ -81,38 +136,28 @@ export default class bootGame extends Scene {
     // this.background.displayHeight = U.HEIGHT;
     // this.background.alpha = 0.5;
 
-    this.title = this.add.text(U.WIDTH/2, U.HEIGHT/2 - 140, " K - 4 3 8 B ", { fill: "#FF3B00", fontFamily: 'Bangers', fontSize: '50px', });
+    this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 160, 'atomic', ' K-438 B ', 70, 1);
     this.title.setOrigin(0.5, 0.5);
-    //this.title.displayWidth = 245;
-    //this.title.displayHeight = 50
+    this.title.tint = 0xFF3B00;
 
-    this.title2 = this.add.text(U.WIDTH/2, U.HEIGHT/2 - 100, " M i s s i o n :   e x p l o r a t i o n ", { fill: "#FF3B00", fontFamily: 'Bangers', fontSize: '25px', });
+    this.title2 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 100, 'atomic', ' Mission : exploration ', 25, 1);
     this.title2.setOrigin(0.5, 0.5);
-    //this.title2.displayWidth = 150;
-    //this.title2.displayHeight = 40;
-    //image = this.background;
-    //this.background = image;
-    this.title3 = this.add.text(U.WIDTH/2, U.HEIGHT/2 - 70, "A Dinan Magel adventure", { fontSize: '20px' });
+    this.title2.tint = 0xFF3B00;
+
+    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', 'A Dinan Magel adventure', 20, 1);
     this.title3.setOrigin(0.5, 0.5);
 
-    this.start = this.add.text(U.WIDTH/2, U.HEIGHT/2+50, 'press enter to start', { fontSize: '30px' }).setInteractive();
+    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 + 50, 'atomic', 'press enter to start', 24, 1);
     this.start.setOrigin(0.5, 0.5);
-    this.start.on('pointerover', function (event) { /* Do something when the mouse enters */ });
-    this.start.on('pointerout', function (event) { /* Do something when the mouse exits. */ });
+    // this.start.setFontSize(22);
     this.start.on('pointerdown', () => {
       this.scene.start('playLvl1');
-      this.scene.stop()
+      this.scene.stop();
     }); // Start game on click.
 
-    this.input.keyboard.once('keydown', (event) => {
-      //theme.stop();
-      //this.sound.add(‘select’).play();
+    this.input.keyboard.once('keydown', () => {
       this.scene.start('loadSavedGame');
     });
-    // this.keyObj = this.input.keyboard.addKey('ENTER')
-    // this.keyObj.on('down', () => { 
-    //   this.scene.start('playLvl1'); 
-    // });
 
     this.tween = this.tweens.add({
       targets: this.start,
@@ -123,66 +168,10 @@ export default class bootGame extends Scene {
       yoyo: true,
       alpha: {
         getStart: () => 0.05,
-        getEnd: () => 1
-      }
+        getEnd: () => 1,
+      },
     });
 
-    this.cameras.main.fadeIn(2000)
-  //this.scene.start('playLvl1'); //start lvl while developping
+    this.cameras.main.fadeIn(2000);
   }
-}
-
-function getRandomVertexColors () {
-  // Create a random color for each vertex.
-  // RandomRGB returns a Phaser.Display.Color object with random RGB values.
-  var RandomRGB = Phaser.Display.Color.RandomRGB;
-  return {
-    topLeft: RandomRGB(),
-    topRight: RandomRGB(),
-    bottomLeft: RandomRGB(),
-    bottomRight: RandomRGB()
-  };
-}
-
-function getTintColor (vertex) {
-  // Interpolate between the fromColor and toColor of the current vertex,
-  // using the current tween value.
-  var tint = Phaser.Display.Color.Interpolate.ColorWithColor(
-    fromColors[vertex],
-    toColors[vertex],
-    100,
-    tween.getValue()
-  );
-  // Interpolate.ColorWithColor returns a Javascript object with
-  // interpolated RGB values. We convert it to a Phaser.Display.Color object
-  // in order to get the integer value of the tint color.
-  return Phaser.Display.Color.ObjectToColor(tint).color;
-}
-
-function tintTween (fromColors, toColors, callback) {
-  tween = this.tweens.addCounter({
-    from: 0,
-    to: 100,
-    duration: 5000,
-    onUpdate: function () {
-      image.setTint(
-          getTintColor('topLeft'),
-          getTintColor('topRight'),
-          getTintColor('bottomLeft'),
-          getTintColor('bottomRight')
-      );
-    },
-    onComplete: callback
-  });
-}
-
-function initTweens ()
-{
-    fromColors = toColors || fromColors;
-    toColors = getRandomVertexColors();
-    tintTween(
-        fromColors,
-        toColors,
-        initTweens
-    );
 }

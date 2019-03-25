@@ -1,19 +1,19 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
+import atomicsc from '../assets/atomicsc.png';
+import atomicscXML from '../assets/atomicsc.xml';
 
 export default class Huhmiel extends Scene {
-  constructor(fromColors) {
-    super('huhmiel')
-    //this.fromColors = null;
+  constructor() {
+    super('huhmiel');
   }
-  
+
   preload() {
-    
+    this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
 
   create() {
-    
-    this.huhmiel = this.add.text(U.WIDTH/2, U.HEIGHT/2, 'huhmiel games', { fontFamily: 'Arial', fontSize: '40px' }).setInteractive();
+    this.huhmiel = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2, 'atomic', 'huhmiel games', 50, 1);
     this.huhmiel.setOrigin(0.5, 0.5);
     this.huhmiel.setAlpha(0);
 
@@ -26,13 +26,11 @@ export default class Huhmiel extends Scene {
       yoyo: true,
       alpha: {
         getStart: () => 0,
-        getEnd: () => 1
+        getEnd: () => 1,
       },
       onComplete: () => {
-        this.scene.start('bootGame'); //original set to 'bootGame'
+        this.scene.start('bootGame'); // original set to 'bootGame'
       },
     });
   }
 }
-
-
