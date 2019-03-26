@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import blackPixel from '../assets/blackPixel.png';
+import iconMissile from '../assets/iconMissile.png';
 
 export default class DashBoard extends Scene {
   constructor() {
@@ -9,10 +10,10 @@ export default class DashBoard extends Scene {
 
   preload() {
     this.load.image('blackpixel', blackPixel);
+    this.load.image('iconMissile', iconMissile);
   }
 
   create() {
-    console.log('dashBoard loaded');
     this.mainScene = this.scene.get('playLvl1');
 
     // loading
@@ -28,6 +29,15 @@ export default class DashBoard extends Scene {
       this.Health = this.add.bitmapText(16, 464, 'atomic', '');
       this.Health.setFontSize(32);
       this.Health.text = `${this.mainScene.player.inventory.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`;
+
+      this.missile = this.add.image(400, 480, 'iconMissile');
+      this.missile.displayWidth = 36;
+      this.missile.displayHeight = 40;
+      this.missile.alpha = 0;
+
+      if (this.mainScene.player.inventory.missile) {
+        this.missile.alpha = 1;
+      }
       // this.setDepth(3000);
     });
 
@@ -37,6 +47,17 @@ export default class DashBoard extends Scene {
 
     this.mainScene.events.on('addEnergyPack', (elm) => {
       this.Health.text = elm.life;
+    });
+
+    this.mainScene.events.on('addWeapon', (elm) => {
+      this[elm.Weapon].alpha = 1;
+    });
+
+    this.mainScene.events.on('selectWeapon', (elm) => {
+      this.missile.clearTint();
+      if (this[elm.selectedWeapon]) {
+        this[elm.selectedWeapon].tint = 0xFF3B00;
+      }
     });
   }
 }

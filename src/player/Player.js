@@ -12,9 +12,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
       life: 100,
       savedPositionX: null,
       savedPositionY: null,
+      selectableWeapon: ['gun'],
       gun: false,
       gunDamage: 5,
-      fireRate: 320,
+      missile: false,
+      missileDamage: 100,
+      fireRate: 420,
       morphing: false,
       morphingBomb: false,
       jumpBooster: false,
@@ -33,6 +36,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       speed: 250,
       runSpeed: 350,
       maxSpeed: 250,
+      selectedWeapon: 'gun',
       lastFired: 0,
       bulletOrientationX: 'right',
       bulletOrientationY: 'normal',
@@ -43,12 +47,14 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
     this.jumpCooldownTimer = null;
     this.boostTimer = null;
+    this.lavaOverlap = false;
+    this.selectWeaponFlag = false;
     this.setDepth(100);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
 
     const {
-      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, P, D,
+      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, D,
     } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.scene.input.keyboard.addKeys({
       left: LEFT,
@@ -58,6 +64,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       jump: SPACE,
       run: SHIFT,
       fire: ENTER,
+      select: TAB,
       pause: P,
       debug: D,
     });
@@ -239,6 +246,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
         }
         this.body.setVelocityY(this.state.speed);
       }
+      // select weapon
+      if (keys.select.isDown) {
+        this.selectWeapon();
+      }
 
       // player animation play
       if (this.lastAnim !== animationName) {
@@ -276,6 +287,52 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   shoot(time) {
+    if (this.state.selectedWeapon === 'gun') {
+      this.shootGun(time);
+    }
+    if (this.state.selectedWeapon === 'missile') {
+      this.shootMissile(time);
+    }
+  }
+
+  shootMissile(time) {
+    if (time > this.state.lastFired) {
+      const missile = this.missiles.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'missile', null, true);
+      if (missile) {
+        this.state.lastFired = time + this.inventory.fireRate;
+        missile.visible = true;
+        missile.anims.play('missile', true);
+        missile.setDepth(99);
+        //    BULLET ORIENTATION    ////
+        if (this.state.bulletOrientationX === 'left') {
+          missile.setAngle(0);
+          missile.flipX = false;
+          missile.body.velocity.x = -400;
+        }
+        if (this.state.bulletOrientationX === 'right') {
+          missile.setAngle(0);
+          missile.flipX = true;
+          missile.body.velocity.x = 400;
+        }
+        if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
+          missile.setAngle(90);
+          missile.flipX = false;
+          missile.body.velocity.y = -400;
+          missile.body.velocity.x = 0;
+        } else if (this.state.bulletOrientationY === 'normal') {
+          missile.body.velocity.y = 0;
+        }
+      }
+    }
+  }
+
+  missileKill(e) {
+    e.setVelocity(0, 0);
+    e.anims.play('enemyExplode', true);
+    e.on('animationcomplete', () => { e.destroy(); });
+  }
+
+  shootGun(time) {
     if (time > this.state.lastFired && this.inventory.gun) {
       const bullet = this.bullets.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'bullet', null, true);
       if (bullet) {
@@ -346,5 +403,90 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   addSpeedFire() {
     this.inventory.fireRate -= 50;
+  }
+
+  addMissile() {
+    this.inventory.missile = true;
+    this.inventory.selectableWeapon.push('missile');
+    this.scene.events.emit('addWeapon', { Weapon: 'missile' });
+  }
+
+  selectWeapon() {
+    if (!this.selectWeaponFlag) {
+      console.log('here')
+      this.selectWeaponFlag = true;
+      let count = this.inventory.selectableWeapon.indexOf(this.state.selectedWeapon);
+      if (count === this.inventory.selectableWeapon.length - 1) {
+        count = -1;
+      }
+      this.state.selectedWeapon = this.inventory.selectableWeapon[count + 1];
+      this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
+      this.scene.time.addEvent({
+        delay: 200,
+        callback: () => {
+          this.selectWeaponFlag = false;
+        },
+      });
+    }
+  }
+
+  handleLava() {
+    if (!this.lavaOverlap) {
+      console.log('here');
+      this.lavaOverlap = true;
+      this.inventory.life -= 1;
+      this.scene.events.emit('setHealth', { life: this.inventory.life });
+      this.playerFlashTween = this.scene.tweens.add({
+        targets: this.scene.player,
+        ease: 'Sine.easeInOut',
+        duration: 200,
+        delay: 0,
+        repeat: 5,
+        yoyo: true,
+        alpha: {
+          getStart: () => 0,
+          getEnd: () => 1,
+        },
+        onComplete: () => {
+          this.scene.player.alpha = 1;
+        },
+      });
+      this.scene.time.addEvent({
+        delay: 100,
+        callback: () => {
+          this.lavaOverlap = false;
+        },
+      });
+    }
+    if (this.inventory.life <= 0) {
+      this.scene.player.dead = true;
+      this.playerDead = true;
+      this.scene.physics.pause();
+      this.scene.input.enabled = false;
+      this.scene.player.anims.pause(this.scene.player.anims.currentFrame);
+      this.playerFlashTween.stop();
+      this.inventory.life = 0;
+      this.scene.player.setTintFill(0xFFFFFF);
+      this.scene.player.setDepth(2000);
+
+      this.round = this.scene.add.sprite(this.scene.player.x, this.scene.player.y, 'whitePixel');
+      this.round.setOrigin(0.5, 0.5);
+      this.round.setDepth(1000);
+      this.round.displayWidth = 2;
+      this.round.displayHeight = 2;
+
+      this.tween = this.scene.tweens.add({
+        targets: this.round,
+        ease: 'Sine.easeInOut',
+        scaleX: 1,
+        scaleY: 1,
+        duration: 2000,
+        delay: 2000,
+        onComplete: () => {
+          this.scene.input.enabled = true;
+          this.scene.playerIsDead();
+        },
+      });
+    }
   }
 }
