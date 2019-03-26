@@ -41,6 +41,11 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
       } else if (this.body.blocked.up || this.state.directionY < -120) {
         this.state.directionY = 2;
       }
+      if (this.state.directionX > 0) {
+        this.flipX = true;
+      } else {
+        this.flipX = false;
+      }
     }
   }
 

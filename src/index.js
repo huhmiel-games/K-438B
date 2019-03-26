@@ -91,7 +91,7 @@ const config = {
     arcade: {
       tileBias: 20,
       gravity: { y: 100 }, // will affect our player sprite
-      debug: false, // change if you need
+      debug: true, // change if you need
       debugShowBody: true,
       debugShowStaticBody: false,
     },

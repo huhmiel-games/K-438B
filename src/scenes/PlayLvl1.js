@@ -5,6 +5,7 @@ import Crabes from '../enemies/Crabes';
 import Guepes from '../enemies/Guepes';
 import Jumpers from '../enemies/Jumpers';
 import Elevators from '../utils/Elevators';
+import Doors from '../utils/Doors';
 import Lava from '../utils/Lava';
 import U from '../utils/usefull';
 
@@ -44,6 +45,7 @@ import missile from '../assets/missile.png';
 import blackPixel from '../assets/blackPixel.png';
 import saveStation from '../assets/savestation.png';
 import elevator from '../assets/elevator.png';
+import door from '../assets/door.png';
 import head from '../assets/head.png';
 import whitePixel from '../assets/whitePixel.png';
 import lava from '../assets/lava.png';
@@ -95,10 +97,11 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('jumper', jumper, { frameWidth: 47, frameHeight: 32 });
     this.load.spritesheet('enemyExplode', enemyExplode, { frameWidth: 67, frameHeight: 48 });
     this.enemyGetHited = false;
-    // save station
+    // various map items
     this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
     this.load.image('elevator', elevator);
+    this.load.image('door', door);
     this.load.spritesheet('lava', lava, { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
 
@@ -359,7 +362,7 @@ export default class playLvl1 extends Scene {
     this.enemyGroup = [];
     console.log(this.map.objects);
     // the crabs
-    this.map.objects[2].objects.forEach((element) => {
+    this.map.objects[1].objects.forEach((element) => {
       this[element.name] = new Crabes(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
@@ -370,7 +373,7 @@ export default class playLvl1 extends Scene {
       this.enemyGroup.push(this[element.name]);
     });
     // the wasps
-    this.map.objects[4].objects.forEach((element) => {
+    this.map.objects[3].objects.forEach((element) => {
       this[element.name] = new Guepes(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
@@ -381,7 +384,7 @@ export default class playLvl1 extends Scene {
       this.enemyGroup.push(this[element.name]);
     });
     // the jumpers
-    this.map.objects[5].objects.forEach((element) => {
+    this.map.objects[4].objects.forEach((element) => {
       this[element.name] = new Jumpers(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
@@ -396,7 +399,7 @@ export default class playLvl1 extends Scene {
 
     // elevators
     this.elevatorGroup = [];
-    this.map.objects[3].objects.forEach((element) => {
+    this.map.objects[2].objects.forEach((element) => {
       this[element.name] = new Elevators(this, element.x + 24, element.y, {
         key: element.properties.key,
         up: element.properties.up,
@@ -417,7 +420,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.lavaGroup = [];
-    this.map.objects[8].objects.forEach((element) => {
+    this.map.objects[7].objects.forEach((element) => {
       this[element.name] = new Lava(this, element.x, element.y, {
         key: element.properties.key,
       });
@@ -434,7 +437,7 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: -1,
     });
-    this.map.objects[7].objects.forEach((element) => {
+    this.map.objects[6].objects.forEach((element) => {
       this[element.name] = new Lava(this, element.x + 16, element.y - 8, {
         key: element.properties.key,
       });
@@ -446,6 +449,39 @@ export default class playLvl1 extends Scene {
       this.lavaGroup.push(this[element.name]);
     });
 
+    // doors
+    this.doorGroup = [];
+    this.map.objects[8].objects.forEach((element) => {
+      if (element.properties.side === 'right') {
+        this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
+          key: element.properties.key,
+          side: element.properties.side,
+        });
+        this[element.name].body.setSize(10, 47);
+      }
+      if (element.properties.side === 'left') {
+        this[element.name] = new Doors(this, element.x + 16, element.y + 9, {
+          key: element.properties.key,
+          side: element.properties.side,
+        });
+        this[element.name].flipX = true;
+        this[element.name].body.setSize(10, 47);
+      }
+      if (element.properties.side === 'top') {
+        this[element.name] = new Doors(this, element.x + 26, element.y, {
+          key: element.properties.key,
+          side: element.properties.side,
+        });
+        this[element.name].flipX = false;
+        this[element.name].setAngle(-90);
+        this[element.name].body.setSize(47, 10);
+      }
+      
+      console.log(this[element.name]);
+      // this[element.name].displayWidth = 48;
+      // this[element.name].displayHeight = 16;
+      this.doorGroup.push(this[element.name]);
+    });
     // WATER
     // this.water = this.map.findObject("water", obj => obj.properties.drag );
     // this.waterBox = this.add.sprite(this.water.x , this.water.y  , 'blackPixel');
@@ -471,6 +507,9 @@ export default class playLvl1 extends Scene {
     //    COLLIDERS    ////
     this.solLayer.setCollisionByProperty({ collides: true });
     this.physics.add.collider(this.player, this.solLayer, null);
+    this.physics.add.collider(this.doorGroup, this.player, null);
+    this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
+    this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
     this.physics.add.collider(this.enemyGroup, this.solLayer, null);
@@ -537,13 +576,13 @@ export default class playLvl1 extends Scene {
       this.msg.y = this.player.y - 20;
     }
     // enemies part
-    this.enemyGroup.forEach((enemy) => {
-      if (enemy.active && enemy.body.velocity.x > 0) {
-        enemy.flipX = true;
-      } else {
-        enemy.flipX = false;
-      }
-    });
+    // this.enemyGroup.forEach((enemy) => {
+    //   if (enemy.active && enemy.body.velocity.x > 0) {
+    //     enemy.flipX = true;
+    //   } else {
+    //     enemy.flipX = false;
+    //   }
+    // });
   }
 
   getPowerUp(elm) {
@@ -743,10 +782,9 @@ export default class playLvl1 extends Scene {
   enemyIsHit(bull, elm) {
     if (!this.getFired) {
       this.getFired = true;
-      this.player.bulletKill(bull);
+      this.player[`${this.player.state.selectedWeapon}Kill`](bull);
       elm.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
       elm.setTintFill(0xFFFFFF);
-      console.log(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
       this.time.addEvent({
         delay: 50,
         callback: () => {
@@ -776,5 +814,11 @@ export default class playLvl1 extends Scene {
     this.explosion.anims.play('enemyExplode').on('animationcomplete', () => {
       this.explosion.destroy();
     });
+  }
+
+  openDoor(d, miss) {
+    console.log(miss, d)
+    this.player.missileKill(miss);
+    d.destroyDoor();
   }
 }

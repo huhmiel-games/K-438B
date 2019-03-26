@@ -37,6 +37,11 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
       if (this.body.blocked.down) {
         this.state.directionY = 0;
       }
+      if (this.state.directionX > 0) {
+        this.flipX = true;
+      } else {
+        this.flipX = false;
+      }
     }
   }
 

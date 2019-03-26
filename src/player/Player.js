@@ -413,7 +413,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   selectWeapon() {
     if (!this.selectWeaponFlag) {
-      console.log('here')
       this.selectWeaponFlag = true;
       let count = this.inventory.selectableWeapon.indexOf(this.state.selectedWeapon);
       if (count === this.inventory.selectableWeapon.length - 1) {
