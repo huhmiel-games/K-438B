@@ -25,10 +25,10 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
       this.body.setVelocityY(this.state.directionY);
       this.body.velocity.normalize().scale(150);
       // gauche ou droite et fait demi tour quand bloqué
-      if (this.body.blocked.left) {
+      if (this.body.blocked.left || this.body.touching.left) {
         this.state.directionX = 100;
       }
-      if (this.body.blocked.right) {
+      if (this.body.blocked.right || this.body.touching.right) {
         this.state.directionX = -100;
       }
       if (this.state.directionY > 0) {

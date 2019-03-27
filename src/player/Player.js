@@ -12,9 +12,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
       life: 100,
       savedPositionX: null,
       savedPositionY: null,
-      selectableWeapon: ['gun'],
+      selectableWeapon: ['bullet'],
       gun: false,
-      gunDamage: 5,
+      bulletDamage: 5,
       missile: false,
       missileDamage: 100,
       fireRate: 420,
@@ -36,7 +36,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       speed: 250,
       runSpeed: 350,
       maxSpeed: 250,
-      selectedWeapon: 'gun',
+      selectedWeapon: 'bullet',
       lastFired: 0,
       bulletOrientationX: 'right',
       bulletOrientationY: 'normal',
@@ -47,6 +47,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
     this.jumpCooldownTimer = null;
     this.boostTimer = null;
+    this.bombTimer = null;
     this.lavaOverlap = false;
     this.selectWeaponFlag = false;
     this.setDepth(100);
@@ -117,7 +118,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.jumpBoosterTimer();
       }
       // fire Y orientation
-      if (keys.up.isDown) {
+      if (keys.up.isDown && !this.scene.solLayer.hasTileAtWorldXY(this.body.x, this.body.y - 12)) {
         this.state.bulletOrientationY = 'up';
         this.state.onMorphingBall = false;
         morph = false;
@@ -193,7 +194,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
           this.body.setVelocityX(-this.state.speed);
         } else if (keys.right.isDown) {
           this.body.setVelocityX(this.state.speed);
-        }
+        } 
         this.state.bulletPositionY = 10;
         // tire vers le haut
       } else if (keys.fire.isDown && keys.up.isDown && !(keys.left.isDown || keys.right.isDown)) {
@@ -250,7 +251,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (keys.select.isDown) {
         this.selectWeapon();
       }
-
       // player animation play
       if (this.lastAnim !== animationName) {
         this.lastAnim = animationName;
@@ -287,11 +287,50 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   shoot(time) {
-    if (this.state.selectedWeapon === 'gun') {
+    if (this.state.selectedWeapon === 'bullet' && !this.state.onMorphingBall) {
       this.shootGun(time);
     }
-    if (this.state.selectedWeapon === 'missile') {
+    if (this.state.selectedWeapon === 'missile' && !this.state.onMorphingBall) {
       this.shootMissile(time);
+    }
+    if (this.inventory.morphingBomb && this.state.onMorphingBall) {
+      this.shootBomb(time);
+    }
+  }
+
+  shootBomb(time) {
+    if (time > this.state.lastFired) {
+      const bomb = this.bombs.getFirstDead(true, this.body.x + 6, this.body.y + 10, 'bomb', null, true);
+      if (bomb) {
+        this.state.lastFired = time + this.inventory.fireRate;
+        bomb.displayWidth = 7;
+        bomb.displayHeight = 7;
+        bomb.visible = true;
+        bomb.setImmovable();
+        bomb.anims.play('bomb', true);
+        bomb.setDepth(101);
+        bomb.body.enabled = false;
+        bomb.body.setSize(16, 16);
+        //    BOMB EXPLODE TIMER    //
+        this.bombTimer = this.scene.time.addEvent({
+          delay: 1500,
+          callback: () => {
+            const filteringOptions = {
+              // isNotEmpty: false,
+              isColliding: true,
+              // hasInterestingFace: false
+            };
+            const tiles = this.scene.solLayer.getTilesWithinWorldXY(bomb.body.x || bomb.body.x - 8 || bomb.body.x + 8, bomb.body.y - 4, 16, 16, filteringOptions);
+            tiles.forEach((e) => {
+              if (e.properties.destructible) {
+                this.scene.solLayer.removeTileAt(e.x, e.y, true, true);
+              }
+            });
+            bomb.body.enabled = true;
+            bomb.anims.play('impactBomb', true).on('animationcomplete', () => bomb.destroy());
+          },
+        });
+      }
     }
   }
 
@@ -431,9 +470,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   handleLava() {
     if (!this.lavaOverlap) {
-      console.log('here');
       this.lavaOverlap = true;
-      this.inventory.life -= 1;
+      this.inventory.life -= 3;
       this.scene.events.emit('setHealth', { life: this.inventory.life });
       this.playerFlashTween = this.scene.tweens.add({
         targets: this.scene.player,

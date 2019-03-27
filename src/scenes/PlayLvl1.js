@@ -7,6 +7,7 @@ import Jumpers from '../enemies/Jumpers';
 import Elevators from '../utils/Elevators';
 import Doors from '../utils/Doors';
 import Lava from '../utils/Lava';
+import WaterFall from '../utils/WaterFalls';
 import U from '../utils/usefull';
 
 // Player
@@ -40,6 +41,7 @@ import map from '../maps/map1.json';
 
 // Various
 import bullet from '../assets/spritesheets/Fx/shot.png';
+import bomb from '../assets/bomb.png';
 import impact from '../assets/spritesheets/Fx/impact.png';
 import missile from '../assets/missile.png';
 import blackPixel from '../assets/blackPixel.png';
@@ -50,6 +52,7 @@ import head from '../assets/head.png';
 import whitePixel from '../assets/whitePixel.png';
 import lava from '../assets/lava.png';
 import lavaFall from '../assets/lava-fall.png';
+import waterFall from '../assets/waterfall.png';
 
 import test from '../maps/map1.png';
 
@@ -82,6 +85,7 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('bullet', bullet, { frameWidth: 6, frameHeight: 4 });
     this.load.spritesheet('impact', impact, { frameWidth: 12, frameHeight: 12 });
     this.load.spritesheet('missile', missile, { frameWidth: 13, frameHeight: 10 });
+    this.load.spritesheet('bomb', bomb, { frameWidth: 11, frameHeight: 11 });
 
     // power up
     this.load.spritesheet('powerupBlue', powerupBlue, { frameWidth: 16, frameHeight: 16 });
@@ -104,6 +108,7 @@ export default class playLvl1 extends Scene {
     this.load.image('door', door);
     this.load.spritesheet('lava', lava, { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
 
     this.load.image('whitePixel', whitePixel);
   }
@@ -264,6 +269,25 @@ export default class playLvl1 extends Scene {
       frameRate: 1,
       repeat: -1,
     });
+    // player morphing bomb
+    this.player.bombs = this.physics.add.group({
+      defaultKey: 'bomb',
+      maxSize: 3,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    this.anims.create({
+      key: 'bomb',
+      frames: this.anims.generateFrameNumbers('bomb', { start: 0, end: 1, first: 0 }),
+      frameRate: 1,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'impactBomb',
+      frames: this.anims.generateFrameNumbers('impact', { start: 0, end: 5, first: 0 }),
+      frameRate: 10,
+      repeat: 0,
+    });
 
     // chargement de la sauvegarde
     if (this.data.systems.settings.data.loadSavedGame) {
@@ -334,7 +358,7 @@ export default class playLvl1 extends Scene {
     this.anims.create({
       key: 'crabe',
       frames: this.anims.generateFrameNumbers('crabe', { start: 0, end: 4, first: 0 }),
-      frameRate: 10,
+      frameRate: 8,
       yoyo: false,
       repeat: -1,
     });
@@ -449,6 +473,26 @@ export default class playLvl1 extends Scene {
       this.lavaGroup.push(this[element.name]);
     });
 
+    // water fall
+    this.anims.create({
+      key: 'waterFall',
+      frames: this.anims.generateFrameNumbers('waterFall', { start: 0, end: 3, first: 0 }),
+      frameRate: 6,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.map.objects[5].objects.forEach((element) => {
+      this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
+        key: element.properties.key,
+      });
+      this[element.name].displayWidth = 16;
+      this[element.name].displayHeight = 16;
+      // this[element.name].setDepth(10);
+      // this[element.name].alpha = 0.7;
+      this[element.name].animate(element.properties.key, true);
+      // this.lavaGroup.push(this[element.name]);
+    });
+
     // doors
     this.doorGroup = [];
     this.map.objects[8].objects.forEach((element) => {
@@ -467,19 +511,6 @@ export default class playLvl1 extends Scene {
         this[element.name].flipX = true;
         this[element.name].body.setSize(10, 47);
       }
-      if (element.properties.side === 'top') {
-        this[element.name] = new Doors(this, element.x + 26, element.y, {
-          key: element.properties.key,
-          side: element.properties.side,
-        });
-        this[element.name].flipX = false;
-        this[element.name].setAngle(-90);
-        this[element.name].body.setSize(47, 10);
-      }
-      
-      console.log(this[element.name]);
-      // this[element.name].displayWidth = 48;
-      // this[element.name].displayHeight = 16;
       this.doorGroup.push(this[element.name]);
     });
     // WATER
@@ -506,13 +537,16 @@ export default class playLvl1 extends Scene {
 
     //    COLLIDERS    ////
     this.solLayer.setCollisionByProperty({ collides: true });
+
     this.physics.add.collider(this.player, this.solLayer, null);
     this.physics.add.collider(this.doorGroup, this.player, null);
+    this.physics.add.collider(this.player.bombs, this.player, (bull, d) => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
     this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
     this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
     this.physics.add.collider(this.enemyGroup, this.solLayer, null);
+    this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
     this.physics.add.collider(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
     this.physics.add.overlap(this.player.bullets, this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
@@ -817,7 +851,6 @@ export default class playLvl1 extends Scene {
   }
 
   openDoor(d, miss) {
-    console.log(miss, d)
     this.player.missileKill(miss);
     d.destroyDoor();
   }

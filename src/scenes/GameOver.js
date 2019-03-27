@@ -33,7 +33,7 @@ export default class GameOver extends Scene {
     this.title.tint = 0xFF3B00;
     this.title.setOrigin(0.5, 0.5);
 
-    this.retry = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' Retry ');
+    this.retry = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' Try again ');
     this.retry.setFontSize(48);
 
     this.quit = this.add.bitmapText(U.WIDTH / 4, this.position[1], 'atomic', ' Quit ');
