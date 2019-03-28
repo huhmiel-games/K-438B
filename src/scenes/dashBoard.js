@@ -3,6 +3,7 @@ import U from '../utils/usefull';
 import blackPixel from '../assets/blackPixel.png';
 import iconMissile from '../assets/iconMissile.png';
 import iconLaser from '../assets/iconLaser.png';
+import iconSwell from '../assets/iconSwell.png';
 
 export default class DashBoard extends Scene {
   constructor() {
@@ -13,6 +14,7 @@ export default class DashBoard extends Scene {
     this.load.image('blackpixel', blackPixel);
     this.load.image('iconMissile', iconMissile);
     this.load.image('iconLaser', iconLaser);
+    this.load.image('iconSwell', iconSwell);
   }
 
   create() {
@@ -32,12 +34,17 @@ export default class DashBoard extends Scene {
       this.Health.setFontSize(32);
       this.Health.text = `${this.mainScene.player.inventory.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`;
 
-      this.missile = this.add.image(400, 480, 'iconMissile');
+      this.swell = this.add.image(400, 480, 'iconSwell');
+      this.swell.displayWidth = 36;
+      this.swell.displayHeight = 40;
+      this.swell.alpha = 0;
+
+      this.missile = this.add.image(450, 480, 'iconMissile');
       this.missile.displayWidth = 36;
       this.missile.displayHeight = 40;
       this.missile.alpha = 0;
 
-      this.laser = this.add.image(450, 480, 'iconLaser');
+      this.laser = this.add.image(500, 480, 'iconLaser');
       this.laser.displayWidth = 36;
       this.laser.displayHeight = 40;
       this.laser.alpha = 0;
@@ -47,6 +54,9 @@ export default class DashBoard extends Scene {
       }
       if (this.mainScene.player.inventory.laser) {
         this.laser.alpha = 1;
+      }
+      if (this.mainScene.player.inventory.swell) {
+        this.swell.alpha = 1;
       }
       // this.setDepth(3000);
     });
@@ -66,6 +76,7 @@ export default class DashBoard extends Scene {
     this.mainScene.events.on('selectWeapon', (elm) => {
       this.missile.clearTint();
       this.laser.clearTint();
+      this.swell.clearTint();
       if (this[elm.selectedWeapon]) {
         this[elm.selectedWeapon].tint = 0xFF3B00;
       }

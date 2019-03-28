@@ -15,6 +15,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       selectableWeapon: ['bullet'],
       gun: false,
       bulletDamage: 5,
+      swell: true,
+      swellDamage: 20,
       missile: false,
       missileDamage: 100,
       laser: false,
@@ -303,6 +305,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
     if (this.state.selectedWeapon === 'bullet' && !this.state.onMorphingBall) {
       this.shootGun(time);
     }
+    if (this.state.selectedWeapon === 'swell' && !this.state.onMorphingBall) {
+      this.shootSwell(time);
+    }
     if (this.state.selectedWeapon === 'missile' && !this.state.onMorphingBall) {
       this.shootMissile(time);
     }
@@ -389,6 +394,48 @@ export default class Player extends Phaser.GameObjects.Sprite {
     }
   }
 
+  shootSwell(time) {
+    if (time > this.state.lastFired) {
+      const swell = this.swells.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'swell', null, true);
+      if (swell) {
+        this.state.lastFired = time + this.inventory.fireRate;
+        // swell.displayWidth = 12;
+        // swell.displayHeight = 12;
+        swell.visible = true;
+        swell.anims.play('swell', true);
+        swell.setDepth(99);
+        //    BULLET ORIENTATION    ////
+        if (this.state.bulletOrientationX === 'left') {
+          // swell.body.setSize(18, 4);
+          // swell.setAngle(0);
+          swell.flipX = false;
+          swell.body.velocity.x = -400;
+        }
+        if (this.state.bulletOrientationX === 'right') {
+          // swell.body.setSize(18, 4);
+          // swell.setAngle(0);
+          swell.flipX = true;
+          swell.body.velocity.x = 400;
+        }
+        if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
+          // swell.body.setSize(4, 18);
+          // swell.setAngle(90);
+          // swell.flipX = false;
+          swell.body.velocity.y = -400;
+          swell.body.velocity.x = 0;
+        } else if (this.state.bulletOrientationY === 'normal') {
+          swell.body.velocity.y = 0;
+        }
+      }
+    }
+  }
+
+  swellKill(e) {
+    e.setVelocity(0, 0);
+    e.anims.play('impact', true);
+    e.on('animationcomplete', () => { e.destroy(); });
+  }
+
   shootMissile(time) {
     if (time > this.state.lastFired) {
       const missile = this.missiles.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'missile', null, true);
@@ -424,7 +471,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   missileKill(e) {
-    console.log(e.texture.key)
     e.setVelocity(0, 0);
     if(e.texture.key === 'missile') {
       e.anims.play('enemyExplode', true).on('animationcomplete', () => { e.destroy(); });
@@ -516,6 +562,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.inventory.laser = true;
     this.inventory.selectableWeapon.push('laser');
     this.scene.events.emit('addWeapon', { Weapon: 'laser' });
+  }
+
+  addSwell() {
+    this.inventory.swell = true;
+    this.inventory.selectableWeapon.push('swell');
+    this.scene.events.emit('addWeapon', { Weapon: 'swell' });
   }
 
 

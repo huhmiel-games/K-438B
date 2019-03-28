@@ -2,8 +2,8 @@ import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import head from '../assets/head.png';
-import atomicsc from '../assets/atomicsc.png';
-import atomicscXML from '../assets/atomicsc.xml';
+// import atomicsc from '../assets/atomicsc.png';
+// import atomicscXML from '../assets/atomicsc.xml';
 
 export default class LoadSavedGame extends Scene {
   constructor() {

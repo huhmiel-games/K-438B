@@ -4,6 +4,7 @@ import PowerUp from '../player/powerUp';
 import Crabes from '../enemies/Crabes';
 import Guepes from '../enemies/Guepes';
 import Jumpers from '../enemies/Jumpers';
+import Octopus from '../enemies/Octopus';
 import Elevators from '../utils/Elevators';
 import Doors from '../utils/Doors';
 import Lava from '../utils/Lava';
@@ -33,6 +34,7 @@ import crabe from '../assets/spritesheets/enemies/crab-walk.png';
 import guepe from '../assets/guepe.png';
 import jumper from '../assets/spritesheets/enemies/jumper-idle.png';
 import enemyExplode from '../assets/spritesheets/Fx/enemy-death.png';
+import octopus from '../assets/spritesheets/enemies/octopus.png';
 
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
@@ -44,6 +46,7 @@ import bomb from '../assets/bomb.png';
 import laser from '../assets/laser.png';
 import impact from '../assets/spritesheets/Fx/impact.png';
 import missile from '../assets/missile.png';
+import swell from '../assets/swell.png';
 import blackPixel from '../assets/blackPixel.png';
 // import saveStation from '../assets/savestation.png';
 import elevator from '../assets/elevator.png';
@@ -87,6 +90,7 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('impact', impact, { frameWidth: 12, frameHeight: 12 });
     this.load.spritesheet('missile', missile, { frameWidth: 18, frameHeight: 10 });
     this.load.spritesheet('bomb', bomb, { frameWidth: 11, frameHeight: 11 });
+    this.load.spritesheet('swell', swell, { frameWidth: 12, frameHeight: 12 });
     this.load.image('laser', laser);
 
     // power up
@@ -102,7 +106,8 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('guepe', guepe, { frameWidth: 40, frameHeight: 47 });
     this.load.spritesheet('jumper', jumper, { frameWidth: 47, frameHeight: 32 });
     this.load.spritesheet('enemyExplode', enemyExplode, { frameWidth: 67, frameHeight: 48 });
-    this.enemyGetHited = false;
+    this.load.spritesheet('octopus', octopus, { frameWidth: 28, frameHeight: 37 });
+    // this.enemyGetHited = false;
     // various map items
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
@@ -134,9 +139,11 @@ export default class playLvl1 extends Scene {
     // this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
     // this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
     this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
+    this.eau.setDepth(102);
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0);
+    this.solLayer.setDepth(100);
     this.frontLayer = this.map.createStaticLayer('front', this.tileset, 0, 0);
-    this.frontLayer.setDepth(101);
+    this.frontLayer.setDepth(103);
 
     // ====================================================================
     // player in water effect
@@ -278,6 +285,20 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
 
+    // player swell
+    this.player.swells = this.physics.add.group({
+      defaultKey: 'swell',
+      maxSize: 10,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    this.anims.create({
+      key: 'swell',
+      frames: this.anims.generateFrameNumbers('swell', { start: 0, end: 8, first: 0 }),
+      frameRate: 24,
+      repeat: -1,
+    });
+
     // player morphing bomb
     this.player.bombs = this.physics.add.group({
       defaultKey: 'bomb',
@@ -410,6 +431,20 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: 0,
     });
+    this.anims.create({
+      key: 'octopus',
+      frames: this.anims.generateFrameNumbers('octopus', { start: 0, end: 4, first: 0 }),
+      frameRate: 10,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'octopusIdle',
+      frames: this.anims.generateFrameNumbers('octopus', { start: 2, end: 2, first: 2 }),
+      frameRate: 1,
+      yoyo: false,
+      repeat: -1,
+    });
     this.enemyGroup = [];
     console.log(this.map.objects);
     // the crabs
@@ -442,6 +477,17 @@ export default class playLvl1 extends Scene {
         damage: element.properties.damage,
       });
       this[element.name].body.setSize(31, 23);
+      this[element.name].setScale(2, 2);
+      this.enemyGroup.push(this[element.name]);
+    });
+    // the octopus
+    this.map.objects[9].objects.forEach((element) => {
+      this[element.name] = new Octopus(this, element.x, element.y - 16, {
+        key: element.properties.key,
+        life: element.properties.life,
+        damage: element.properties.damage,
+      });
+      //this[element.name].body.setSize(31, 23);
       this[element.name].setScale(2, 2);
       this.enemyGroup.push(this[element.name]);
     });
@@ -574,23 +620,28 @@ export default class playLvl1 extends Scene {
 
     this.physics.add.collider(this.player, this.solLayer, null);
     this.physics.add.collider(this.doorGroup, this.player, null);
+    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
+    this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
+
+    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player.bullets);
+    this.physics.add.collider(this.player.swells, this.solLayer, this.player.bulletKill, null, this.player.swells);
+    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player.missiles);
+    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player.lasers);
+
     this.physics.add.collider(this.player.bombs, this.player, () => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
     this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
     this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
+    this.physics.add.collider(this.player.swells, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.lasers);
     this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
-    this.physics.add.collider(this.enemyGroup, this.solLayer, null);
-    this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
+
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
     this.physics.add.collider(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
     this.physics.add.overlap(this.player.bullets, this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
     this.physics.add.overlap(this.player.missiles, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
     this.physics.add.overlap(this.player.lasers, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player.bullets);
-    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player.missiles);
-    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player.lasers);
-
+    this.physics.add.overlap(this.player.swells, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
 
     // ====================================================================
     // MODAL
@@ -674,6 +725,9 @@ export default class playLvl1 extends Scene {
     } else if (elm.state.ability === 'laser') {
       this.player.inventory[elm.state.ability] = true;
       this.player.addLaser();
+    } else if (elm.state.ability === 'swell') {
+      this.player.inventory[elm.state.ability] = true;
+      this.player.addSwell();
     } else {
       this.player.inventory[elm.state.ability] = true;
     }
@@ -871,7 +925,10 @@ export default class playLvl1 extends Scene {
   enemyIsHit(bull, elm) {
     if (!elm.getFired) {
       elm.getFired = true;
-      if (this.player.state.selectedWeapon === 'missile' || this.player.state.selectedWeapon === 'bullet') {
+      if (this.player.state.selectedWeapon === 'missile'
+      || this.player.state.selectedWeapon === 'bullet'
+      || this.player.state.selectedWeapon === 'swell'
+      ) {
         this.player[`${this.player.state.selectedWeapon}Kill`](bull);
       }
       elm.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
