@@ -122,19 +122,14 @@ export default class Player extends Phaser.GameObjects.Sprite {
       // fire Y orientation
       if (keys.up.isDown && !morph) {
         this.state.bulletOrientationY = 'up';
-        console.log('ici')
-        // this.state.onMorphingBall = false;
-        // morph = false;
       } else {
         this.state.bulletOrientationY = 'normal';
-        console.log('la')
       }
       if (keys.up.isDown && !this.scene.solLayer.hasTileAtWorldXY(this.body.x, this.body.y - 12) && morph) {
         this.state.bulletOrientationY = 'up';
         this.state.onMorphingBall = false;
         morph = false;
-        console.log('ou ici')
-      } 
+      }
       // call run speed
       this.isRunning();
       if (keys.fire.isDown) {
