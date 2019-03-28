@@ -35,7 +35,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       onMorphingBall: false,
       jumpBoost: false,
       onJumpBoost: false,
-      speed: 250,
+      speed: 200,
       runSpeed: 350,
       maxSpeed: 250,
       selectedWeapon: 'bullet',
@@ -47,6 +47,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       pause: false,
     };
 
+    this.onWater = false;
     this.jumpCooldownTimer = null;
     this.boostTimer = null;
     this.bombTimer = null;
@@ -261,6 +262,13 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.lastAnim = animationName;
         this.animate(animationName, true);
       }
+
+      if (this.onWater) {
+        console.log('here');
+        this.state.speed = 70;
+      } else {
+        this.state.speed = 200;
+      }
     }
   }
 
@@ -284,9 +292,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
   isRunning() {
     if (this.keys.run.isDown
       && (this.keys.left.isDown || this.keys.right.isDown)
-      && this.body.blocked.down) {
+      && this.body.blocked.down
+      && !this.onWater) {
       this.state.speed = this.state.runSpeed;
-    } else if (!this.keys.run.isDown && (this.keys.left.isDown || this.keys.right.isDown)) {
+    } else if (!this.keys.run.isDown && (this.keys.left.isDown || this.keys.right.isDown) && !this.onWater) {
       this.state.speed = 200;
     }
   }
@@ -512,7 +521,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         count = -1;
       }
       this.state.selectedWeapon = this.inventory.selectableWeapon[count + 1];
-      console.log(this.state.selectedWeapon);
+      // console.log(this.state.selectedWeapon);
       this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
       this.scene.time.addEvent({
         delay: 200,

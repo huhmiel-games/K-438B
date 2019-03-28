@@ -139,6 +139,16 @@ export default class playLvl1 extends Scene {
     this.frontLayer.setDepth(101);
 
     // ====================================================================
+    // player in water effect
+    this.solLayer.setTileLocationCallback(2, 34, 26, 18, (e) => {
+      if (e === this.player) {
+        this.player.onWater = true;
+      }
+    }, this);
+    this.solLayer.setTileLocationCallback(29, 31, 1, 21, () => { this.player.onWater = false; }, this);
+    this.solLayer.setTileLocationCallback(2, 53, 29, 1, () => { this.player.onWater = false; }, this);
+
+    // ====================================================================
     // PAUSE GAME
     this.input.keyboard.on('keydown', (event) => {
       if (event.code === 'KeyP') {
@@ -160,6 +170,7 @@ export default class playLvl1 extends Scene {
     this.player = new Player(this, 1924, 158, { key: 'player' });
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
+    
     this.anims.create({
       key: 'walk',
       frames: this.anims.generateFrameNumbers('player', { start: 0, end: 10, first: 0 }),
