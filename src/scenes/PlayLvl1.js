@@ -32,7 +32,6 @@ import powerupRed from '../assets/powerupRouge.png';
 import crabe from '../assets/spritesheets/enemies/crab-walk.png';
 import guepe from '../assets/guepe.png';
 import jumper from '../assets/spritesheets/enemies/jumper-idle.png';
-
 import enemyExplode from '../assets/spritesheets/Fx/enemy-death.png';
 
 // Map
@@ -42,10 +41,11 @@ import map from '../maps/map1.json';
 // Various
 import bullet from '../assets/spritesheets/Fx/shot.png';
 import bomb from '../assets/bomb.png';
+import laser from '../assets/laser.png';
 import impact from '../assets/spritesheets/Fx/impact.png';
 import missile from '../assets/missile.png';
 import blackPixel from '../assets/blackPixel.png';
-import saveStation from '../assets/savestation.png';
+// import saveStation from '../assets/savestation.png';
 import elevator from '../assets/elevator.png';
 import door from '../assets/door.png';
 import head from '../assets/head.png';
@@ -64,6 +64,7 @@ export default class playLvl1 extends Scene {
     };
   }
 
+  // ====================================================================
   preload() {
     // map
     this.load.image('tiles', tiles);
@@ -84,8 +85,9 @@ export default class playLvl1 extends Scene {
     // player bullets
     this.load.spritesheet('bullet', bullet, { frameWidth: 6, frameHeight: 4 });
     this.load.spritesheet('impact', impact, { frameWidth: 12, frameHeight: 12 });
-    this.load.spritesheet('missile', missile, { frameWidth: 13, frameHeight: 10 });
+    this.load.spritesheet('missile', missile, { frameWidth: 18, frameHeight: 10 });
     this.load.spritesheet('bomb', bomb, { frameWidth: 11, frameHeight: 11 });
+    this.load.image('laser', laser);
 
     // power up
     this.load.spritesheet('powerupBlue', powerupBlue, { frameWidth: 16, frameHeight: 16 });
@@ -102,7 +104,7 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('enemyExplode', enemyExplode, { frameWidth: 67, frameHeight: 48 });
     this.enemyGetHited = false;
     // various map items
-    this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
+    // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
     this.load.image('elevator', elevator);
     this.load.image('door', door);
@@ -113,39 +115,30 @@ export default class playLvl1 extends Scene {
     this.load.image('whitePixel', whitePixel);
   }
 
+  // ====================================================================
   create() {
-    // this.background = this.add.image(0, 0,'background');
-    // this.background.setOrigin(0, 0);
-    // this.background.displayWidth = U.WIDTH;
-    // this.background.displayHeight = U.HEIGHT;
-    // this.scene.stop('loadSavedGame');
-
     this.map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
-    this.tileset = this.map.addTilesetImage('tileground', 'tiles');
+    this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16, 0, 0);
 
     this.playerFlashTween = null;
     // test
-    // this.test = this.add.image(0, 0,'test');
-    // this.test.setOrigin(0, 0);
-    // this.test.displayWidth = 2048;
-    // this.test.displayHeight = 1024;
+    this.test = this.add.image(0, 0, 'test');
+    this.test.setOrigin(0, 0);
+    this.test.displayWidth = 2048;
+    this.test.displayHeight = 2048;
 
-    // Parameters: layer name (or index) from Tiled, tileset, x, y
-    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
-    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
-    this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
+    // ====================================================================
+    // LAYERS
+
+    // this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
+    // this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
+    // this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
     this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0);
     this.frontLayer = this.map.createStaticLayer('front', this.tileset, 0, 0);
     this.frontLayer.setDepth(101);
 
-    // const aboveLayer = map.createStaticLayer("Above Player", tileset, 0, 0);
-
-    // const spawnPoint = this.map.findObject("enemies", obj => {
-    //   if (obj.tetelaser) return obj
-
-    // });
-
+    // ====================================================================
     // PAUSE GAME
     this.input.keyboard.on('keydown', (event) => {
       if (event.code === 'KeyP') {
@@ -159,8 +152,11 @@ export default class playLvl1 extends Scene {
       }
     });
 
-
+    // need testing without
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    // ====================================================================
+    // PLAYER SECTION
     this.player = new Player(this, 1924, 158, { key: 'player' });
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
@@ -256,6 +252,7 @@ export default class playLvl1 extends Scene {
       frameRate: 20,
       repeat: 0,
     });
+
     // player missiles
     this.player.missiles = this.physics.add.group({
       defaultKey: 'missile',
@@ -265,10 +262,11 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'missile',
-      frames: this.anims.generateFrameNumbers('missile', { start: 0, end: 1, first: 0 }),
-      frameRate: 1,
+      frames: this.anims.generateFrameNumbers('missile', { start: 0, end: 3, first: 0 }),
+      frameRate: 10,
       repeat: -1,
     });
+
     // player morphing bomb
     this.player.bombs = this.physics.add.group({
       defaultKey: 'bomb',
@@ -289,6 +287,15 @@ export default class playLvl1 extends Scene {
       repeat: 0,
     });
 
+    // player laser
+    this.player.lasers = this.physics.add.group({
+      defaultKey: 'laser',
+      maxSize: 10,
+      allowGravity: false,
+      createIfNull: true,
+    });
+
+    // ====================================================================
     // chargement de la sauvegarde
     if (this.data.systems.settings.data.loadSavedGame) {
       this.loadGame();
@@ -296,6 +303,8 @@ export default class playLvl1 extends Scene {
     if (!localStorage.getItem('k438b')) {
       this.saveGame();
     }
+
+    // ====================================================================
     // SECTION POWER-UP
     this.anims.create({
       key: 'powerupYellow',
@@ -345,6 +354,7 @@ export default class playLvl1 extends Scene {
       }
     });
 
+    // ====================================================================
     // SECTION ENEMIES
     // explode animation
     this.anims.create({
@@ -353,6 +363,12 @@ export default class playLvl1 extends Scene {
       frameRate: 15,
       yoyo: false,
       repeat: 0,
+    });
+    this.explodeSprite = this.add.group({
+      defaultKey: 'transparentPixel',
+      maxSize: 30,
+      allowGravity: false,
+      createIfNull: true,
     });
     // anims enemies
     this.anims.create({
@@ -421,6 +437,7 @@ export default class playLvl1 extends Scene {
 
     this.getFired = false;
 
+    // ====================================================================
     // elevators
     this.elevatorGroup = [];
     this.map.objects[2].objects.forEach((element) => {
@@ -435,6 +452,7 @@ export default class playLvl1 extends Scene {
       this.elevatorGroup.push(this[element.name]);
     });
 
+    // ====================================================================
     // lava
     this.anims.create({
       key: 'lava',
@@ -473,6 +491,7 @@ export default class playLvl1 extends Scene {
       this.lavaGroup.push(this[element.name]);
     });
 
+    // ====================================================================
     // water fall
     this.anims.create({
       key: 'waterFall',
@@ -485,7 +504,7 @@ export default class playLvl1 extends Scene {
       this[element.name] = new WaterFall(this, element.x + 8, element.y - 8, {
         key: element.properties.key,
       });
-      this[element.name].displayWidth = 16;
+      this[element.name].displayWidth = 32;
       this[element.name].displayHeight = 16;
       // this[element.name].setDepth(10);
       // this[element.name].alpha = 0.7;
@@ -493,6 +512,7 @@ export default class playLvl1 extends Scene {
       // this.lavaGroup.push(this[element.name]);
     });
 
+    // ====================================================================
     // doors
     this.doorGroup = [];
     this.map.objects[8].objects.forEach((element) => {
@@ -525,6 +545,8 @@ export default class playLvl1 extends Scene {
     // this.waterBox.body.setSize(this.water.width, this.water.height)
     // console.log(this)
 
+    // ====================================================================
+    // camera
     // set bounds so the camera won't go outside the game world
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     // make the camera follow the player
@@ -535,13 +557,15 @@ export default class playLvl1 extends Scene {
     this.cameras.main.setZoom(2);
     // this.cameras.main.setSize(400, 256);
 
+    // ====================================================================
     //    COLLIDERS    ////
     this.solLayer.setCollisionByProperty({ collides: true });
 
     this.physics.add.collider(this.player, this.solLayer, null);
     this.physics.add.collider(this.doorGroup, this.player, null);
-    this.physics.add.collider(this.player.bombs, this.player, (bull, d) => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
+    this.physics.add.collider(this.player.bombs, this.player, () => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
     this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
+    this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
     this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
@@ -551,10 +575,13 @@ export default class playLvl1 extends Scene {
     this.physics.add.collider(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
     this.physics.add.overlap(this.player.bullets, this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
     this.physics.add.overlap(this.player.missiles, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    this.physics.add.overlap(this.player.lasers, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
     this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player.bullets);
     this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player.missiles);
+    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player.lasers);
 
 
+    // ====================================================================
     // MODAL
     this.msg = this.add.image(-400, -180, 'blackPixel');
     this.msg.setOrigin(0.5, 0.5);
@@ -567,9 +594,12 @@ export default class playLvl1 extends Scene {
     this.msgText.setAlpha(0);
     this.cameras.main.fadeIn(1000);
 
+    // ====================================================================
+    // load the dashBoard
     this.events.emit('loadingDone');
   }
 
+  // ====================================================================
   update() {
     // player part
     if (!this.player.state.pause || !this.playerDead) {
@@ -619,6 +649,7 @@ export default class playLvl1 extends Scene {
     // });
   }
 
+  // ====================================================================
   getPowerUp(elm) {
     this.state.displayPowerUpMsg = true;
     if (elm.state.ability === 'energy') {
@@ -629,6 +660,9 @@ export default class playLvl1 extends Scene {
     } else if (elm.state.ability === 'missile') {
       this.player.inventory[elm.state.ability] = true;
       this.player.addMissile();
+    } else if (elm.state.ability === 'laser') {
+      this.player.inventory[elm.state.ability] = true;
+      this.player.addLaser();
     } else {
       this.player.inventory[elm.state.ability] = true;
     }
@@ -661,6 +695,7 @@ export default class playLvl1 extends Scene {
     });
   }
 
+  // ====================================================================
   pauseGame() {
     if (!this.player.state.pause) {
       this.player.state.pause = true;
@@ -673,7 +708,7 @@ export default class playLvl1 extends Scene {
       this.msg.setAlpha(0.9);
       this.msg.setDepth(109);
 
-      this.msgText = this.add.bitmapText(this.cameras.main.worldView.x / 2, this.cameras.main.worldView.y / 4, 'atomic', 'PAUSE', 50, 1);
+      this.msgText = this.add.bitmapText(this.cameras.main.worldView.x + 200, this.cameras.main.worldView.y + 128, 'atomic', 'PAUSE', 50, 1);
       this.msgText.setOrigin(0.5, 0.5);
       this.msgText.setAlpha(1);
       this.msgText.setDepth(110);
@@ -701,6 +736,7 @@ export default class playLvl1 extends Scene {
     }
   }
 
+  // ====================================================================
   choose() {
     if (this.player.state.pause) {
       if (this.lastPosition === 1) {
@@ -712,6 +748,7 @@ export default class playLvl1 extends Scene {
     }
   }
 
+  // ====================================================================
   launch() {
     if (this.player.state.pause) {
       if (this.lastPosition === 0) {
@@ -730,6 +767,7 @@ export default class playLvl1 extends Scene {
     }
   }
 
+  // ====================================================================
   saveGame() {
     this.player.inventory.savedPositionX = this.player.x;
     this.player.inventory.savedPositionY = this.player.y;
@@ -737,6 +775,7 @@ export default class playLvl1 extends Scene {
     localStorage.setItem('k438b', s);
   }
 
+  // ====================================================================
   loadGame() {
     const l = localStorage.getItem('k438b');
     this.player.inventory = JSON.parse(l);
@@ -744,14 +783,17 @@ export default class playLvl1 extends Scene {
     this.player.y = this.player.inventory.savedPositionY;
   }
 
+  // ====================================================================
   shakeCamera() {
     this.cameras.main.shake(100, 0.005);
   }
 
+  // ====================================================================
   flashCamera() {
     this.cameras.main.flash(1000);
   }
 
+  // ====================================================================
   playerIsHit(elm) {
     if (!this.playerHurt) {
       this.playerHurt = true; // flag
@@ -809,16 +851,20 @@ export default class playLvl1 extends Scene {
     this.events.emit('setHealth', { life: this.player.inventory.life }); // set health dashboard scene
   }
 
+  // ====================================================================
   playerIsDead() {
     this.scene.start('gameOver');
   }
 
+  // ====================================================================
   enemyIsHit(bull, elm) {
-    if (!this.getFired) {
-      this.getFired = true;
-      this.player[`${this.player.state.selectedWeapon}Kill`](bull);
+    if (!elm.getFired) {
+      elm.getFired = true;
+      if (this.player.state.selectedWeapon === 'missile' || this.player.state.selectedWeapon === 'bullet') {
+        this.player[`${this.player.state.selectedWeapon}Kill`](bull);
+      }
       elm.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
-      elm.setTintFill(0xFFFFFF);
+      elm.setTintFill(0xDDDDDD);
       this.time.addEvent({
         delay: 50,
         callback: () => {
@@ -828,7 +874,7 @@ export default class playLvl1 extends Scene {
       this.hitTimer = this.time.addEvent({
         delay: 120,
         callback: () => {
-          this.getFired = false;
+          elm.getFired = false;
         },
       });
     }
@@ -844,12 +890,14 @@ export default class playLvl1 extends Scene {
   }
 
   enemyExplode(x, y) {
-    this.explosion = this.add.sprite(x, y, 'whitePixel');
-    this.explosion.anims.play('enemyExplode').on('animationcomplete', () => {
-      this.explosion.destroy();
+    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
+    // this.explosion = this.add.sprite(x, y, 'whitePixel');
+    exp.anims.play('enemyExplode').on('animationcomplete', () => {
+      exp.destroy();
     });
   }
 
+  // ====================================================================
   openDoor(d, miss) {
     this.player.missileKill(miss);
     d.destroyDoor();

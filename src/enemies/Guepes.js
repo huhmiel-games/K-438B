@@ -16,6 +16,7 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
     this.body.allowGravity = false;
     this.body.setSize(20, 20);
     this.state.directionY = Math.sin(300 + Math.PI / 4);
+    this.getFired = false;
   }
 
   preUpdate(time, delta) {

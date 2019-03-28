@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import blackPixel from '../assets/blackPixel.png';
 import iconMissile from '../assets/iconMissile.png';
+import iconLaser from '../assets/iconLaser.png';
 
 export default class DashBoard extends Scene {
   constructor() {
@@ -11,6 +12,7 @@ export default class DashBoard extends Scene {
   preload() {
     this.load.image('blackpixel', blackPixel);
     this.load.image('iconMissile', iconMissile);
+    this.load.image('iconLaser', iconLaser);
   }
 
   create() {
@@ -35,8 +37,16 @@ export default class DashBoard extends Scene {
       this.missile.displayHeight = 40;
       this.missile.alpha = 0;
 
+      this.laser = this.add.image(450, 480, 'iconLaser');
+      this.laser.displayWidth = 36;
+      this.laser.displayHeight = 40;
+      this.laser.alpha = 0;
+
       if (this.mainScene.player.inventory.missile) {
         this.missile.alpha = 1;
+      }
+      if (this.mainScene.player.inventory.laser) {
+        this.laser.alpha = 1;
       }
       // this.setDepth(3000);
     });
@@ -55,6 +65,7 @@ export default class DashBoard extends Scene {
 
     this.mainScene.events.on('selectWeapon', (elm) => {
       this.missile.clearTint();
+      this.laser.clearTint();
       if (this[elm.selectedWeapon]) {
         this[elm.selectedWeapon].tint = 0xFF3B00;
       }

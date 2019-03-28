@@ -15,6 +15,7 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
     this.body.allowGravity = true;
     this.body.setGravityY(500);
+    this.getFired = false;
   }
 
   preUpdate(time, delta) {

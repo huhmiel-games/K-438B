@@ -17,6 +17,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       bulletDamage: 5,
       missile: false,
       missileDamage: 100,
+      laser: false,
+      laserDamage: 50,
       fireRate: 420,
       morphing: false,
       morphingBomb: false,
@@ -118,13 +120,21 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.jumpBoosterTimer();
       }
       // fire Y orientation
-      if (keys.up.isDown && !this.scene.solLayer.hasTileAtWorldXY(this.body.x, this.body.y - 12)) {
+      if (keys.up.isDown && !morph) {
+        this.state.bulletOrientationY = 'up';
+        console.log('ici')
+        // this.state.onMorphingBall = false;
+        // morph = false;
+      } else {
+        this.state.bulletOrientationY = 'normal';
+        console.log('la')
+      }
+      if (keys.up.isDown && !this.scene.solLayer.hasTileAtWorldXY(this.body.x, this.body.y - 12) && morph) {
         this.state.bulletOrientationY = 'up';
         this.state.onMorphingBall = false;
         morph = false;
-      } else {
-        this.state.bulletOrientationY = 'normal';
-      }
+        console.log('ou ici')
+      } 
       // call run speed
       this.isRunning();
       if (keys.fire.isDown) {
@@ -194,7 +204,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
           this.body.setVelocityX(-this.state.speed);
         } else if (keys.right.isDown) {
           this.body.setVelocityX(this.state.speed);
-        } 
+        }
         this.state.bulletPositionY = 10;
         // tire vers le haut
       } else if (keys.fire.isDown && keys.up.isDown && !(keys.left.isDown || keys.right.isDown)) {
@@ -293,9 +303,51 @@ export default class Player extends Phaser.GameObjects.Sprite {
     if (this.state.selectedWeapon === 'missile' && !this.state.onMorphingBall) {
       this.shootMissile(time);
     }
+    if (this.state.selectedWeapon === 'laser' && !this.state.onMorphingBall) {
+      this.shootLaser(time);
+    }
     if (this.inventory.morphingBomb && this.state.onMorphingBall) {
       this.shootBomb(time);
     }
+  }
+
+  shootLaser(time) {
+    if (time > this.state.lastFired) {
+      const laser = this.lasers.getFirstDead(true, this.body.x + this.state.bulletPositionX, this.body.y + this.state.bulletPositionY, 'laser', null, true);
+      if (laser) {
+        this.state.lastFired = time + this.inventory.fireRate;
+        laser.visible = true;
+        // laser.anims.play('bull', true);
+        laser.setDepth(99);
+        //    BULLET ORIENTATION    ////
+        if (this.state.bulletOrientationX === 'left') {
+          laser.setAngle(0);
+          laser.body.setSize(22, 4);
+          laser.body.velocity.x = -600;
+        }
+        if (this.state.bulletOrientationX === 'right') {
+          laser.setAngle(0);
+          laser.body.setSize(22, 4);
+          laser.body.velocity.x = 600;
+        }
+        if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
+          laser.setAngle(90);
+          laser.body.setSize(4, 22);
+          laser.body.velocity.y = -600;
+          laser.body.velocity.x = 0;
+        } else if (this.state.bulletOrientationY === 'normal') {
+          laser.setAngle(0);
+          laser.body.setSize(22, 4);
+          laser.body.velocity.y = 0;
+        }
+      }
+    }
+  }
+
+  laserKill(e) {
+    e.setVelocity(0, 0);
+    e.anims.play('enemyExplode', true);
+    e.on('animationcomplete', () => { e.destroy(); });
   }
 
   shootBomb(time) {
@@ -450,6 +502,13 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.events.emit('addWeapon', { Weapon: 'missile' });
   }
 
+  addLaser() {
+    this.inventory.laser = true;
+    this.inventory.selectableWeapon.push('laser');
+    this.scene.events.emit('addWeapon', { Weapon: 'laser' });
+  }
+
+
   selectWeapon() {
     if (!this.selectWeaponFlag) {
       this.selectWeaponFlag = true;
@@ -458,6 +517,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         count = -1;
       }
       this.state.selectedWeapon = this.inventory.selectableWeapon[count + 1];
+      console.log(this.state.selectedWeapon);
       this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
       this.scene.time.addEvent({
         delay: 200,

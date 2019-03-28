@@ -19,6 +19,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     this.body.setGravityY(300);
     this.body.setSize(20, 20);
     this.flag = false;
+    this.getFired = false;
   }
 
   preUpdate(time, delta) {
