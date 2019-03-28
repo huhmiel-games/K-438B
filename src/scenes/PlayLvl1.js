@@ -170,7 +170,7 @@ export default class playLvl1 extends Scene {
     this.player = new Player(this, 1924, 158, { key: 'player' });
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
-    
+
     this.anims.create({
       key: 'walk',
       frames: this.anims.generateFrameNumbers('player', { start: 0, end: 10, first: 0 }),

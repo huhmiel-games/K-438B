@@ -262,9 +262,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.lastAnim = animationName;
         this.animate(animationName, true);
       }
-
+      // player on water
       if (this.onWater) {
-        console.log('here');
         this.state.speed = 70;
       } else {
         this.state.speed = 200;
@@ -400,16 +399,19 @@ export default class Player extends Phaser.GameObjects.Sprite {
         missile.setDepth(99);
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
+          missile.body.setSize(18, 4);
           missile.setAngle(0);
           missile.flipX = false;
           missile.body.velocity.x = -400;
         }
         if (this.state.bulletOrientationX === 'right') {
+          missile.body.setSize(18, 4);
           missile.setAngle(0);
           missile.flipX = true;
           missile.body.velocity.x = 400;
         }
         if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
+          missile.body.setSize(4, 18);
           missile.setAngle(90);
           missile.flipX = false;
           missile.body.velocity.y = -400;
@@ -422,9 +424,13 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   missileKill(e) {
+    console.log(e.texture.key)
     e.setVelocity(0, 0);
-    e.anims.play('enemyExplode', true);
-    e.on('animationcomplete', () => { e.destroy(); });
+    if(e.texture.key === 'missile') {
+      e.anims.play('enemyExplode', true).on('animationcomplete', () => { e.destroy(); });
+    } else {
+      e.destroy();
+    }
   }
 
   shootGun(time) {
@@ -514,7 +520,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
 
   selectWeapon() {
-    if (!this.selectWeaponFlag) {
+    if (!this.selectWeaponFlag && !this.keys.fire.isDown) {
       this.selectWeaponFlag = true;
       let count = this.inventory.selectableWeapon.indexOf(this.state.selectedWeapon);
       if (count === this.inventory.selectableWeapon.length - 1) {
@@ -524,7 +530,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       // console.log(this.state.selectedWeapon);
       this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
       this.scene.time.addEvent({
-        delay: 200,
+        delay: 500,
         callback: () => {
           this.selectWeaponFlag = false;
         },
