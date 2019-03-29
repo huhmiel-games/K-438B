@@ -28,6 +28,7 @@ import powerupBlue from '../assets/powerupBleu.png';
 import powerupYellow from '../assets/powerupJaune.png';
 import powerupGreen from '../assets/powerupVert.png';
 import powerupRed from '../assets/powerupRouge.png';
+import powerUp from '../assets/spritesheets/Fx/power-up.png';
 
 // Enemies
 import crabe from '../assets/spritesheets/enemies/crab-walk.png';
@@ -72,6 +73,7 @@ export default class playLvl1 extends Scene {
     // map
     this.load.image('tiles', tiles);
     this.load.tilemapTiledJSON('map', map);
+    this.load.image('test', test);
 
     // player animation
     this.load.spritesheet('player', playerRun, { frameWidth: 40, frameHeight: 40 });
@@ -98,8 +100,7 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('powerupYellow', powerupYellow, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('powerupGreen', powerupGreen, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('powerupRed', powerupRed, { frameWidth: 16, frameHeight: 16 });
-    this.load.image('blackPixel', blackPixel);
-    this.load.image('test', test);
+    this.load.spritesheet('powerUp', powerUp, { frameWidth: 23, frameHeight: 21 });
 
     // Enemies
     this.load.spritesheet('crabe', crabe, { frameWidth: 48, frameHeight: 32 });
@@ -116,7 +117,7 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('lava', lava, { frameWidth: 32, frameHeight: 32 });
     this.load.spritesheet('lavaFall', lavaFall, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
-
+    this.load.image('blackPixel', blackPixel);
     this.load.image('whitePixel', whitePixel);
   }
 
@@ -139,7 +140,7 @@ export default class playLvl1 extends Scene {
     // this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
     // this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
     this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
-    this.eau.setDepth(102);
+    this.eau.setDepth(99);
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0);
     this.solLayer.setDepth(100);
     this.frontLayer = this.map.createStaticLayer('front', this.tileset, 0, 0);
@@ -152,7 +153,7 @@ export default class playLvl1 extends Scene {
         this.player.onWater = true;
       }
     }, this);
-    this.solLayer.setTileLocationCallback(29, 31, 1, 21, () => { this.player.onWater = false; }, this);
+    this.solLayer.setTileLocationCallback(30, 31, 1, 21, () => { this.player.onWater = false; }, this);
     this.solLayer.setTileLocationCallback(2, 53, 29, 1, () => { this.player.onWater = false; }, this);
 
     // ====================================================================
@@ -481,18 +482,17 @@ export default class playLvl1 extends Scene {
       this.enemyGroup.push(this[element.name]);
     });
     // the octopus
-    this.map.objects[9].objects.forEach((element) => {
+    this.map.objects[9].objects.forEach((element) =>  {
       this[element.name] = new Octopus(this, element.x, element.y - 16, {
         key: element.properties.key,
         life: element.properties.life,
         damage: element.properties.damage,
       });
-      //this[element.name].body.setSize(31, 23);
       this[element.name].setScale(2, 2);
       this.enemyGroup.push(this[element.name]);
     });
 
-    this.getFired = false;
+    // this.getFired = false;
 
     // ====================================================================
     // elevators
@@ -590,17 +590,6 @@ export default class playLvl1 extends Scene {
       }
       this.doorGroup.push(this[element.name]);
     });
-    // WATER
-    // this.water = this.map.findObject("water", obj => obj.properties.drag );
-    // this.waterBox = this.add.sprite(this.water.x , this.water.y  , 'blackPixel');
-    // this.waterBox.displayWidth = this.water.width;
-    // this.waterBox.displayHeight = this.water.height;
-    // this.waterBox.setAlpha(1);
-    // this.waterBox.setDepth(109);
-    // this.physics.world.enable(this.waterBox, 1);
-    // console.log(this.waterBox)
-    // this.waterBox.body.setSize(this.water.width, this.water.height)
-    // console.log(this)
 
     // ====================================================================
     // camera
@@ -609,9 +598,10 @@ export default class playLvl1 extends Scene {
     // make the camera follow the player
     this.cameras.main.startFollow(this.player);
     // set background color, so the sky is not black
-    this.cameras.main.setBackgroundColor('#3B1158');
-    this.cameras.main.roundPixels = true;
+    // this.cameras.main.setBackgroundColor('#3B1158');
+    // this.cameras.main.roundPixels = true;
     this.cameras.main.setZoom(2);
+    this.cameras.main.fadeIn(1000);
     // this.cameras.main.setSize(400, 256);
 
     // ====================================================================
@@ -645,16 +635,16 @@ export default class playLvl1 extends Scene {
 
     // ====================================================================
     // MODAL
-    this.msg = this.add.image(-400, -180, 'blackPixel');
-    this.msg.setOrigin(0.5, 0.5);
-    this.msg.displayWidth = 300;
-    this.msg.displayHeight = 80;
-    this.msg.setAlpha(0);
+    // this.msg = this.add.image(-400, -180, 'blackPixel');
+    // this.msg.setOrigin(0.5, 0.5);
+    // this.msg.displayWidth = 300;
+    // this.msg.displayHeight = 80;
+    // this.msg.setAlpha(0);
 
-    this.msgText = this.add.text(-400, -180, '', { fontSize: '15px' });
-    this.msgText.setOrigin(0.5, 0.5);
-    this.msgText.setAlpha(0);
-    this.cameras.main.fadeIn(1000);
+    // this.msgText = this.add.text(-400, -180, '', { fontSize: '15px' });
+    // this.msgText.setOrigin(0.5, 0.5);
+    // this.msgText.setAlpha(0);
+    
 
     // ====================================================================
     // load the dashBoard
@@ -713,6 +703,11 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   getPowerUp(elm) {
+    // if (this.state.displayPowerUpMsg) {
+    //   this.state.displayPowerUpMsg = false;
+    //   this.msg.destroy();
+    //   this.msgText.destroy();
+    // }
     this.state.displayPowerUpMsg = true;
     if (elm.state.ability === 'energy') {
       this.player.addEnergy();
@@ -737,17 +732,19 @@ export default class playLvl1 extends Scene {
     this.msg.displayWidth = 300;
     this.msg.displayHeight = 80;
     this.msg.setAlpha(1);
+    this.msg.setDepth(200);
 
-    this.msgtext = this.add.text(0, 0, elm.state.text, { fontSize: '15px', align: 'center' });
+    this.msgtext = this.add.bitmapText(0, 0, 'atomic', elm.state.text, 12, 1);
     this.msgtext.setOrigin(0.5, 0.5);
     this.msgtext.setAlpha(1);
+    this.msgtext.setDepth(210);
     elm.destroy();
 
     this.fadingTween = this.tweens.add({
       targets: [this.msg, this.msgtext],
       ease: 'Sine.easeInOut',
       duration: 2000,
-      delay: 5000,
+      delay: 3000,
       repeat: 0,
       yoyo: false,
       alpha: {

@@ -6,8 +6,6 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     this.state = {
       life: config.life,
       damage: config.damage,
-      directionX: 0,
-      directionY: 0,
       hited: false,
     };
 
@@ -17,7 +15,7 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
     this.body.allowGravity = true;
     this.body.setGravityY(100);
-    this.body.setSize(20, 25);
+    this.body.setSize(20, 20);
     this.flag = false;
     this.getFired = false;
   }
@@ -26,7 +24,7 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     super.preUpdate(time, delta);
     let animationName;
     if (this.scene.player.onWater) {
-      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 150) {
+      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200) {
         this.attack();
       } else {
         this.goHome();
@@ -39,6 +37,12 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       animationName = 'octopus';
     } else {
       animationName = 'octopusIdle';
+    }
+
+    if (this.body.velocity.x > 0) {
+      this.flipX = true;
+    } else {
+      this.flipX = false;
     }
 
     if (this.lastAnim !== animationName) {
@@ -67,6 +71,9 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       Math.cos(angle) * speed,
       Math.sin(angle) * speed,
     );
+    if (this.body.blocked.right && this.body.velocity.x < 100) {
+      this.body.velocity.y -= 10;
+    }
   }
 
   animate(str) {

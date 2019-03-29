@@ -12,7 +12,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     };
 
     this.lastAnim = null;
-    this.setDepth(50);
+    this.setDepth(101);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
@@ -46,7 +46,11 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     if (!this.flag) {
       this.flag = true;
       this.delay = Phaser.Math.Between(0, 300);
-      this.side = Phaser.Math.Between(-100, 100);
+      if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200 || this.state.life < 400) {
+        this.side = this.scene.player.x - this.x;
+      } else {
+        this.side = Phaser.Math.Between(-100, 100);
+      }
       this.body.setVelocity(0, 0);
       this.scene.time.addEvent({
         delay: this.delay * 10,

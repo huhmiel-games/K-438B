@@ -10,7 +10,7 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
       directionY: 0,
       hited: false,
     };
-    this.setDepth(50);
+    this.setDepth(101);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = false;
