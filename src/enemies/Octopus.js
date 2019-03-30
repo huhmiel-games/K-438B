@@ -7,6 +7,7 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       life: config.life,
       damage: config.damage,
       hited: false,
+      giveLife: config.life / 10,
     };
 
     this.lastAnim = null;

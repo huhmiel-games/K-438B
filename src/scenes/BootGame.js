@@ -69,42 +69,18 @@ export default class bootGame extends Scene {
     super('bootGame');
   }
 
-  // init () {
-  //   var canvas = this.sys.game.canvas;
-  //   var fullscreen = this.sys.game.device.fullscreen;
-
-  //   if (!fullscreen.available) {
-  //     return;
-  //   }
-
-  //   // You don't really have to create the buttons here.
-  //   // You could add them to HTML instead and then select here.
-
-  //   const startBtn = document.createElement('button');
-  //   const stopBtn = document.createElement('button');
-
-  //   startBtn.textContent = 'Start Fullscreen';
-  //   stopBtn.textContent = 'Stop Fullscreen';
-
-  //   canvas.parentNode.appendChild(startBtn);
-  //   canvas.parentNode.appendChild(stopBtn);
-
-  //   startBtn.addEventListener('click', function () {
-  //     if (document.fullscreenElement) { return; }
-
-  //     canvas[fullscreen.request]();
-  //   });
-
-  //   stopBtn.addEventListener('click', function () {
-  //     document[fullscreen.cancel]();
-  //   });
-
-  //   this.events.on('shutdown', ()=>{
-  //     const canvas = this.sys.game.canvas;
-  //     canvas.parentNode.removeChild(startBtn);
-  //     canvas.parentNode.removeChild(stopBtn);
-  //   }, this);
-  // }
+  init() {
+    const { canvas } = this.sys.game;
+    const { fullscreen } = this.sys.game.device;
+    if (!fullscreen.available) {
+      return;
+    }
+    const startBtn = document.getElementById('fullscreen');
+    startBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) { return; }
+      canvas[fullscreen.request]();
+    });
+  }
 
   preload() {
     this.load.image('background', background);

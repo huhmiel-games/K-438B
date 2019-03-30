@@ -9,6 +9,8 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
       directionX: 100,
       directionY: 0,
       hited: false,
+      type: config.key,
+      giveLife: config.life / 10,
     };
 
     this.lastAnim = null;
@@ -31,9 +33,9 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
         this.jumperJump();
       }
       if (!this.body.blocked.down) {
-        animationName = 'jumperJump';
+        animationName = `${this.state.type}Jump`;
       } else {
-        animationName = 'jumperIdle';
+        animationName = `${this.state.type}Idle`;
       }
     }
     if (this.lastAnim !== animationName) {

@@ -1,0 +1,28 @@
+body {
+  background-color: #111111;
+}
+
+div {
+  display: block;
+  text-align: center;
+}
+
+button {
+  border:solid 4px #3B1157;
+  border-radius: 5px;
+  background-color: #3B1157;
+  color: #fff;
+}
+
+button:hover {
+  border:solid 4px #3B0157;
+  background: #3B0157;
+  color: #fff;
+}
+
+canvas{
+  margin-top: 10px;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+}

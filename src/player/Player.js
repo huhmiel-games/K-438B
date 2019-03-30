@@ -24,8 +24,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
       fireRate: 420,
       morphing: false,
       morphingBomb: false,
+      morphingSonar: false,
       jumpBooster: false,
-      powerUp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      powerUp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     };
     this.state = {
       canJump: false,
@@ -37,7 +38,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       onMorphingBall: false,
       jumpBoost: false,
       onJumpBoost: false,
-      speed: 200,
+      speed: 250,
       runSpeed: 350,
       maxSpeed: 250,
       selectedWeapon: 'bullet',
@@ -47,6 +48,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       bulletPositionY: 10,
       bulletPositionX: 10,
       pause: false,
+      fullScreen: false,
     };
 
     this.onWater = false;
@@ -55,12 +57,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.bombTimer = null;
     this.lavaOverlap = false;
     this.selectWeaponFlag = false;
-    this.setDepth(100);
+    this.setDepth(105);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
 
     const {
-      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, D,
+      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, F, D,
     } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.scene.input.keyboard.addKeys({
       left: LEFT,
@@ -72,10 +74,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
       fire: ENTER,
       select: TAB,
       pause: P,
+      fullscreen: F,
       debug: D,
     });
 
-    this.arrLife = this.inventory.powerUp;
+    // this.arrLife = this.inventory.powerUp;
     this.ComboMorphingBall = this.scene.input.keyboard.createCombo(
       [this.keys.down, this.keys.down],
       {
@@ -179,7 +182,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       } else if (!this.body.blocked.down
         && !(keys.left.isDown || keys.right.isDown)
         && !this.state.onMorphingBall
-        && !this.state.jumpBoost) {
+        && !this.state.jumpBoost
+        && !this.body.touching.down) {
         animationName = 'jumpVertical';
         this.body.setVelocityX(0);
         this.ComboJumpBooster.enabled = false;
@@ -268,10 +272,32 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (this.onWater) {
         this.state.speed = 70;
       } else {
-        this.state.speed = 200;
+        this.state.speed = 250;
       }
+      // fullscreen mode
+      // if (keys.fullscreen.isDown) {
+      //   this.state.fullScreen = true;
+      //   this.displayFullScreen();
+      // }
+      this.displaySonar();
     }
   }
+
+  // displayFullScreen() {
+  //   if (this.state.fullScreen) {
+  //     window['canvas'][device.fullscreen.request]();
+  //     // if (this.scene.scale.isFullscreen) {
+  //     //   //this.scene.scale.stopFullscreen();
+  //     //   // On stop fulll screen
+  //     // } else {
+  //     //   //this.scene.scale.startFullscreen();
+  //     //   window['gamecanvas']['canvas'][game.device.fullscreen.request]();
+  //     //   // On start fulll screen
+  //     // }
+  //   } else {
+  //     this.state.fullScreen = false;
+  //   }
+  // }
 
   isJumping() {
     this.jumpCooldownTimer = this.scene.time.addEvent({
@@ -384,6 +410,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
             tiles.forEach((e) => {
               if (e.properties.destructible) {
                 this.scene.solLayer.removeTileAt(e.x, e.y, true, true);
+                this.scene.frontLayer.removeTileAt(e.x, e.y, true, true);
               }
             });
             bomb.body.enabled = true;
@@ -570,7 +597,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.events.emit('addWeapon', { Weapon: 'swell' });
   }
 
-
   selectWeapon() {
     if (!this.selectWeaponFlag && !this.keys.fire.isDown) {
       this.selectWeaponFlag = true;
@@ -647,5 +673,28 @@ export default class Player extends Phaser.GameObjects.Sprite {
         },
       });
     }
+  }
+
+  getLife(l) {
+    if (this.inventory.life + l.health < this.inventory.lifeEnergyBlock * 100) {
+      this.inventory.life += l.health;
+    } else {
+      this.inventory.life = this.inventory.lifeEnergyBlock * 100;
+    }
+    l.destroy();
+    this.scene.events.emit('setHealth', { life: this.inventory.life });
+  }
+
+  displaySonar() {
+    if (!this.inventory.morphingSonar) {
+      return;
+    }
+    if (this.state.onMorphingBall) {
+      //this.scene.mask.setMask(this.scene.mask);
+    }
+    // if (!this.state.onMorphingBall) {
+    //   console.log(this.scene.frontLayer)
+    //   this.scene.frontLayer.mask.clearMask();
+    // }
   }
 }

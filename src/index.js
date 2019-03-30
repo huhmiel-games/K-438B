@@ -80,10 +80,10 @@ import DashBoard from './scenes/dashBoard';
 
 const config = {
   type: Phaser.AUTO,
-  parent: 'phaser-example',
+  parent: 'gamecanvas',
   width: U.WIDTH,
   height: U.HEIGHT,
-  mode: Phaser.DOM.FIT,
+  mode: Phaser.DOM.NO_ZOOM, // FIT,
   roundPixels: false, // seems to not work
   pixelArt: true, // just a test but seems very good
   physics: {
@@ -92,7 +92,7 @@ const config = {
       tileBias: 20,
       gravity: { y: 100 }, // will affect our player sprite
       debug: true, // change if you need
-      debugShowBody: true,
+      debugShowBody: false,
       debugShowStaticBody: false,
     },
   },

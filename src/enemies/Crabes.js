@@ -9,8 +9,9 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
       directionX: 30,
       directionY: 0,
       hited: false,
+      giveLife: config.life / 10,
     };
-    this.setDepth(101);
+    this.setDepth(104);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
