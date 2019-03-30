@@ -92,7 +92,7 @@ const config = {
       tileBias: 20,
       gravity: { y: 100 }, // will affect our player sprite
       debug: true, // change if you need
-      debugShowBody: false,
+      debugShowBody: true,
       debugShowStaticBody: false,
     },
   },

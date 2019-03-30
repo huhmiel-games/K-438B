@@ -11,6 +11,7 @@ import Lava from '../utils/Lava';
 import FireBalls from '../enemies/FireBalls';
 import WaterFall from '../utils/WaterFalls';
 import U from '../utils/usefull';
+import Boss1 from '../enemies/Boss1';
 
 // Player
 import playerRun from '../assets/run.png';
@@ -40,6 +41,14 @@ import jumper2 from '../assets/spritesheets/enemies/jumper-idle2.png';
 import enemyExplode from '../assets/spritesheets/Fx/enemy-death.png';
 import octopus from '../assets/spritesheets/enemies/octopus.png';
 import fireballs from '../assets/fire-ball.png';
+
+// boss
+import boss1Walk from '../assets/boss1walk.png';
+import boss1Run from '../assets/boss1run.png';
+import boss1Crouch from '../assets/boss1crouch.png';
+import boss1Attack from '../assets/boss1attack.png';
+import boss1Jump from '../assets/boss1jump.png';
+import boss1Hit from '../assets/boss1hit.png';
 
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
@@ -118,6 +127,14 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('octopus', octopus, { frameWidth: 28, frameHeight: 37 });
     this.load.spritesheet('fireball', fireballs, { frameWidth: 16, frameHeight: 16 });
     // this.enemyGetHited = false;
+
+    // boss
+    this.load.spritesheet('boss1walk', boss1Walk, { frameWidth: 184, frameHeight: 136 });
+    this.load.spritesheet('boss1run', boss1Run, { frameWidth: 178, frameHeight: 136 });
+    this.load.spritesheet('boss1crouch', boss1Crouch, { frameWidth: 185, frameHeight: 136 });
+    this.load.spritesheet('boss1attack', boss1Attack, { frameWidth: 188, frameHeight: 136 });
+    this.load.spritesheet('boss1hit', boss1Hit, { frameWidth: 153, frameHeight: 136 });
+    this.load.spritesheet('boss1jump', boss1Jump, { frameWidth: 172, frameHeight: 179 });
     // various map items
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
@@ -554,6 +571,63 @@ export default class playLvl1 extends Scene {
     });
 
     // this.getFired = false;
+
+    // ====================================================================
+    // BOSS 1
+    this.anims.create({
+      key: 'boss1walk',
+      frames: this.anims.generateFrameNumbers('boss1walk', { start: 0, end: 13, first: 0 }),
+      frameRate: 40,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'boss1run',
+      frames: this.anims.generateFrameNumbers('boss1run', { start: 0, end: 9, first: 0 }),
+      frameRate: 20,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'boss1hit',
+      frames: this.anims.generateFrameNumbers('boss1hit', { start: 0, end: 8, first: 0 }),
+      frameRate: 10,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'boss1crouch',
+      frames: this.anims.generateFrameNumbers('boss1crouch', { start: 0, end: 13, first: 0 }),
+      frameRate: 40,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'boss1attack',
+      frames: this.anims.generateFrameNumbers('boss1attack', { start: 0, end: 8, first: 0 }),
+      frameRate: 15,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'boss1jump',
+      frames: this.anims.generateFrameNumbers('boss1jump', { start: 0, end: 18, first: 0 }),
+      frameRate: 10,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.boss1started = false;
+    this.prepBattle = this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
+      if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
+        this.boss1BattlePrep();
+      }
+    }, this);
+    this.startBattle = this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
+      if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
+        this.boss1Battle();
+      }
+    }, this);
+
 
     // ====================================================================
     // elevators
@@ -1061,5 +1135,31 @@ export default class playLvl1 extends Scene {
   openDoor(d, miss) {
     this.player.missileKill(miss);
     d.destroyDoor();
+  }
+
+  // ====================================================================
+  // BOSS 1
+  boss1BattlePrep() {
+    this.boss1started = true;
+    this.boss1 = new Boss1(this, 1930, 1350, { key: 'boss1run' });
+    console.log('boss1 started:', this.boss1);
+    this.boss1.animate('boss1run');
+    this.enemyGroup.push(this.boss);
+    this.boss1.body.setVelocity(0, 0);
+    this.boss1.body.setEnable(false);
+    this.boss1.alpha = 0;
+  }
+
+  boss1Battle() {
+    if (!this.boss1) {
+      this.boss1BattlePrep();
+    }
+    
+    this.boss1.body.setEnable();
+    this.physics.add.collider(this.boss1, this.solLayer, null);
+    this.boss1.alpha = 1;
+    this.boss1.animate('boss1run');
+    this.boss1.body.velocity.x = -400;
+    //this.startBattle.destroy();
   }
 }
