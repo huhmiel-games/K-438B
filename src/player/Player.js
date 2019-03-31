@@ -63,7 +63,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
 
     const {
-      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, F, D,
+      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, D,
     } = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.scene.input.keyboard.addKeys({
       left: LEFT,
@@ -75,7 +75,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       fire: ENTER,
       select: TAB,
       pause: P,
-      fullscreen: F,
       debug: D,
     });
 
@@ -276,29 +275,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.speed = 250;
       }
       // fullscreen mode
-      // if (keys.fullscreen.isDown) {
-      //   this.state.fullScreen = true;
-      //   this.displayFullScreen();
-      // }
+      if (keys.debug.isDown) {
+        console.log(this.x, this.y);
+      }
       this.displaySonar();
     }
   }
-
-  // displayFullScreen() {
-  //   if (this.state.fullScreen) {
-  //     window['canvas'][device.fullscreen.request]();
-  //     // if (this.scene.scale.isFullscreen) {
-  //     //   //this.scene.scale.stopFullscreen();
-  //     //   // On stop fulll screen
-  //     // } else {
-  //     //   //this.scene.scale.startFullscreen();
-  //     //   window['gamecanvas']['canvas'][game.device.fullscreen.request]();
-  //     //   // On start fulll screen
-  //     // }
-  //   } else {
-  //     this.state.fullScreen = false;
-  //   }
-  // }
 
   isJumping() {
     this.jumpCooldownTimer = this.scene.time.addEvent({
@@ -500,7 +482,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   missileKill(e) {
     e.setVelocity(0, 0);
-    if(e.texture.key === 'missile') {
+    if (e.texture.key === 'missile') {
       e.anims.play('enemyExplode', true).on('animationcomplete', () => { e.destroy(); });
     } else {
       e.destroy();

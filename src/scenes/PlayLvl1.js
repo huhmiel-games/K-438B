@@ -447,6 +447,13 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: 0,
     });
+    this.anims.create({
+      key: 'bossExplode',
+      frames: this.anims.generateFrameNumbers('enemyExplode', { start: 0, end: 5, first: 0 }),
+      frameRate: 15,
+      yoyo: false,
+      repeat: 10,
+    });
     this.explodeSprite = this.add.group({
       defaultKey: 'transparentPixel',
       maxSize: 30,
@@ -617,20 +624,21 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.boss1started = false;
-    this.prepBattle = this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
-      if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
-        this.boss1BattlePrep();
-      }
-    }, this);
-    this.startBattle = this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
-      if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
-        this.boss1Battle();
-      }
-    }, this);
-
+    if (!this.player.inventory.boss1) {
+      this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
+        if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
+          this.boss1BattlePrep();
+        }
+      }, this);
+      this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
+        if (this.boss1started && e === this.player && !this.player.inventory.boss1) {
+          this.boss1Battle();
+        }
+      }, this);
+    }
 
     // ====================================================================
-    // elevators
+    // ELEVATORS
     this.elevatorGroup = [];
     this.map.objects[2].objects.forEach((element) => {
       this[element.name] = new Elevators(this, element.x + 24, element.y, {
@@ -645,7 +653,7 @@ export default class playLvl1 extends Scene {
     });
 
     // ====================================================================
-    // lava
+    // LAVA
     this.anims.create({
       key: 'lava',
       frames: this.anims.generateFrameNumbers('lava', { start: 0, end: 6, first: 0 }),
@@ -691,7 +699,7 @@ export default class playLvl1 extends Scene {
       this.lavaGroup.push(this[element.name]);
     });
     // ====================================================================
-    // water fall
+    // WATER FALL
     this.anims.create({
       key: 'waterFall',
       frames: this.anims.generateFrameNumbers('waterFall', { start: 0, end: 3, first: 0 }),
@@ -712,7 +720,7 @@ export default class playLvl1 extends Scene {
     });
 
     // ====================================================================
-    // doors
+    // DOORS
     this.doorGroup = [];
     this.map.objects[8].objects.forEach((element) => {
       if (element.properties.side === 'right') {
@@ -734,7 +742,7 @@ export default class playLvl1 extends Scene {
     });
 
     // ====================================================================
-    // camera
+    // CAMERA
     // set bounds so the camera won't go outside the game world
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     // make the camera follow the player
@@ -746,7 +754,7 @@ export default class playLvl1 extends Scene {
     this.cameras.main.fadeIn(1000);
 
     // ====================================================================
-    //    COLLIDERS    ////
+    //    COLLIDERS
     this.solLayer.setCollisionByProperty({ collides: true });
 
     this.physics.add.collider(this.player, this.solLayer, null);
@@ -874,8 +882,12 @@ export default class playLvl1 extends Scene {
       this.events.emit('setHealth', { life: this.player.inventory.life });
     } else if (elm.state.ability === 'speedfire') {
       this.player.addSpeedFire();
-    } else if (elm.state.ability === 'missile') {
-      this.player.inventory[elm.state.ability] = true;
+    } else if (elm.state.ability === 'missile' && !this.player.inventory.boss1) {
+      // this.player.inventory[elm.state.ability] = true;
+      this.state.displayPowerUpMsg = false;
+      return;
+    } else if (elm.state.ability === 'missile' && this.player.inventory.boss1) {
+      // this.player.inventory[elm.state.ability] = true;
       this.player.addMissile();
     } else if (elm.state.ability === 'laser') {
       this.player.inventory[elm.state.ability] = true;
@@ -1114,13 +1126,86 @@ export default class playLvl1 extends Scene {
       this.giveLife.anims.play('powerUp');
       this.giveLifeGroup.push(this.giveLife);
       // kill the enemy
-      this.enemyExplode(el.x, el.y);
-      this.enemyDestroy(el);
+      if (el === this.boss1) {
+        this.boss1.setTintFill(0xDDDDDD);
+        this.missile.body.reset(this.boss1.x, this.boss1.y);
+        this.bossExplode(this.boss1.x, this.boss1.y);
+        this.time.addEvent({
+          delay: Phaser.Math.Between(500, 1200),
+          callback: () => {
+            this.bossExplode(this.boss1.x - 50, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+            this.bossExplode(this.boss1.x - 20, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+          },
+        });
+        this.time.addEvent({
+          delay: Phaser.Math.Between(500, 1200),
+          callback: () => {
+            this.bossExplode(this.boss1.x, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+            this.bossExplode(this.boss1.x + 20, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+          },
+        });
+        this.time.addEvent({
+          delay: Phaser.Math.Between(500, 1200),
+          callback: () => {
+            this.bossExplode(this.boss1.x + 50, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+            this.bossExplode(this.boss1.x - 50, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+          },
+        });
+        this.time.addEvent({
+          delay: Phaser.Math.Between(500, 1200),
+          callback: () => {
+            this.bossExplode(this.boss1.x, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+            this.bossExplode(this.boss1.x, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+          },
+        });
+        this.time.addEvent({
+          delay: Phaser.Math.Between(500, 1200),
+          callback: () => {
+            this.bossExplode(this.boss1.x + 20, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+            this.bossExplode(this.boss1.x + 50, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
+          },
+        });
+        this.boss1.anims.pause(this.boss1.anims.currentFrame);
+        this.boss1.body.setEnable(false);
+        this.boss1.setDepth(0);
+        this.time.addEvent({
+          delay: 600,
+          callback: () => {
+            this.tween = this.tweens.add({
+              targets: this.boss1,
+              ease: 'Sine.easeInOut',
+              duration: 1000,
+              delay: 0,
+              repeat: 0,
+              yoyo: false,
+              alpha: {
+                getStart: () => 1,
+                getEnd: () => 0,
+              },
+              onComplete: () => {
+                this.missile.alpha = 1;
+                this.player.inventory.boss1 = true;
+                this.boss1.destroy();
+              },
+            });
+          },
+        });
+      } else {
+        this.enemyExplode(el.x, el.y);
+        this.enemyDestroy(el);
+      }
     }
   }
 
   enemyDestroy(e) {
     e.destroy();
+  }
+
+  bossExplode(x, y) {
+    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
+    exp.anims.play('bossExplode').on('animationcomplete', () => {
+      exp.destroy();
+    });
   }
 
   enemyExplode(x, y) {
@@ -1141,10 +1226,10 @@ export default class playLvl1 extends Scene {
   // BOSS 1
   boss1BattlePrep() {
     this.boss1started = true;
+    this.solLayer.setTileLocationCallback(78, 77, 1, 3, null);
     this.boss1 = new Boss1(this, 1930, 1350, { key: 'boss1run' });
-    console.log('boss1 started:', this.boss1);
     this.boss1.animate('boss1run');
-    this.enemyGroup.push(this.boss);
+    this.enemyGroup.push(this.boss1);
     this.boss1.body.setVelocity(0, 0);
     this.boss1.body.setEnable(false);
     this.boss1.alpha = 0;
@@ -1154,12 +1239,11 @@ export default class playLvl1 extends Scene {
     if (!this.boss1) {
       this.boss1BattlePrep();
     }
-    
+    this.solLayer.setTileLocationCallback(109, 86, 3, 3, null);
     this.boss1.body.setEnable();
     this.physics.add.collider(this.boss1, this.solLayer, null);
     this.boss1.alpha = 1;
     this.boss1.animate('boss1run');
-    this.boss1.body.velocity.x = -400;
-    //this.startBattle.destroy();
+    this.boss1.intro = true;
   }
 }

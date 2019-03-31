@@ -1,21 +1,25 @@
+let onPosition = false;
+let eatMissile = false;
+let missileEated = false;
+
 export default class Boss1 extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, config) {
     super(scene, x, y, config.key);
 
     this.scene = scene;
     this.state = {
-      life: 1800,
+      life: 180,
       damage: 25,
       directionX: 160,
       directionY: 0,
       hited: false,
-      // giveLife: config.life / 10,
     };
     this.setDepth(104);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
     this.body.setGravityY(500);
+    this.intro = false;
     this.getFired = false;
     this.lastAnim = null;
     this.attack = false;
@@ -29,7 +33,39 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
     let animationName;
-    if (this.active) {
+    if (this.intro) {
+      if (!onPosition) {
+        const dx = this.scene.missile.x - this.x;
+        const dy = this.scene.missile.y - this.y;
+        const angle = Math.atan2(dy, dx);
+        const speed = 500;
+        this.body.setVelocity(
+          Math.cos(angle) * speed,
+          Math.sin(angle) * speed,
+        );
+        this.flipX = false;
+      }
+      if (this.x < 1770 && !eatMissile) {
+        this.body.setVelocity(0, 0);
+        onPosition = true;
+        animationName = 'boss1hit';
+        this.scene.time.addEvent({
+          delay: 2000,
+          callback: () => {
+            eatMissile = true;
+          },
+        });
+      }
+      if (eatMissile && !missileEated) {
+        missileEated = true;
+        animationName = 'boss1crouch';
+        this.scene.missile.alpha = 0;
+        this.scene.missile.body.reset(2050, 1408);
+        this.intro = false;
+        this.body.setEnable();
+      }
+    }
+    if (this.active && !this.intro) {
       this.body.setVelocityX(this.state.directionX);
       // gauche ou droite et fait demi tour quand bloqué
       if (this.body.blocked.left && !this.attack && this.state.life >= 500) {
@@ -64,10 +100,10 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
       } else {
         this.flipX = false;
       }
-      if (this.lastAnim !== animationName) {
-        this.lastAnim = animationName;
-        this.animate(animationName, true);
-      }
+    }
+    if (this.lastAnim !== animationName) {
+      this.lastAnim = animationName;
+      this.animate(animationName, true);
     }
   }
 
@@ -117,10 +153,11 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
       this.scene.time.addEvent({
         delay: 1000,
         callback: () => {
-          console.log('la');
-          this.body.setVelocityY(500);
-          this.isJumping = false;
-          this.run();
+          if (this.active) {
+            this.body.setVelocityY(500);
+            this.isJumping = false;
+            this.run();
+          }
         },
       });
     }
@@ -144,6 +181,5 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
 
   looseLife(e) {
     this.state.life = this.state.life - e;
-    console.log(this.state.life);
   }
 }
