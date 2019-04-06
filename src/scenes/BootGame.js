@@ -3,6 +3,7 @@ import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import atomicsc from '../assets/atomicsc.png';
 import atomicscXML from '../assets/atomicsc.xml';
+import bip2 from '../assets/sounds/piou.wav';
 
 
 let tween;
@@ -85,6 +86,7 @@ export default class bootGame extends Scene {
   preload() {
     this.load.image('background', background);
     this.load.bitmapFont('atomic', atomicsc, atomicscXML);
+    this.load.audio('bip2', bip2);
   }
 
   create() {
@@ -104,14 +106,6 @@ export default class bootGame extends Scene {
     tintTween = tintTween.bind(this);
 
     initTweens();
-
-    this.scene.stop('huhmiel');
-    // this.background = this.add.image(0, 0, 'background');
-    // this.background.setOrigin(0, 0);
-    // this.background.displayWidth = U.WIDTH;
-    // this.background.displayHeight = U.HEIGHT;
-    // this.background.alpha = 0.5;
-
     this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 160, 'atomic', ' K-438 B ', 70, 1);
     this.title.setOrigin(0.5, 0.5);
     this.title.tint = 0xFF3B00;
@@ -120,19 +114,26 @@ export default class bootGame extends Scene {
     this.title2.setOrigin(0.5, 0.5);
     this.title2.tint = 0xFF3B00;
 
-    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', 'A Dinan Magel adventure', 20, 1);
+    this.text = 'A Dinan Magel adventure';
+    this.count = 0;
+    this.title3 = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
     this.title3.setOrigin(0.5, 0.5);
 
-    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 + 50, 'atomic', 'press enter to start', 24, 1);
+    this.time.addEvent({
+      delay: 50,
+      repeat: this.text.length - 1,
+      callback: () => {
+        this.title3.text += this.text[this.count];
+        this.count += 1;
+      },
+    });
+
+    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 + 50, 'atomic', 'press fire to start', 24, 1);
     this.start.setOrigin(0.5, 0.5);
-    // this.start.setFontSize(22);
-    this.start.on('pointerdown', () => {
-      this.scene.start('playLvl1');
-      this.scene.stop();
-    }); // Start game on click.
 
     this.input.keyboard.once('keydown', () => {
-      this.scene.start('loadSavedGame');
+      this.sound.play('bip2', { volume: 0.1 });
+      this.scene.start('intro'); //loadSavedGame
     });
 
     this.tween = this.tweens.add({

@@ -6223,7 +6223,7 @@
         {
          "columns":64,
          "firstgid":1,
-         "image":"..\/assets\/environment\/layers\/tilesets.png",
+         "image":"..\/..\/PROJETS\/K438B\/K-438B\/src\/assets\/environment\/layers\/tilesets.png",
          "imageheight":1024,
          "imagewidth":1024,
          "margin":0,

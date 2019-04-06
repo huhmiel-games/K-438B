@@ -5,13 +5,15 @@ import Crabes from '../enemies/Crabes';
 import Guepes from '../enemies/Guepes';
 import Jumpers from '../enemies/Jumpers';
 import Octopus from '../enemies/Octopus';
+import RhinoBeetles from '../enemies/RhinoBeetles';
+import Boss1 from '../enemies/Boss1';
+// import BossFinal from '../enemies/BossFinal';
 import Elevators from '../utils/Elevators';
 import Doors from '../utils/Doors';
 import Lava from '../utils/Lava';
 import FireBalls from '../enemies/FireBalls';
 import WaterFall from '../utils/WaterFalls';
 import U from '../utils/usefull';
-import Boss1 from '../enemies/Boss1';
 
 // Player
 import playerRun from '../assets/run.png';
@@ -41,14 +43,20 @@ import jumper2 from '../assets/spritesheets/enemies/jumper-idle2.png';
 import enemyExplode from '../assets/spritesheets/Fx/enemy-death.png';
 import octopus from '../assets/spritesheets/enemies/octopus.png';
 import fireballs from '../assets/fire-ball.png';
+import rhinoBeetle from '../assets/rhinoBeetle.png';
 
-// boss
+// boss 1
+import boss1wallfront from '../assets/boss1wallfront.png';
 import boss1Walk from '../assets/boss1walk.png';
 import boss1Run from '../assets/boss1run.png';
 import boss1Crouch from '../assets/boss1crouch.png';
 import boss1Attack from '../assets/boss1attack.png';
 import boss1Jump from '../assets/boss1jump.png';
 import boss1Hit from '../assets/boss1hit.png';
+
+// final boss
+// import bosstest from '../assets/spritesheets/enemies/finalBoss/finalBossAttackTest.png';
+// import bosstest2 from '../assets/spritesheets/enemies/finalBoss/finalBossWalkTest.png';
 
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
@@ -63,6 +71,7 @@ import missile from '../assets/missile.png';
 import swell from '../assets/swell.png';
 import blackPixel from '../assets/blackPixel.png';
 // import saveStation from '../assets/savestation.png';
+import lavaPixel from '../assets/lavaPixel.png';
 import elevator from '../assets/elevator.png';
 import door from '../assets/door.png';
 import head from '../assets/head.png';
@@ -73,6 +82,37 @@ import waterFall from '../assets/waterfall.png';
 
 import test from '../maps/map1.png';
 import mapSol from '../maps/mapSol.png';
+
+// import sounds fx
+import bulletFX from '../assets/sounds/bullet.wav';
+import swellFX from '../assets/sounds/swell.wav';
+import missileFX from '../assets/sounds/missile.wav';
+import laserFX from '../assets/sounds/laser3.wav';
+import impactFX from '../assets/sounds/explo.wav';
+import explo2FX from '../assets/sounds/explo2.wav';
+import enemyImpactFX from '../assets/sounds/enemyHit.wav';
+import playerHitFX from '../assets/sounds/playerHit.wav';
+import morphFX from '../assets/sounds/playerHit2.wav';
+import powerUpFX from '../assets/sounds/powerup.wav';
+import selectFX from '../assets/sounds/select.wav';
+import jumpBoosterFX from '../assets/sounds/jumpboost.wav';
+import getLifeFX from '../assets/sounds/getlife2.wav';
+import runFX from '../assets/sounds/walk.wav';
+import explo3FX from '../assets/sounds/explo3.wav';
+import melo from '../assets/sounds/melo1.wav';
+
+
+// import boss1 sounds fx
+import cri1 from '../assets/sounds/boss1/cri-001.wav';
+import cri2 from '../assets/sounds/boss1/cri-002.wav';
+import cri3 from '../assets/sounds/boss1/cri-003.wav';
+import cri4 from '../assets/sounds/boss1/cri-004.wav';
+import LetsPlayWithTheDemon from '../assets/music/LetsPlayWithTheDemon.ogg';
+
+// import music
+import ambient1 from '../assets/music/ambient1.ogg';
+import ambient2 from '../assets/music/ambient2.ogg';
+
 
 export default class playLvl1 extends Scene {
   constructor() {
@@ -126,15 +166,21 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('enemyExplode', enemyExplode, { frameWidth: 67, frameHeight: 48 });
     this.load.spritesheet('octopus', octopus, { frameWidth: 28, frameHeight: 37 });
     this.load.spritesheet('fireball', fireballs, { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('rhinobeetle', rhinoBeetle, { frameWidth: 80, frameHeight: 64 });
     // this.enemyGetHited = false;
 
     // boss
+    this.load.image('boss1wallfront', boss1wallfront);
     this.load.spritesheet('boss1walk', boss1Walk, { frameWidth: 184, frameHeight: 136 });
     this.load.spritesheet('boss1run', boss1Run, { frameWidth: 178, frameHeight: 136 });
     this.load.spritesheet('boss1crouch', boss1Crouch, { frameWidth: 185, frameHeight: 136 });
     this.load.spritesheet('boss1attack', boss1Attack, { frameWidth: 188, frameHeight: 136 });
     this.load.spritesheet('boss1hit', boss1Hit, { frameWidth: 153, frameHeight: 136 });
     this.load.spritesheet('boss1jump', boss1Jump, { frameWidth: 172, frameHeight: 179 });
+
+    // final boss
+    // this.load.spritesheet('bossFinal', bosstest, { frameWidth: 278, frameHeight: 400 });
+    // this.load.spritesheet('bossFinal2', bosstest2, { frameWidth: 313, frameHeight: 400 });
     // various map items
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
@@ -145,6 +191,35 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('waterFall', waterFall, { frameWidth: 16, frameHeight: 16 });
     this.load.image('blackPixel', blackPixel);
     this.load.image('whitePixel', whitePixel);
+    this.load.image('lavaPixel', lavaPixel);
+
+    // sounds
+    this.load.audio('bullet', bulletFX);
+    this.load.audio('swell', swellFX);
+    this.load.audio('missile', missileFX);
+    this.load.audio('laser', laserFX);
+    this.load.audio('impact', impactFX);
+    this.load.audio('explo2', explo2FX);
+    this.load.audio('explo3', explo3FX);
+    this.load.audio('enemyHit', enemyImpactFX);
+    this.load.audio('playerHit', playerHitFX);
+    this.load.audio('powerUp', powerUpFX);
+    this.load.audio('select', selectFX);
+    this.load.audio('jumpBooster', jumpBoosterFX);
+    this.load.audio('getLife', getLifeFX);
+    this.load.audio('run', runFX);
+    this.load.audio('morph', morphFX);
+    this.load.audio('melo', melo);
+
+    // sounds boss1
+    this.load.audio('cri1', cri1);
+    this.load.audio('cri2', cri2);
+    this.load.audio('cri3', cri3);
+    this.load.audio('cri4', cri4);
+    this.load.audio('LetsPlayWithTheDemon', LetsPlayWithTheDemon);
+    // music
+    this.load.audio('ambient1', ambient1);
+    this.load.audio('ambient2', ambient2);
   }
 
   // ====================================================================
@@ -166,16 +241,20 @@ export default class playLvl1 extends Scene {
     // this.mapSol.setDepth(100);
 
     // ====================================================================
+    // GAMEPAD SUPPORT
+
+    // ====================================================================
     // LAYERS
 
     this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
     this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
     this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
+    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0);
+    this.statue.setDepth(98);
     this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
     this.eau.setDepth(99);
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0);
     this.solLayer.setDepth(100);
-    // this.solLayer.alpha = 0;
     this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0);
     this.frontLayer.setDepth(106);
 
@@ -197,19 +276,39 @@ export default class playLvl1 extends Scene {
     }, this);
 
     // ====================================================================
-    // PAUSE GAME
-    this.input.keyboard.on('keydown', (event) => {
-      if (event.code === 'KeyP') {
-        this.pauseGame();
+    // launch music
+    this.musicStore = [false, false];
+    this.ambient1 = this.sound.add('ambient1', { volume: 0.8 });
+    this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
+    this.solLayer.setTileLocationCallback(97, 8, 1, 3, (elm) => {
+      if (elm === this.player && !this.musicStore[0]) {
+        if (this.ambient2.isPlaying) {
+          this.ambient2.stop();
+          this.musicStore[1] = false;
+        }
+        this.musicStore[0] = true;
+        this.ambient1.play();
       }
+    });
+    this.solLayer.setTileLocationCallback(54, 72, 1, 3, (elm) => {
+      if (elm === this.player && !this.musicStore[1]) {
+        if (this.ambient1.isPlaying) {
+          this.ambient1.stop();
+          this.musicStore[0] = false;
+        }
+        this.musicStore[1] = true;
+        this.ambient2.play();
+      }
+    });
+
+    // ====================================================================
+    // accessible keys during pause
+    this.input.keyboard.on('keydown', (event) => {
       if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
         this.choose();
       }
       if (event.code === 'Enter') {
         this.launch();
-      }
-      if (event.code === 'KeyF') {
-        this.displayFullScreen();
       }
     });
 
@@ -242,7 +341,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'runShoot',
-      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 10, first: 0 }),
+      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 9, first: 0 }),
       frameRate: 25,
       repeat: -1,
     });
@@ -293,6 +392,32 @@ export default class playLvl1 extends Scene {
       frames: this.anims.generateFrameNumbers('hurt', { start: 0, end: 2, first: 0 }),
       frameRate: 16,
       repeat: 0,
+    });
+
+    // player walk and run sounds
+    this.walkplay = false;
+    this.walkk = this.sound.add('run', { volume: 0.5 });
+    this.player.on('animationupdate', () => {
+      if (this.player.anims.currentAnim.key === 'runShoot' && !this.walkplay && this.player.body.blocked.down) {
+        this.walkplay = true;
+        this.walkk.play();
+        this.time.addEvent({
+          delay: 150,
+          callback: () => {
+            this.walkplay = false;
+          },
+        });
+      }
+      if (this.player.anims.currentAnim.key === 'walkShoot' && !this.walkplay && this.player.body.blocked.down) {
+        this.walkplay = true;
+        this.walkk.play();
+        this.time.addEvent({
+          delay: 250,
+          callback: () => {
+            this.walkplay = false;
+          },
+        });
+      }
     });
 
     // player bullets
@@ -377,9 +502,10 @@ export default class playLvl1 extends Scene {
       this.loadGame();
     }
     if (!localStorage.getItem('k438b')) {
+      // this.transmission('New transmision-A problem occured during-the material transfer on planet-Items are scattered on planet');
       this.saveGame();
     }
-
+    // this.transmission('New transmision-A problem occured during the material transfer on planet.-All items are scattered on the planet.');
     // ====================================================================
     // SECTION POWER-UP
     this.anims.create({
@@ -531,6 +657,20 @@ export default class playLvl1 extends Scene {
       yoyo: false,
       repeat: -1,
     });
+    this.anims.create({
+      key: 'rhinoWalk',
+      frames: this.anims.generateFrameNumbers('rhinobeetle', { start: 0, end: 2, first: 0 }),
+      frameRate: 5,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'rhinoBall',
+      frames: this.anims.generateFrameNumbers('rhinobeetle', { start: 3, end: 6, first: 3 }),
+      frameRate: 5,
+      yoyo: false,
+      repeat: -1,
+    });
     this.enemyGroup = [];
     console.log(this.map.objects);
     // the crabs
@@ -576,8 +716,23 @@ export default class playLvl1 extends Scene {
       this[element.name].setScale(2, 2);
       this.enemyGroup.push(this[element.name]);
     });
-
-    // this.getFired = false;
+    // the rhinobeetles
+    this.loadRhino = false;
+    if (!this.player.inventory.rhino) {
+      this.solLayer.setTileLocationCallback(53, 103, 1, 8, (e) => {
+        if (e === this.player && !this.loadRhino) {
+          this.loadRhino = true;
+          this.map.objects[11].objects.forEach((element) => {
+            this[element.name] = new RhinoBeetles(this, element.x, element.y - 16, {
+              key: element.properties.key,
+              life: element.properties.life,
+              damage: element.properties.damage,
+            });
+            this.enemyGroup.push(this[element.name]);
+          });
+        }
+      }, this);
+    }
 
     // ====================================================================
     // BOSS 1
@@ -624,6 +779,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.boss1started = false;
+    this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.4 });
     if (!this.player.inventory.boss1) {
       this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
         if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
@@ -631,11 +787,41 @@ export default class playLvl1 extends Scene {
         }
       }, this);
       this.solLayer.setTileLocationCallback(109, 86, 3, 3, (e) => {
-        if (this.boss1started && e === this.player && !this.player.inventory.boss1) {
+        if (e === this.player && !this.player.inventory.boss1) {
           this.boss1Battle();
         }
       }, this);
     }
+    // ========================================================================================================================================
+    // BOSS FINAL
+    // this.anims.create({
+    //   key: 'bossFinalAttack',
+    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 16, first: 0 }),
+    //   frameRate: 10,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.anims.create({
+    //   key: 'bossFinalWalk',
+    //   frames: this.anims.generateFrameNumbers('bossFinal2', { start: 0, end: 16, first: 0 }),
+    //   frameRate: 10,
+    //   yoyo: false,
+    //   repeat: -1,
+    // });
+    // this.bossFinal = new BossFinal(this, 1700, 500, { key: 'bossFinal2' });
+    // this.bossFinal.animate('bossFinalWalk');
+    // this.physics.add.collider(this.bossFinal, this.solLayer, null);
+    // // this.physics.add.overlap(this.bossFinal, this.player, (e) => { this.bossFinal.attack(e); });
+    // this.physics.add.collider(this.enemyGroup, this.bossFinal, (e) => { this.enemyDestroy(e); });
+    // this.physics.add.overlap(this.bossFinal, this.player, elm => this.playerIsHit(elm), null, this);
+    // this.physics.add.overlap(this.player.bullets, this.bossFinal, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.missiles, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.lasers, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.swells, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    // //this.enemyGroup.push(this.bossFinal);
+    // // this.bossFinal.body.setVelocity(0, 0);
+    // // this.bossFinal.body.setEnable();
+    // console.log(this.bossFinal)
 
     // ====================================================================
     // ELEVATORS
@@ -698,6 +884,30 @@ export default class playLvl1 extends Scene {
       this[element.name].animate(element.properties.key, true);
       this.lavaGroup.push(this[element.name]);
     });
+
+    // LAVA RISE
+    this.lavaRiseFlag = false;
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        // var image = scene.physics.add.image(x, y, key);
+        console.log('start lavaRise');
+        this.lavaRise = this.physics.add.image(0, 2000, 'lavaPixel');
+        this.lavaRise.setOrigin(0, 0);
+        this.lavaRise.displayWidth = 2048;
+        this.lavaRise.displayHeight = 2048;
+        this.lavaRise.setDepth(99);
+        this.lavaRise.alpha = 0.9;
+        // this.lavaRise.body.setVelocity(0, 0);
+        //this.lavaGroup.push(this.lavaRise);
+        this.lavaRise.body.velocity.y = -1000;
+        this.lavaRise.body.isImmovable = true;
+        this.lavaRise.body.allowGravity = false;
+        this.lavaRise.setOffset(0, 0);
+        this.physics.add.overlap(this.player, this.lavaRise, () => this.player.handleLava(), null, this.player);
+        console.log(this.lavaRise);
+      },
+    });
     // ====================================================================
     // WATER FALL
     this.anims.create({
@@ -722,7 +932,7 @@ export default class playLvl1 extends Scene {
     // ====================================================================
     // DOORS
     this.doorGroup = [];
-    this.map.objects[8].objects.forEach((element) => {
+    this.map.objects[8].objects.forEach((element, i) => {
       if (element.properties.side === 'right') {
         this[element.name] = new Doors(this, element.x + 3, element.y + 9, {
           key: element.properties.key,
@@ -739,6 +949,10 @@ export default class playLvl1 extends Scene {
         this[element.name].body.setSize(10, 47);
       }
       this.doorGroup.push(this[element.name]);
+      if (i === 7) {
+        this[element.name].body.enable = false;
+        this[element.name].alpha = 0;
+      }
     });
 
     // ====================================================================
@@ -774,7 +988,9 @@ export default class playLvl1 extends Scene {
     this.physics.add.collider(this.player.swells, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.lasers);
     this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
+    this.physics.add.collider(this.elevatorGroup, this.player.bullets, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
+    
     this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
 
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
@@ -785,16 +1001,6 @@ export default class playLvl1 extends Scene {
     this.physics.add.overlap(this.player.swells, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
 
     // ====================================================================
-    // MODAL
-    // this.msg = this.add.image(-400, -180, 'blackPixel');
-    // this.msg.setOrigin(0.5, 0.5);
-    // this.msg.displayWidth = 300;
-    // this.msg.displayHeight = 80;
-    // this.msg.setAlpha(0);
-
-    // this.msgText = this.add.text(-400, -180, '', { fontSize: '15px' });
-    // this.msgText.setOrigin(0.5, 0.5);
-    // this.msgText.setAlpha(0);
 
     // //////////////////////////////////////////////////////////////////////
     this.mask = this.make.graphics({ fillStyle: { color: 0xffffff }, add: false })
@@ -809,6 +1015,11 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   update() {
+    // lava rise
+    if (this.lavaRise) {
+      this.startLavaRise();
+    }
+    // player sonar
     if (this.player.state.onMorphingBall && this.player.inventory.morphingSonar) {
       this.mask.x = this.player.x;
       this.mask.y = this.player.y;
@@ -818,11 +1029,13 @@ export default class playLvl1 extends Scene {
     }
     // player part
     if (!this.player.state.pause || !this.playerDead) {
-      if (this.cursors.left.isDown) {
+      if (this.player.body.velocity.x < 0) {
         this.player.flipX = true;
+        this.player.state.bulletOrientationX = 'left';
         this.player.state.bulletPositionX = 1;
-      } else if (this.cursors.right.isDown) {
+      } else if (this.player.body.velocity.x > 0) {
         this.player.flipX = false;
+        this.state.bulletOrientationX = 'right';
         this.player.state.bulletPositionX = 9;
       }
       // bodysize for duck
@@ -854,6 +1067,10 @@ export default class playLvl1 extends Scene {
       this.msg.x = this.player.x + 150;
       this.msg.y = this.player.y - 20;
     }
+    if (this.modalText) {
+      this.modalText.x = this.player.x;
+      this.modalText.y = this.player.y + 40;
+    }
     // enemies part
     // this.enemyGroup.forEach((enemy) => {
     //   if (enemy.active && enemy.body.velocity.x > 0) {
@@ -864,6 +1081,17 @@ export default class playLvl1 extends Scene {
     // });
   }
 
+  startLavaRise() {
+    // this.lavaRise.displayHeight += 1;
+    if (!this.lavaRiseFlag && this.lavaRise.y > 0) {
+      this.lavaRiseFlag = true;
+      this.lavaRise.setVelocityY(-12);
+    }
+    if (this.lavaRise.y < 0) {
+      this.lavaRise.setVelocityY(0);
+    }
+  }
+
   displayFullScreen() {
     // fullscreen mode but doesn't work on all browsers
     this.sys.game.canvas[this.sys.game.device.fullscreen.request]();
@@ -871,11 +1099,6 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   getPowerUp(elm) {
-    // if (this.state.displayPowerUpMsg) {
-    //   this.state.displayPowerUpMsg = false;
-    //   this.msg.destroy();
-    //   this.msgText.destroy();
-    // }
     this.state.displayPowerUpMsg = true;
     if (elm.state.ability === 'energy') {
       this.player.addEnergy();
@@ -883,11 +1106,9 @@ export default class playLvl1 extends Scene {
     } else if (elm.state.ability === 'speedfire') {
       this.player.addSpeedFire();
     } else if (elm.state.ability === 'missile' && !this.player.inventory.boss1) {
-      // this.player.inventory[elm.state.ability] = true;
       this.state.displayPowerUpMsg = false;
       return;
     } else if (elm.state.ability === 'missile' && this.player.inventory.boss1) {
-      // this.player.inventory[elm.state.ability] = true;
       this.player.addMissile();
     } else if (elm.state.ability === 'laser') {
       this.player.inventory[elm.state.ability] = true;
@@ -898,6 +1119,7 @@ export default class playLvl1 extends Scene {
     } else {
       this.player.inventory[elm.state.ability] = true;
     }
+    this.sound.play('powerUp');
     this.player.inventory.powerUp[elm.state.id] = 1;
     this.msg = this.add.image(0, 0, 'blackPixel');
     this.msg.setOrigin(0.5, 0.5);
@@ -1007,6 +1229,7 @@ export default class playLvl1 extends Scene {
     this.player.inventory.savedPositionY = this.player.y;
     const s = JSON.stringify(this.player.inventory);
     localStorage.setItem('k438b', s);
+    this.sound.play('melo');
   }
 
   // ====================================================================
@@ -1018,8 +1241,8 @@ export default class playLvl1 extends Scene {
   }
 
   // ====================================================================
-  shakeCamera() {
-    this.cameras.main.shake(100, 0.005);
+  shakeCamera(e) {
+    this.cameras.main.shake(e, 0.005);
   }
 
   // ====================================================================
@@ -1031,7 +1254,8 @@ export default class playLvl1 extends Scene {
   playerIsHit(elm) {
     if (!this.playerHurt) {
       this.playerHurt = true; // flag
-      this.player.animate('hurt');
+      // this.player.animate('hurt');
+      this.sound.play('playerHit');
       this.player.inventory.life -= elm.state.damage;
       this.playerFlashTween = this.tweens.add({
         targets: this.player,
@@ -1047,7 +1271,7 @@ export default class playLvl1 extends Scene {
         onComplete: () => {
           this.player.alpha = 1;
           this.playerHurt = false;
-          this.player.animate('stand');
+          // this.player.animate('stand');
         },
       });
       // if player is dead, launch deadth sequence
@@ -1087,6 +1311,11 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   playerIsDead() {
+    let d = localStorage.getItem('d');
+    d = JSON.parse(d);
+    d += 1;
+    localStorage.setItem('d', d);
+    this.bossMusic.stop();
     this.scene.start('gameOver');
   }
 
@@ -1101,14 +1330,27 @@ export default class playLvl1 extends Scene {
       ) {
         this.player[`${this.player.state.selectedWeapon}Kill`](bull);
       }
-      el.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
-      el.setTintFill(0xDDDDDD);
-      this.time.addEvent({
-        delay: 50,
-        callback: () => {
-          el.clearTint();
-        },
-      });
+      if (el === this.rhino1 || el === this.rhino2 || el === this.rhino3) {
+        if (el.vulnerable) {
+          el.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
+          el.setTintFill(0xDDDDDD);
+          this.time.addEvent({
+            delay: 50,
+            callback: () => {
+              el.clearTint();
+            },
+          });
+        }
+      } else {
+        el.looseLife(this.player.inventory[`${this.player.state.selectedWeapon}Damage`]);
+        el.setTintFill(0xDDDDDD);
+        this.time.addEvent({
+          delay: 50,
+          callback: () => {
+            el.clearTint();
+          },
+        });
+      }
       this.hitTimer = this.time.addEvent({
         delay: 120,
         callback: () => {
@@ -1126,10 +1368,17 @@ export default class playLvl1 extends Scene {
       this.giveLife.anims.play('powerUp');
       this.giveLifeGroup.push(this.giveLife);
       // kill the enemy
+      if (el === this.rhino1 || el === this.rhino2 || el === this.rhino3) {
+        this.player.state.rhinoCount += 1;
+        if (this.player.state.rhinoCount === 3) {
+          this.player.inventory.rhino = true;
+        }
+      }
       if (el === this.boss1) {
         this.boss1.setTintFill(0xDDDDDD);
         this.missile.body.reset(this.boss1.x, this.boss1.y);
         this.bossExplode(this.boss1.x, this.boss1.y);
+        this.shakeCamera(5000);
         this.time.addEvent({
           delay: Phaser.Math.Between(500, 1200),
           callback: () => {
@@ -1199,11 +1448,19 @@ export default class playLvl1 extends Scene {
 
   enemyDestroy(e) {
     e.destroy();
+    let en = localStorage.getItem('e');
+    en = JSON.parse(en);
+    en += 1;
+    localStorage.setItem('e', en);
   }
 
   bossExplode(x, y) {
+    this.bossMusic.stop();
     const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
-    exp.anims.play('bossExplode').on('animationcomplete', () => {
+    this.sound.play('explo2', { volume: 0.3 });
+    exp.anims.play('bossExplode').on('animationrepeat', () => {
+      this.sound.play('explo2', { volume: 0.3 });
+    }).on('animationcomplete', () => {
       exp.destroy();
     });
   }
@@ -1227,6 +1484,11 @@ export default class playLvl1 extends Scene {
   boss1BattlePrep() {
     this.boss1started = true;
     this.solLayer.setTileLocationCallback(78, 77, 1, 3, null);
+    this.boss1wallfront = this.add.image(1912, 1340, 'boss1wallfront');
+    this.boss1wallfront.displayWidthX = 352;
+    this.boss1wallfront.displayWidthY = 352;
+    this.boss1wallfront.visible = true;
+    this.boss1wallfront.setDepth(2000);
     this.boss1 = new Boss1(this, 1930, 1350, { key: 'boss1run' });
     this.boss1.animate('boss1run');
     this.enemyGroup.push(this.boss1);
@@ -1236,7 +1498,7 @@ export default class playLvl1 extends Scene {
   }
 
   boss1Battle() {
-    if (!this.boss1) {
+    if (!this.boss1started) {
       this.boss1BattlePrep();
     }
     this.solLayer.setTileLocationCallback(109, 86, 3, 3, null);
@@ -1245,5 +1507,37 @@ export default class playLvl1 extends Scene {
     this.boss1.alpha = 1;
     this.boss1.animate('boss1run');
     this.boss1.intro = true;
+    this.door7.body.enable = true;
+    this.door7.alpha = 1;
+  }
+
+  transmission(txt) {
+    let count = 0;
+    this.modalText = this.add.bitmapText(this.player.x, this.player.y + 80, 'atomic', '', 6, 1);
+    this.modalText.setOrigin(0.5, 0);
+    this.modalText.setAlpha(1);
+    this.modalText.setDepth(201);
+    this.time.addEvent({
+      delay: 100,
+      repeat: txt.length - 1,
+      callback: () => {
+        if (txt[count] === '-') {
+          this.modalText.text += '\n';
+          this.modalText.y -= 10;
+          this.sound.play('bip3', { volume: 0.5 });
+          count += 1;
+        } else {
+          this.modalText.text += txt[count];
+          this.sound.play('bip1', { volume: 1 });
+          count += 1;
+        }
+      },
+    });
+    this.time.addEvent({
+      delay: 20000,
+      callback: () => {
+        this.modalText.destroy();
+      },
+    });
   }
 }

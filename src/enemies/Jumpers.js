@@ -72,6 +72,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
   }
 
   looseLife(e) {
+    this.scene.sound.play('enemyHit');
     this.state.life = this.state.life - e;
   }
 }

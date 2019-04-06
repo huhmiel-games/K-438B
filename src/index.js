@@ -7,6 +7,8 @@ import LoadSavedGame from './scenes/Load';
 import playLvl1 from './scenes/PlayLvl1';
 import gameOver from './scenes/GameOver';
 import DashBoard from './scenes/dashBoard';
+import Options from './scenes/Options';
+import Intro from './scenes/Intro';
 
 // function preload() {
 //   const progressBar = this.add.graphics();
@@ -86,6 +88,22 @@ const config = {
   mode: Phaser.DOM.NO_ZOOM, // FIT,
   roundPixels: false, // seems to not work
   pixelArt: true, // just a test but seems very good
+  input: {
+    keyboard: {
+      target: window,
+    },
+    mouse: {
+      target: null,
+      capture: false,
+    },
+    activePointers: 1,
+    touch: {
+      target: null,
+      capture: false,
+    },
+    smoothFactor: 0,
+    gamepad: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -96,7 +114,7 @@ const config = {
       debugShowStaticBody: false,
     },
   },
-  scene: [bootGame, LoadSavedGame, playLvl1, DashBoard, gameOver, Huhmiel],
+  scene: [bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, gameOver, Huhmiel],
 };
 
 const game = new Phaser.Game(config);

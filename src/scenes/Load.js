@@ -2,17 +2,21 @@ import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import head from '../assets/head.png';
+import bip from '../assets/sounds/bip.wav';
+// import bip2 from '../assets/sounds/piou.wav';
 // import atomicsc from '../assets/atomicsc.png';
 // import atomicscXML from '../assets/atomicsc.xml';
 
 export default class LoadSavedGame extends Scene {
   constructor() {
-    super('loadSavedGame');
+    super({ key: 'loadSavedGame' });
   }
 
   preload() {
     this.load.image('background', background);
     this.load.image('head', head);
+    this.load.audio('bip', bip);
+    // this.load.audio('bip2', bip2);
     // this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
 
@@ -31,6 +35,12 @@ export default class LoadSavedGame extends Scene {
     } else {
       this.newGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' New Game ', 48, 1);
     }
+    if (!localStorage.getItem('d')) {
+      localStorage.setItem('d', '0');
+    }
+    if (!localStorage.getItem('e')) {
+      localStorage.setItem('e', '0');
+    }
 
     this.options = this.add.bitmapText(U.WIDTH / 4, this.position[1], 'atomic', ' Options ', 48, 1);
 
@@ -42,9 +52,11 @@ export default class LoadSavedGame extends Scene {
 
     this.input.keyboard.on('keydown', (event) => {
       if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+        this.sound.play('bip', { volume: 0.2 });
         this.choose();
       }
       if (event.code === 'Enter') {
+        this.sound.play('bip2', { volume: 0.1 });
         this.launch();
       }
     });
@@ -73,11 +85,8 @@ export default class LoadSavedGame extends Scene {
       this.scene.start('playLvl1');
       this.scene.start('dashBoard');
     }
-    // if (this.lastPosition === 1) {
-    //   this.scene.start('playLvl1')
-    // }
     if (this.lastPosition === 1) {
-      console.log('load options');
+      this.scene.start('Options');
     }
   }
 }

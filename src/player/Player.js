@@ -27,7 +27,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       morphingSonar: false,
       jumpBooster: false,
       boss1: false,
-      powerUp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      rhino: false,
+      powerUp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     };
     this.state = {
       canJump: false,
@@ -50,6 +51,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
       bulletPositionX: 10,
       pause: false,
       fullScreen: false,
+      rhinoCount: 0,
+      e: 0,
+      d: 0,
     };
 
     this.onWater = false;
@@ -62,23 +66,31 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
 
-    const {
-      LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P, D,
-    } = Phaser.Input.Keyboard.KeyCodes;
+    let keysOptions = [];
+    if (!localStorage.getItem('Options')) {
+      const def = ['LEFT', 'RIGHT', 'UP', 'DOWN', 'ENTER', 'SPACE', 'SHIFT', 'S', 'P'];
+      const s = JSON.stringify(def);
+      localStorage.setItem('Options', s);
+    }
+    const l = localStorage.getItem('Options');
+    keysOptions = JSON.parse(l);
+    // const {
+    //   LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P,
+    // } = Phaser.Input.Keyboard.KeyCodes;
+
     this.keys = this.scene.input.keyboard.addKeys({
-      left: LEFT,
-      right: RIGHT,
-      up: UP,
-      down: DOWN,
-      jump: SPACE,
-      run: SHIFT,
-      fire: ENTER,
-      select: TAB,
-      pause: P,
-      debug: D,
+      left: Phaser.Input.Keyboard.KeyCodes[keysOptions[0]],
+      right: Phaser.Input.Keyboard.KeyCodes[keysOptions[1]],
+      up: Phaser.Input.Keyboard.KeyCodes[keysOptions[2]],
+      down: Phaser.Input.Keyboard.KeyCodes[keysOptions[3]],
+      fire: Phaser.Input.Keyboard.KeyCodes[keysOptions[4]],
+      jump: Phaser.Input.Keyboard.KeyCodes[keysOptions[5]],
+      run: Phaser.Input.Keyboard.KeyCodes[keysOptions[6]],
+      select: Phaser.Input.Keyboard.KeyCodes[keysOptions[7]],
+      pause: Phaser.Input.Keyboard.KeyCodes[keysOptions[8]],
+      //debug: D,
     });
 
-    // this.arrLife = this.inventory.powerUp;
     this.ComboMorphingBall = this.scene.input.keyboard.createCombo(
       [this.keys.down, this.keys.down],
       {
@@ -97,9 +109,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         deleteOnMatch: false,
       },
     );
-    this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
+      this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
       if (keyCombo.keyCodes[0] === 40 && keyCombo.keyCodes[1] === 40) {
         morph = true;
+        if (this.inventory.morphing) {
+          this.scene.sound.play('morph', { volume: 0.3 });
+        }
       }
       if (keyCombo.keyCodes[0] === 40 && keyCombo.keyCodes[1] === 32) {
         jumpB = true;
@@ -204,8 +219,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
           this.body.setVelocityX(0);
         } else if (keys.left.isDown) {
           this.body.setVelocityX(-this.state.speed);
+          this.state.bulletOrientationX = 'left';
         } else if (keys.right.isDown) {
           this.body.setVelocityX(this.state.speed);
+          this.state.bulletOrientationX = 'right';
         }
         this.state.bulletPositionY = 10;
         // tire vers le haut
@@ -275,8 +292,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.speed = 250;
       }
       // fullscreen mode
-      if (keys.debug.isDown) {
-        console.log(this.x, this.y);
+      // if (keys.debug.isDown) {
+      //   console.log(this.x, this.y);
+      // }
+      if (keys.pause.isDown) {
+        this.scene.pauseGame();
       }
       this.displaySonar();
     }
@@ -336,6 +356,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         laser.visible = true;
         // laser.anims.play('bull', true);
         laser.setDepth(99);
+        this.scene.sound.play('laser', { volume: 0.3 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
           laser.setAngle(0);
@@ -362,6 +383,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   laserKill(e) {
+    this.scene.sound.play('explo2', { volume: 0.2 });
     e.setVelocity(0, 0);
     e.anims.play('enemyExplode', true);
     e.on('animationcomplete', () => { e.destroy(); });
@@ -397,6 +419,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
               }
             });
             bomb.body.enabled = true;
+            this.scene.sound.play('impact', { volume: 0.4 });
             bomb.anims.play('impactBomb', true).on('animationcomplete', () => bomb.destroy());
           },
         });
@@ -414,6 +437,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         swell.visible = true;
         swell.anims.play('swell', true);
         swell.setDepth(99);
+        this.scene.sound.play('swell', { volume: 0.15 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
           // swell.body.setSize(18, 4);
@@ -441,6 +465,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   swellKill(e) {
+    this.scene.sound.play('impact', { volume: 0.4 });
     e.setVelocity(0, 0);
     e.anims.play('impact', true);
     e.on('animationcomplete', () => { e.destroy(); });
@@ -454,6 +479,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         missile.visible = true;
         missile.anims.play('missile', true);
         missile.setDepth(99);
+        this.scene.sound.play('missile', { volume: 0.5 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
           missile.body.setSize(18, 4);
@@ -482,6 +508,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   missileKill(e) {
     e.setVelocity(0, 0);
+    this.scene.sound.play('explo2', { volume: 0.4 });
     if (e.texture.key === 'missile') {
       e.anims.play('enemyExplode', true).on('animationcomplete', () => { e.destroy(); });
     } else {
@@ -497,6 +524,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
         bullet.visible = true;
         bullet.anims.play('bull', true);
         bullet.setDepth(99);
+        // bullet sound
+        this.scene.sound.play('bullet', { volume: 0.08 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
           bullet.body.velocity.x = -600;
@@ -517,6 +546,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   bulletKill(e) {
     e.setVelocity(0, 0);
     e.anims.play('impact', true);
+    this.scene.sound.play('impact', { volume: 0.4 });
     e.on('animationcomplete', () => { e.destroy(); });
   }
 
@@ -531,6 +561,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.state.maxSpeed = 550;
     this.body.setVelocityY(-this.state.speed);
     this.body.velocity.normalize().scale(this.state.maxSpeed);
+    this.scene.sound.play('jumpBooster', { volume: 0.08 });
     this.boostTimer = this.scene.time.addEvent({
       delay: 500,
       callback: () => {
@@ -590,6 +621,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       this.state.selectedWeapon = this.inventory.selectableWeapon[count + 1];
       // console.log(this.state.selectedWeapon);
       this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
+      this.scene.sound.play('select', { volume: 0.1 });
       this.scene.time.addEvent({
         delay: 500,
         callback: () => {
@@ -664,6 +696,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     } else {
       this.inventory.life = this.inventory.lifeEnergyBlock * 100;
     }
+    this.scene.sound.play('getLife', { volume: 0.05 });
     l.destroy();
     this.scene.events.emit('setHealth', { life: this.inventory.life });
   }

@@ -1,3 +1,5 @@
+// import PlaySound from '../utils/PlaySound';
+
 export default class Crabe extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, config) {
     super(scene, x, y, config.key);
@@ -52,6 +54,8 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
   }
 
   looseLife(e) {
+    // PlaySound(this.scene, 'enemyHit');
+    this.scene.sound.play('enemyHit');
     this.state.life = this.state.life - e;
   }
 }
