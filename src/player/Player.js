@@ -88,7 +88,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       run: Phaser.Input.Keyboard.KeyCodes[keysOptions[6]],
       select: Phaser.Input.Keyboard.KeyCodes[keysOptions[7]],
       pause: Phaser.Input.Keyboard.KeyCodes[keysOptions[8]],
-      //debug: D,
     });
 
     this.ComboMorphingBall = this.scene.input.keyboard.createCombo(
@@ -109,7 +108,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         deleteOnMatch: false,
       },
     );
-      this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
+    this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
       if (keyCombo.keyCodes[0] === 40 && keyCombo.keyCodes[1] === 40) {
         morph = true;
         if (this.inventory.morphing) {
@@ -635,6 +634,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     if (!this.lavaOverlap) {
       this.lavaOverlap = true;
       this.inventory.life -= 3;
+      this.scene.sound.play('playerHit');
       this.scene.events.emit('setHealth', { life: this.inventory.life });
       this.playerFlashTween = this.scene.tweens.add({
         targets: this.scene.player,
@@ -662,6 +662,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       this.scene.player.dead = true;
       this.playerDead = true;
       this.scene.physics.pause();
+      this.scene.events.emit('setHealth', { life: 0 });
+      this.scene.sound.play('playerDead', { volume: 0.2 });
       this.scene.input.enabled = false;
       this.scene.player.anims.pause(this.scene.player.anims.currentFrame);
       this.playerFlashTween.stop();
@@ -706,7 +708,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       return;
     }
     if (this.state.onMorphingBall) {
-      //this.scene.mask.setMask(this.scene.mask);
+      // this.scene.mask.setMask(this.scene.mask);
     }
     // if (!this.state.onMorphingBall) {
     //   console.log(this.scene.frontLayer)

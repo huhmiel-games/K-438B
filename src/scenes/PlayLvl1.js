@@ -50,9 +50,9 @@ import boss1wallfront from '../assets/boss1wallfront.png';
 import boss1Walk from '../assets/boss1walk.png';
 import boss1Run from '../assets/boss1run.png';
 import boss1Crouch from '../assets/boss1crouch.png';
-import boss1Attack from '../assets/boss1attack.png';
-import boss1Jump from '../assets/boss1jump.png';
-import boss1Hit from '../assets/boss1hit.png';
+import boss1Attack from '../assets/spritesheets/enemies/boss1attack.png';
+import boss1Jump from '../assets/spritesheets/enemies/boss1jump.png';
+import boss1Hit from '../assets/spritesheets/enemies/boss1hit.png';
 
 // final boss
 // import bosstest from '../assets/spritesheets/enemies/finalBoss/finalBossAttackTest.png';
@@ -84,29 +84,29 @@ import test from '../maps/map1.png';
 import mapSol from '../maps/mapSol.png';
 
 // import sounds fx
-import bulletFX from '../assets/sounds/bullet.wav';
-import swellFX from '../assets/sounds/swell.wav';
-import missileFX from '../assets/sounds/missile.wav';
-import laserFX from '../assets/sounds/laser3.wav';
-import impactFX from '../assets/sounds/explo.wav';
-import explo2FX from '../assets/sounds/explo2.wav';
-import enemyImpactFX from '../assets/sounds/enemyHit.wav';
-import playerHitFX from '../assets/sounds/playerHit.wav';
-import morphFX from '../assets/sounds/playerHit2.wav';
-import powerUpFX from '../assets/sounds/powerup.wav';
-import selectFX from '../assets/sounds/select.wav';
-import jumpBoosterFX from '../assets/sounds/jumpboost.wav';
-import getLifeFX from '../assets/sounds/getlife2.wav';
-import runFX from '../assets/sounds/walk.wav';
-import explo3FX from '../assets/sounds/explo3.wav';
-import melo from '../assets/sounds/melo1.wav';
-
+import bulletFX from '../assets/sounds/bullet.ogg';
+import swellFX from '../assets/sounds/swell.ogg';
+import missileFX from '../assets/sounds/missile.ogg';
+import laserFX from '../assets/sounds/laser3.ogg';
+import impactFX from '../assets/sounds/explo.ogg';
+import explo2FX from '../assets/sounds/explo2.ogg';
+import enemyImpactFX from '../assets/sounds/enemyHit.ogg';
+import playerHitFX from '../assets/sounds/playerHit.ogg';
+import morphFX from '../assets/sounds/playerHit2.ogg';
+import powerUpFX from '../assets/sounds/powerup.ogg';
+import selectFX from '../assets/sounds/select.ogg';
+import jumpBoosterFX from '../assets/sounds/jumpboost.ogg';
+import getLifeFX from '../assets/sounds/getlife2.ogg';
+import runFX from '../assets/sounds/walk.ogg';
+import explo3FX from '../assets/sounds/explo3.ogg';
+import melo from '../assets/sounds/melo1.ogg';
+import playerDead from '../assets/sounds/playerdead.ogg';
 
 // import boss1 sounds fx
-import cri1 from '../assets/sounds/boss1/cri-001.wav';
-import cri2 from '../assets/sounds/boss1/cri-002.wav';
-import cri3 from '../assets/sounds/boss1/cri-003.wav';
-import cri4 from '../assets/sounds/boss1/cri-004.wav';
+import cri1 from '../assets/sounds/boss1/cri-001.ogg';
+import cri2 from '../assets/sounds/boss1/cri-002.ogg';
+import cri3 from '../assets/sounds/boss1/cri-003.ogg';
+import cri4 from '../assets/sounds/boss1/cri-004.ogg';
 import LetsPlayWithTheDemon from '../assets/music/LetsPlayWithTheDemon.ogg';
 
 // import music
@@ -210,6 +210,7 @@ export default class playLvl1 extends Scene {
     this.load.audio('run', runFX);
     this.load.audio('morph', morphFX);
     this.load.audio('melo', melo);
+    this.load.audio('playerDead', playerDead);
 
     // sounds boss1
     this.load.audio('cri1', cri1);
@@ -1284,6 +1285,7 @@ export default class playLvl1 extends Scene {
         this.player.inventory.life = 0;
         this.player.setTintFill(0xFFFFFF);
         this.player.setDepth(2000);
+        this.sound.play('playerDead', { volume: 0.2 });
 
         this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel');
         this.round.setOrigin(0.5, 0.5);

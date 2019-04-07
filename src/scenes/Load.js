@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import head from '../assets/head.png';
-import bip from '../assets/sounds/bip.wav';
+import bip from '../assets/sounds/bip.ogg';
 // import bip2 from '../assets/sounds/piou.wav';
 // import atomicsc from '../assets/atomicsc.png';
 // import atomicscXML from '../assets/atomicsc.xml';

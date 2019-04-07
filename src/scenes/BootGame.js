@@ -3,8 +3,8 @@ import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import atomicsc from '../assets/atomicsc.png';
 import atomicscXML from '../assets/atomicsc.xml';
-import bip2 from '../assets/sounds/piou.wav';
-
+import bip2 from '../assets/sounds/piou.ogg';
+import ambient2 from '../assets/music/ambient2.ogg';
 
 let tween;
 let image;
@@ -87,6 +87,7 @@ export default class bootGame extends Scene {
     this.load.image('background', background);
     this.load.bitmapFont('atomic', atomicsc, atomicscXML);
     this.load.audio('bip2', bip2);
+    this.load.audio('ambient2', ambient2);
   }
 
   create() {
@@ -106,6 +107,9 @@ export default class bootGame extends Scene {
     tintTween = tintTween.bind(this);
 
     initTweens();
+
+    this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
+
     this.title = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 160, 'atomic', ' K-438 B ', 70, 1);
     this.title.setOrigin(0.5, 0.5);
     this.title.tint = 0xFF3B00;
@@ -133,6 +137,7 @@ export default class bootGame extends Scene {
 
     this.input.keyboard.once('keydown', () => {
       this.sound.play('bip2', { volume: 0.1 });
+      this.ambient2.stop();
       this.scene.start('intro'); //loadSavedGame
     });
 
@@ -150,5 +155,6 @@ export default class bootGame extends Scene {
     });
 
     this.cameras.main.fadeIn(2000);
+    this.ambient2.play();
   }
 }

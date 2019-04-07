@@ -3,9 +3,9 @@ import U from '../utils/usefull';
 import background from '../assets/menuBackgound.png';
 import atomicsc from '../assets/atomicsc.png';
 import atomicscXML from '../assets/atomicsc.xml';
-import bip2 from '../assets/sounds/piou.wav';
-import bip1 from '../assets/sounds/walk.wav';
-import bip3 from '../assets/sounds/noname.wav';
+import bip2 from '../assets/sounds/piou.ogg';
+import bip1 from '../assets/sounds/walk.ogg';
+import bip3 from '../assets/sounds/noname.ogg';
 
 export default class Intro extends Scene {
   constructor() {
