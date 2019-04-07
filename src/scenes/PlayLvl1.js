@@ -891,7 +891,7 @@ export default class playLvl1 extends Scene {
       delay: 1000,
       callback: () => {
         // var image = scene.physics.add.image(x, y, key);
-        console.log('start lavaRise');
+        // console.log('start lavaRise');
         this.lavaRise = this.physics.add.image(0, 2000, 'lavaPixel');
         this.lavaRise.setOrigin(0, 0);
         this.lavaRise.displayWidth = 2048;
@@ -899,13 +899,13 @@ export default class playLvl1 extends Scene {
         this.lavaRise.setDepth(99);
         this.lavaRise.alpha = 0.9;
         // this.lavaRise.body.setVelocity(0, 0);
-        //this.lavaGroup.push(this.lavaRise);
+        // this.lavaGroup.push(this.lavaRise);
         this.lavaRise.body.velocity.y = -1000;
         this.lavaRise.body.isImmovable = true;
         this.lavaRise.body.allowGravity = false;
         this.lavaRise.setOffset(0, 0);
         this.physics.add.overlap(this.player, this.lavaRise, () => this.player.handleLava(), null, this.player);
-        console.log(this.lavaRise);
+        // console.log(this.lavaRise);
       },
     });
     // ====================================================================
@@ -990,7 +990,6 @@ export default class playLvl1 extends Scene {
     this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.collider(this.elevatorGroup, this.player.bullets, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
-    
     this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
 
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
