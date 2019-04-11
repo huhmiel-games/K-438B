@@ -9,6 +9,7 @@ import gameOver from './scenes/GameOver';
 import DashBoard from './scenes/dashBoard';
 import Options from './scenes/Options';
 import Intro from './scenes/Intro';
+import endGame from './scenes/EndGame';
 
 // function preload() {
 //   const progressBar = this.add.graphics();
@@ -114,7 +115,7 @@ const config = {
       debugShowStaticBody: false,
     },
   },
-  scene: [bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, gameOver, Huhmiel],
+  scene: [ endGame, bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, gameOver, Huhmiel],
 };
 
 const game = new Phaser.Game(config);

@@ -27,6 +27,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       morphingSonar: false,
       jumpBooster: false,
       boss1: false,
+      bossFinal: false,
       rhino: false,
       powerUp: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     };

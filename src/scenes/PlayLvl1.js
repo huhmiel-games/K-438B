@@ -7,7 +7,7 @@ import Jumpers from '../enemies/Jumpers';
 import Octopus from '../enemies/Octopus';
 import RhinoBeetles from '../enemies/RhinoBeetles';
 import Boss1 from '../enemies/Boss1';
-// import BossFinal from '../enemies/BossFinal';
+import BossFinal from '../enemies/BossFinal';
 import Elevators from '../utils/Elevators';
 import Doors from '../utils/Doors';
 import Lava from '../utils/Lava';
@@ -55,8 +55,8 @@ import boss1Jump from '../assets/spritesheets/enemies/boss1jump.png';
 import boss1Hit from '../assets/spritesheets/enemies/boss1hit.png';
 
 // final boss
-// import bosstest from '../assets/spritesheets/enemies/finalBoss/finalBossAttackTest.png';
-// import bosstest2 from '../assets/spritesheets/enemies/finalBoss/finalBossWalkTest.png';
+import bosstest from '../../../bossAttack.png';
+import bosstest2 from '../../../bossFly.png';
 
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
@@ -79,6 +79,7 @@ import whitePixel from '../assets/whitePixel.png';
 import lava from '../assets/lava.png';
 import lavaFall from '../assets/lava-fall.png';
 import waterFall from '../assets/waterfall.png';
+import boss1dead from '../assets/boss1dead.png';
 
 import test from '../maps/map1.png';
 import mapSol from '../maps/mapSol.png';
@@ -101,6 +102,8 @@ import runFX from '../assets/sounds/walk.ogg';
 import explo3FX from '../assets/sounds/explo3.ogg';
 import melo from '../assets/sounds/melo1.ogg';
 import playerDead from '../assets/sounds/playerdead.ogg';
+import shake from '../assets/sounds/shake3.ogg';
+import shake2 from '../assets/sounds/shake4.ogg';
 
 // import boss1 sounds fx
 import cri1 from '../assets/sounds/boss1/cri-001.ogg';
@@ -179,8 +182,8 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('boss1jump', boss1Jump, { frameWidth: 172, frameHeight: 179 });
 
     // final boss
-    // this.load.spritesheet('bossFinal', bosstest, { frameWidth: 278, frameHeight: 400 });
-    // this.load.spritesheet('bossFinal2', bosstest2, { frameWidth: 313, frameHeight: 400 });
+    this.load.spritesheet('bossFinal', bosstest, { frameWidth: 192, frameHeight: 240 });
+    this.load.spritesheet('bossFinal2', bosstest2, { frameWidth: 192, frameHeight: 240 });
     // various map items
     // this.load.spritesheet('savestation', saveStation, { frameWidth: 40, frameHeight: 60 });
     this.load.image('head', head);
@@ -192,6 +195,7 @@ export default class playLvl1 extends Scene {
     this.load.image('blackPixel', blackPixel);
     this.load.image('whitePixel', whitePixel);
     this.load.image('lavaPixel', lavaPixel);
+    this.load.image('boss1dead', boss1dead);
 
     // sounds
     this.load.audio('bullet', bulletFX);
@@ -211,6 +215,8 @@ export default class playLvl1 extends Scene {
     this.load.audio('morph', morphFX);
     this.load.audio('melo', melo);
     this.load.audio('playerDead', playerDead);
+    this.load.audio('shake', shake);
+    this.load.audio('shake2', shake2);
 
     // sounds boss1
     this.load.audio('cri1', cri1);
@@ -227,6 +233,11 @@ export default class playLvl1 extends Scene {
   create() {
     this.map = this.make.tilemap({ key: 'map', tileWidth: 16, tileHeight: 16 });
     this.tileset = this.map.addTilesetImage('tileground', 'tiles', 16, 16);
+
+    this.firstTimestamp = new Date().getTime();
+    if (!localStorage.getItem('time')) {
+      localStorage.setItem('time', 0);
+    }
 
     this.playerFlashTween = null;
     // test
@@ -795,34 +806,41 @@ export default class playLvl1 extends Scene {
     }
     // ========================================================================================================================================
     // BOSS FINAL
-    // this.anims.create({
-    //   key: 'bossFinalAttack',
-    //   frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 16, first: 0 }),
-    //   frameRate: 10,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.anims.create({
-    //   key: 'bossFinalWalk',
-    //   frames: this.anims.generateFrameNumbers('bossFinal2', { start: 0, end: 16, first: 0 }),
-    //   frameRate: 10,
-    //   yoyo: false,
-    //   repeat: -1,
-    // });
-    // this.bossFinal = new BossFinal(this, 1700, 500, { key: 'bossFinal2' });
-    // this.bossFinal.animate('bossFinalWalk');
-    // this.physics.add.collider(this.bossFinal, this.solLayer, null);
-    // // this.physics.add.overlap(this.bossFinal, this.player, (e) => { this.bossFinal.attack(e); });
-    // this.physics.add.collider(this.enemyGroup, this.bossFinal, (e) => { this.enemyDestroy(e); });
-    // this.physics.add.overlap(this.bossFinal, this.player, elm => this.playerIsHit(elm), null, this);
-    // this.physics.add.overlap(this.player.bullets, this.bossFinal, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
-    // this.physics.add.overlap(this.player.missiles, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    // this.physics.add.overlap(this.player.lasers, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    // this.physics.add.overlap(this.player.swells, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    // //this.enemyGroup.push(this.bossFinal);
-    // // this.bossFinal.body.setVelocity(0, 0);
-    // // this.bossFinal.body.setEnable();
-    // console.log(this.bossFinal)
+    this.anims.create({
+      key: 'bossFinalAttack',
+      frames: this.anims.generateFrameNumbers('bossFinal', { start: 0, end: 7, first: 0 }),
+      frameRate: 10,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'bossFinalFly',
+      frames: this.anims.generateFrameNumbers('bossFinal2', { start: 0, end: 3, first: 3 }),
+      frameRate: 16,
+      yoyo: true,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: 'bossFinalIntro',
+      frames: this.anims.generateFrameNumbers('bossFinal2', { start: 3, end: 3, first: 3 }),
+      frameRate: 1,
+      yoyo: false,
+      repeat: -1,
+    });
+    this.bossFinalReady = false;
+    this.bossFinalstarted = false;
+    if (!this.player.inventory.bossFinal) {
+      this.solLayer.setTileLocationCallback(70, 127, 8, 1, (e) => {
+        if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
+          this.bossFinalBattlePrep();
+        }
+      }, this);
+      this.solLayer.setTileLocationCallback(1, 188, 116, 1, (e) => {
+        if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
+          this.bossFinalBattlePrep();
+        }
+      }, this);
+    }
 
     // ====================================================================
     // ELEVATORS
@@ -888,27 +906,8 @@ export default class playLvl1 extends Scene {
 
     // LAVA RISE
     this.lavaRiseFlag = false;
-    this.time.addEvent({
-      delay: 1000,
-      callback: () => {
-        // var image = scene.physics.add.image(x, y, key);
-        // console.log('start lavaRise');
-        this.lavaRise = this.physics.add.image(0, 2000, 'lavaPixel');
-        this.lavaRise.setOrigin(0, 0);
-        this.lavaRise.displayWidth = 2048;
-        this.lavaRise.displayHeight = 2048;
-        this.lavaRise.setDepth(99);
-        this.lavaRise.alpha = 0.9;
-        // this.lavaRise.body.setVelocity(0, 0);
-        // this.lavaGroup.push(this.lavaRise);
-        this.lavaRise.body.velocity.y = -1000;
-        this.lavaRise.body.isImmovable = true;
-        this.lavaRise.body.allowGravity = false;
-        this.lavaRise.setOffset(0, 0);
-        this.physics.add.overlap(this.player, this.lavaRise, () => this.player.handleLava(), null, this.player);
-        // console.log(this.lavaRise);
-      },
-    });
+    this.onSismic = false;
+
     // ====================================================================
     // WATER FALL
     this.anims.create({
@@ -1017,7 +1016,8 @@ export default class playLvl1 extends Scene {
   update() {
     // lava rise
     if (this.lavaRise) {
-      this.startLavaRise();
+      this.stopLavaRise();
+      this.sismicActivity();
     }
     // player sonar
     if (this.player.state.onMorphingBall && this.player.inventory.morphingSonar) {
@@ -1069,7 +1069,7 @@ export default class playLvl1 extends Scene {
     }
     if (this.modalText) {
       this.modalText.x = this.player.x;
-      this.modalText.y = this.player.y + 40;
+      this.modalText.y = this.player.y - 120;
     }
     // enemies part
     // this.enemyGroup.forEach((enemy) => {
@@ -1081,11 +1081,76 @@ export default class playLvl1 extends Scene {
     // });
   }
 
+  sismicActivity() {
+    if (!this.onSismic) {
+      this.onSismic = true;
+      const rdm = Phaser.Math.Between(2000, 5000);
+      this.shakeCamera(2000);
+      this.sound.play('shake', { volume: 0.5 });
+      this.sound.play('shake2', { volume: 0.5 });
+      this.time.addEvent({
+        delay: rdm,
+        callback: () => {
+          this.onSismic = false;
+        },
+      });
+    }
+  }
+
   startLavaRise() {
-    // this.lavaRise.displayHeight += 1;
+    this.transmission('ALERT-High sismic activity detected-return to spacehip for evacuation');
+    this.solLayer.setTileLocationCallback(119, 3, 1, 9, (e) => {
+      if (e === this.player) {
+        this.endMission();
+      }
+    }, this);
+    this.time.addEvent({
+      delay: 5000,
+      callback: () => {
+        this.lavaRise = this.physics.add.image(0, 3072, 'lavaPixel');
+        this.lavaRise.setOrigin(0, 0);
+        this.lavaRise.displayWidth = 2048;
+        this.lavaRise.displayHeight = 3072;
+        this.lavaRise.setDepth(99);
+        this.lavaRise.alpha = 0.9;
+        this.lavaRise.body.velocity.y = -43;
+        this.lavaRise.body.isImmovable = true;
+        this.lavaRise.body.allowGravity = false;
+        this.lavaRise.setOffset(0, 0);
+        this.physics.add.overlap(this.player, this.lavaRise, () => this.player.handleLava(), null, this.player);
+      },
+    });
+  }
+
+  endMission() {
+    this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel');
+    this.round.setOrigin(0.5, 0.5);
+    this.round.setDepth(1000);
+    this.round.displayWidth = 4096;
+    this.round.displayHeight = 4096;
+    this.round.alpha = 0;
+    this.countTime();
+    this.tween = this.tweens.add({
+      targets: this.round,
+      ease: 'Sine.easeInOut',
+      duration: 500,
+      delay: 0,
+      repeat: 0,
+      yoyo: false,
+      alpha: {
+        getStart: () => 0,
+        getEnd: () => 1,
+      },
+      onComplete: () => {
+        this.scene.start('endGame'); // original set to 'bootGame'
+      },
+    });
+  }
+
+  stopLavaRise() {
     if (!this.lavaRiseFlag && this.lavaRise.y > 0) {
       this.lavaRiseFlag = true;
-      this.lavaRise.setVelocityY(-12);
+      // this.lavaRise.setVelocityY(-12);
     }
     if (this.lavaRise.y < 0) {
       this.lavaRise.setVelocityY(0);
@@ -1154,6 +1219,7 @@ export default class playLvl1 extends Scene {
   // ====================================================================
   pauseGame() {
     if (!this.player.state.pause) {
+      this.countTime();
       this.player.state.pause = true;
       this.physics.pause();
       this.player.anims.pause(this.player.anims.currentFrame);
@@ -1216,6 +1282,7 @@ export default class playLvl1 extends Scene {
         this.continueBtn.destroy();
         this.saveGameBtn.destroy();
         this.head.destroy();
+        this.firstTimestamp = new Date().getTime();
       }
       if (this.lastPosition === 1) {
         this.saveGame();
@@ -1230,6 +1297,7 @@ export default class playLvl1 extends Scene {
     const s = JSON.stringify(this.player.inventory);
     localStorage.setItem('k438b', s);
     this.sound.play('melo');
+    this.countTime();
   }
 
   // ====================================================================
@@ -1317,7 +1385,17 @@ export default class playLvl1 extends Scene {
     d += 1;
     localStorage.setItem('d', d);
     this.bossMusic.stop();
+    this.countTime();
     this.scene.start('gameOver');
+  }
+
+  countTime() {
+    const secondTimestamp = new Date().getTime();
+    const result = secondTimestamp - this.firstTimestamp;
+    let elapsedTime = localStorage.getItem('time');
+    elapsedTime = JSON.parse(elapsedTime);
+    localStorage.setItem('time', elapsedTime + result);
+    this.firstTimestamp = new Date().getTime();
   }
 
   // ====================================================================
@@ -1362,20 +1440,27 @@ export default class playLvl1 extends Scene {
     if (el.state.life < 0) {
       el.clearTint();
       // give life to player
-      this.giveLife = this.physics.add.staticSprite(el.x, el.y, 'powerUp');
-      this.giveLife.setDepth(105);
-      this.giveLife.health = el.state.giveLife;
-      this.giveLife.body.setSize(23, 21);
-      this.giveLife.anims.play('powerUp');
-      this.giveLifeGroup.push(this.giveLife);
+
       // kill the enemy
       if (el === this.rhino1 || el === this.rhino2 || el === this.rhino3) {
+        this.giveLife = this.physics.add.staticSprite(el.x, el.y, 'powerUp');
+        this.giveLife.setDepth(105);
+        this.giveLife.health = el.state.giveLife;
+        this.giveLife.body.setSize(23, 21);
+        this.giveLife.anims.play('powerUp');
+        this.giveLifeGroup.push(this.giveLife);
         this.player.state.rhinoCount += 1;
         if (this.player.state.rhinoCount === 3) {
           this.player.inventory.rhino = true;
         }
       }
       if (el === this.boss1) {
+        this.giveLife = this.physics.add.staticSprite(el.x, el.y, 'powerUp');
+        this.giveLife.setDepth(105);
+        this.giveLife.health = el.state.giveLife;
+        this.giveLife.body.setSize(23, 21);
+        this.giveLife.anims.play('powerUp');
+        this.giveLifeGroup.push(this.giveLife);
         this.boss1.setTintFill(0xDDDDDD);
         this.missile.body.reset(this.boss1.x, this.boss1.y);
         this.bossExplode(this.boss1.x, this.boss1.y);
@@ -1440,7 +1525,99 @@ export default class playLvl1 extends Scene {
             });
           },
         });
+      } else if (el === this.bossFinal) {
+        if (!this.bossFinal.isDead) {
+          this.bossFinal.isDead = true;
+          this.bossFinal.body.setVelocityY(500);
+          this.bossFinal.setTintFill(0xDDDDDD);
+          this.bossExplode(this.bossFinal.x, this.bossFinal.y);
+          this.shakeCamera(5000);
+          this.time.addEvent({
+            delay: Phaser.Math.Between(500, 1200),
+            callback: () => {
+              this.bossExplode(this.bossFinal.x - 50, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+              this.bossExplode(this.bossFinal.x - 20, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+            },
+          });
+          this.time.addEvent({
+            delay: Phaser.Math.Between(500, 1200),
+            callback: () => {
+              this.bossExplode(this.bossFinal.x, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+              this.bossExplode(this.bossFinal.x + 20, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+            },
+          });
+          this.time.addEvent({
+            delay: Phaser.Math.Between(500, 1200),
+            callback: () => {
+              this.bossExplode(this.bossFinal.x + 50, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+              this.bossExplode(this.bossFinal.x - 50, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+            },
+          });
+          this.time.addEvent({
+            delay: Phaser.Math.Between(500, 1200),
+            callback: () => {
+              this.bossExplode(this.bossFinal.x, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+              this.bossExplode(this.bossFinal.x, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+            },
+          });
+          this.time.addEvent({
+            delay: Phaser.Math.Between(500, 1200),
+            callback: () => {
+              this.bossExplode(this.bossFinal.x + 20, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+              this.bossExplode(this.bossFinal.x + 50, Phaser.Math.Between(this.bossFinal.y - 50, this.bossFinal.y + 50));
+            },
+          });
+          this.bossFinal.anims.pause(this.bossFinal.anims.currentFrame);
+          this.bossFinal.setDepth(0);
+          this.bossFinal.playRoar('cri4');
+          this.bossFinal.body.velocity.y = 500;
+          this.time.addEvent({
+            delay: 600,
+            callback: () => {
+              this.tween = this.tweens.add({
+                targets: this.bossFinal,
+                ease: 'Sine.easeInOut',
+                duration: 1000,
+                delay: 0,
+                repeat: 0,
+                yoyo: false,
+                alpha: {
+                  getStart: () => 1,
+                  getEnd: () => 0,
+                },
+                onComplete: () => {
+                  this.giveLife = this.physics.add.staticSprite(this.bossFinal.x, this.bossFinal.y, 'powerUp');
+                  this.giveLife.setDepth(105);
+                  this.giveLife.health = el.state.giveLife;
+                  this.giveLife.body.setSize(23, 21);
+                  this.giveLife.anims.play('powerUp');
+                  this.giveLifeGroup.push(this.giveLife);
+                  const filteringOptions = {
+                    // isNotEmpty: false,
+                    isColliding: false,
+                    // hasInterestingFace: false
+                  };
+                  const bossFinalTiles = this.solLayer.getTilesWithinWorldXY(this.bossFinal.x, this.bossFinal.y + 48, 48, 16, filteringOptions);
+                  bossFinalTiles.forEach((e) => {
+                    if (e.properties.destructible) {
+                      this.solLayer.removeTileAt(e.x, e.y, true, true);
+                    }
+                  });
+                  this.startLavaRise();
+                  this.player.inventory.bossFinal = true;
+                  this.bossFinal.destroy();
+                },
+              });
+            },
+          });
+        }
       } else {
+        this.giveLife = this.physics.add.staticSprite(el.x, el.y, 'powerUp');
+        this.giveLife.setDepth(105);
+        this.giveLife.health = el.state.giveLife;
+        this.giveLife.body.setSize(23, 21);
+        this.giveLife.anims.play('powerUp');
+        this.giveLifeGroup.push(this.giveLife);
         this.enemyExplode(el.x, el.y);
         this.enemyDestroy(el);
       }
@@ -1459,11 +1636,13 @@ export default class playLvl1 extends Scene {
     this.bossMusic.stop();
     const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
     this.sound.play('explo2', { volume: 0.3 });
-    exp.anims.play('bossExplode').on('animationrepeat', () => {
-      this.sound.play('explo2', { volume: 0.3 });
-    }).on('animationcomplete', () => {
-      exp.destroy();
-    });
+    if (exp) {
+      exp.anims.play('bossExplode').on('animationrepeat', () => {
+        this.sound.play('explo2', { volume: 0.3 });
+      }).on('animationcomplete', () => {
+        exp.destroy();
+      });
+    }
   }
 
   enemyExplode(x, y) {
@@ -1514,8 +1693,8 @@ export default class playLvl1 extends Scene {
 
   transmission(txt) {
     let count = 0;
-    this.modalText = this.add.bitmapText(this.player.x, this.player.y + 80, 'atomic', '', 6, 1);
-    this.modalText.setOrigin(0.5, 0);
+    this.modalText = this.add.bitmapText(this.player.x, this.player.y - 480, 'atomic', '', 6, 1);
+    this.modalText.setOrigin(0.5, 0.5);
     this.modalText.setAlpha(1);
     this.modalText.setDepth(201);
     this.time.addEvent({
@@ -1535,10 +1714,58 @@ export default class playLvl1 extends Scene {
       },
     });
     this.time.addEvent({
-      delay: 20000,
+      delay: 10000,
       callback: () => {
         this.modalText.destroy();
       },
     });
+  }
+
+  bossFinalBattlePrep() {
+    this.bossFinalReady = true;
+    this.bossFinal = new BossFinal(this, 1250, 2950, { key: 'bossFinal' });
+    this.bossFinal.animate('bossFinalIntro');
+    this.physics.add.collider(this.bossFinal, this.solLayer, null);
+    this.physics.add.overlap(this.bossFinal, this.player, elm => this.playerIsHit(elm), null, this);
+    this.physics.add.overlap(this.player.bullets, this.bossFinal, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+    this.physics.add.overlap(this.player.missiles, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    this.physics.add.overlap(this.player.lasers, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    this.physics.add.overlap(this.player.swells, this.bossFinal, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    this.bossFinal.flames = this.physics.add.group({
+      defaultKey: 'fireball',
+      maxSize: 900,
+      allowGravity: false,
+      createIfNull: true,
+    });
+    this.physics.add.collider(this.bossFinal.flames, this.solLayer, (elm) => { this.bossFinal.stopFlame(elm); }, null);
+    this.physics.add.overlap(this.bossFinal.flames, this.player, () => this.player.handleLava(), null, this.player);
+    this.boss1dead = this.add.image(1200, 3010, 'boss1dead');
+    this.solLayer.setTileLocationCallback(62, 188, 1, 6, (e) => {
+      if (e === this.player && !this.player.inventory.bossFinal && !this.bossFinalstarted) {
+        this.bossFinal.playBossMusic();
+        this.bossFinal.playRoar('cri1');
+        this.time.addEvent({
+          delay: 700,
+          callback: () => {
+            this.bossFinal.animate('bossFinalAttack');
+            if (this.bossFinal.y < 2810) {
+              this.bossFinal.body.velocity.y = 0;
+            } else if (this.bossFinal.y > 2900) {
+              this.bossFinal.body.velocity.y = -300;
+            } else {
+              this.bossFinal.body.velocity.y = 0;
+            }
+          },
+        });
+        this.time.addEvent({
+          delay: 3000,
+          callback: () => {
+            this.bossFinalstarted = true;
+          },
+        });
+      }
+    }, this);
+    this.solLayer.setTileLocationCallback(70, 127, 8, 1, null);
+    this.solLayer.setTileLocationCallback(1, 188, 116, 1, null);
   }
 }
