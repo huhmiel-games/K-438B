@@ -116,6 +116,7 @@ import LetsPlayWithTheDemon from '../assets/music/LetsPlayWithTheDemon.ogg';
 // import music
 import ambient1 from '../assets/music/ambient1.ogg';
 import ambient2 from '../assets/music/ambient2.ogg';
+import waterAmbient from '../assets/music/waterAmbiance.ogg';
 
 export default class playLvl1 extends Scene {
   constructor() {
@@ -228,6 +229,7 @@ export default class playLvl1 extends Scene {
     // music
     this.load.audio('ambient1', ambient1);
     this.load.audio('ambient2', ambient2);
+    this.load.audio('waterAmbient', waterAmbient);
   }
 
   // ====================================================================
@@ -273,19 +275,25 @@ export default class playLvl1 extends Scene {
 
     // ====================================================================
     // player in water effect
+    this.waterAmbientMusic = this.sound.add('waterAmbient');
     this.solLayer.setTileLocationCallback(2, 34, 26, 18, (e) => {
       if (e === this.player) {
         this.player.onWater = true;
         this.player.setDepth(98);
+        if (!this.waterAmbientMusic.isPlaying) {
+          this.waterAmbientMusic.play();
+        }
       }
     }, this);
     this.solLayer.setTileLocationCallback(30, 31, 1, 21, () => {
       this.player.onWater = false;
       this.player.setDepth(105);
+      this.waterAmbientMusic.stop();
     }, this);
     this.solLayer.setTileLocationCallback(2, 53, 29, 1, () => {
       this.player.onWater = false;
       this.player.setDepth(105);
+      this.waterAmbientMusic.stop();
     }, this);
 
     // ====================================================================
@@ -293,26 +301,26 @@ export default class playLvl1 extends Scene {
     this.musicStore = [false, false];
     this.ambient1 = this.sound.add('ambient1', { volume: 0.8 });
     this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
-    this.solLayer.setTileLocationCallback(97, 8, 1, 3, (elm) => {
-      if (elm === this.player && !this.musicStore[0]) {
-        if (this.ambient2.isPlaying) {
-          this.ambient2.stop();
-          this.musicStore[1] = false;
-        }
-        this.musicStore[0] = true;
-        this.ambient1.play();
-      }
-    });
-    this.solLayer.setTileLocationCallback(54, 72, 1, 3, (elm) => {
-      if (elm === this.player && !this.musicStore[1]) {
-        if (this.ambient1.isPlaying) {
-          this.ambient1.stop();
-          this.musicStore[0] = false;
-        }
-        this.musicStore[1] = true;
-        this.ambient2.play();
-      }
-    });
+    // this.solLayer.setTileLocationCallback(97, 8, 1, 3, (elm) => {
+    //   if (elm === this.player && !this.musicStore[0]) {
+    //     if (this.ambient2.isPlaying) {
+    //       this.ambient2.stop();
+    //       this.musicStore[1] = false;
+    //     }
+    //     this.musicStore[0] = true;
+    //     this.ambient1.play();
+    //   }
+    // });
+    // this.solLayer.setTileLocationCallback(54, 72, 1, 3, (elm) => {
+    //   if (elm === this.player && !this.musicStore[1]) {
+    //     if (this.ambient1.isPlaying) {
+    //       this.ambient1.stop();
+    //       this.musicStore[0] = false;
+    //     }
+    //     this.musicStore[1] = true;
+    //     this.ambient2.play();
+    //   }
+    // });
 
     // ====================================================================
     // accessible keys during pause
@@ -1015,6 +1023,7 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   update() {
+    this.playMusic();
     // lava rise
     if (this.lavaRise) {
       this.stopLavaRise();
@@ -1080,6 +1089,25 @@ export default class playLvl1 extends Scene {
     //     enemy.flipX = false;
     //   }
     // });
+  }
+
+  playMusic() {
+    if (this.player.y <= 1268) {
+      if (this.ambient2.isPlaying) {
+        this.ambient2.stop();
+      }
+      if (!this.ambient1.isPlaying) {
+        this.ambient1.play();
+      }
+    }
+    if (this.player.y <= 2164 && this.player.y > 1268) {
+      if (this.ambient1.isPlaying) {
+        this.ambient1.stop();
+      }
+      if (!this.ambient2.isPlaying) {
+        this.ambient2.play();
+      }
+    }
   }
 
   sismicActivity() {
@@ -1220,6 +1248,7 @@ export default class playLvl1 extends Scene {
   // ====================================================================
   pauseGame() {
     if (!this.player.state.pause) {
+      console.log(this.player.x, this.player.y)
       this.countTime();
       this.player.state.pause = true;
       this.physics.pause();
