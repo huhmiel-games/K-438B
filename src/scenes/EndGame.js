@@ -6,6 +6,7 @@ import background from '../assets/menuBackgound.png';
 import bip2 from '../assets/sounds/piou.ogg';
 import bip1 from '../assets/sounds/walk.ogg';
 import bip3 from '../assets/sounds/noname.ogg';
+import melP from '../assets/music/LesRestesDeNiourk_melP.ogg'
 
 export default class EndGame extends Scene {
   constructor() {
@@ -18,6 +19,7 @@ export default class EndGame extends Scene {
     this.load.audio('bip2', bip2);
     this.load.audio('bip1', bip1);
     this.load.audio('bip3', bip3);
+    this.load.audio('melP', melP);
   }
 
   create() {
@@ -85,6 +87,7 @@ export default class EndGame extends Scene {
             getEnd: () => 0,
           },
           onComplete: () => {
+            this.sound.play('melP');
             this.congrat = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 4, 'atomic', 'Congratulation !!\nMission complete', 30, 1);
             this.congrat.setOrigin(0.5, 0.5);
             this.congrat.setAlpha(0);
@@ -141,7 +144,7 @@ export default class EndGame extends Scene {
   }
 
   credits() {
-    this.text = 'Credits---Designer:-Philippe Pereira---Graphics:-Luis Zuno---Boss Graphics:-Mobile Game Graphics---Programming:-Philippe Pereira---Game Engine:-Phaser 3---Sound Programming:-Philippe Pereira---Music:-sonniss---Boss Music:-Patrick de Arteaga-- -- -- -- -- -- -- -- --Thanks for playing-- -- -- -- -- -- -- -- -- -- --THE END-- -- -- -- -- -- -- -- --';
+    this.text = 'Credits---Designer:-Philippe Pereira---Graphics:-Luis Zuno---Boss Graphics:-Mobile Game Graphics---Programming:-Philippe Pereira---Game Engine:-Phaser 3---Sound Programming:-Philippe Pereira---Music:-sonniss-Mel P---Boss Music:-Patrick de Arteaga-- -- -- -- -- -- -- -- --Thanks for playing-- -- -- -- -- -- -- -- -- -- --THE END-- -- -- -- -- -- -- -- --';
     this.count = 0;
     this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
     this.chief.setOrigin(0.5, 0.8);
