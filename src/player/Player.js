@@ -218,10 +218,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
         if (!(keys.left.isDown || keys.right.isDown)) {
           this.body.setVelocityX(0);
         } else if (keys.left.isDown) {
-          this.body.setVelocityX(-this.state.speed);
+          this.body.setVelocityX(-150);
           this.state.bulletOrientationX = 'left';
         } else if (keys.right.isDown) {
-          this.body.setVelocityX(this.state.speed);
+          this.body.setVelocityX(150);
           this.state.bulletOrientationX = 'right';
         }
         this.state.bulletPositionY = 10;
@@ -378,6 +378,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
           laser.body.setSize(22, 4);
           laser.body.velocity.y = 0;
         }
+        this.scene.time.addEvent({
+          delay: 800,
+          callback: () => {
+            laser.destroy();
+          },
+        });
       }
     }
   }
@@ -460,6 +466,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else if (this.state.bulletOrientationY === 'normal') {
           swell.body.velocity.y = 0;
         }
+        this.scene.time.addEvent({
+          delay: 1000,
+          callback: () => {
+            swell.destroy();
+          },
+        });
       }
     }
   }
@@ -502,6 +514,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else if (this.state.bulletOrientationY === 'normal') {
           missile.body.velocity.y = 0;
         }
+        this.scene.time.addEvent({
+          delay: 1000,
+          callback: () => {
+            missile.destroy();
+          },
+        });
       }
     }
   }
@@ -539,6 +557,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else if (this.state.bulletOrientationY === 'normal') {
           bullet.body.velocity.y = 0;
         }
+        this.scene.time.addEvent({
+          delay: 800,
+          callback: () => {
+            bullet.destroy();
+          },
+        });
       }
     }
   }

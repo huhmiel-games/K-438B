@@ -297,30 +297,9 @@ export default class playLvl1 extends Scene {
     }, this);
 
     // ====================================================================
-    // launch music
-    this.musicStore = [false, false];
-    this.ambient1 = this.sound.add('ambient1', { volume: 0.8 });
-    this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
-    // this.solLayer.setTileLocationCallback(97, 8, 1, 3, (elm) => {
-    //   if (elm === this.player && !this.musicStore[0]) {
-    //     if (this.ambient2.isPlaying) {
-    //       this.ambient2.stop();
-    //       this.musicStore[1] = false;
-    //     }
-    //     this.musicStore[0] = true;
-    //     this.ambient1.play();
-    //   }
-    // });
-    // this.solLayer.setTileLocationCallback(54, 72, 1, 3, (elm) => {
-    //   if (elm === this.player && !this.musicStore[1]) {
-    //     if (this.ambient1.isPlaying) {
-    //       this.ambient1.stop();
-    //       this.musicStore[0] = false;
-    //     }
-    //     this.musicStore[1] = true;
-    //     this.ambient2.play();
-    //   }
-    // });
+    // AMBIENT MUSIC
+    this.ambient1 = this.sound.add('ambient1', { volume: 0.2 });
+    this.ambient2 = this.sound.add('ambient2', { volume: 0.1 });
 
     // ====================================================================
     // accessible keys during pause
@@ -417,7 +396,7 @@ export default class playLvl1 extends Scene {
 
     // player walk and run sounds
     this.walkplay = false;
-    this.walkk = this.sound.add('run', { volume: 0.5 });
+    this.walkk = this.sound.add('run', { volume: 0.8 });
     this.player.on('animationupdate', () => {
       if (this.player.anims.currentAnim.key === 'runShoot' && !this.walkplay && this.player.body.blocked.down) {
         this.walkplay = true;
@@ -523,7 +502,7 @@ export default class playLvl1 extends Scene {
       this.loadGame();
     }
     if (!localStorage.getItem('k438b')) {
-      // this.transmission('New transmision-A problem occured during-the material transfer on planet-Items are scattered on planet');
+      this.transmission('New transmision-A problem occured during-the material transfer on planet-Items are scattered on planet');
       this.saveGame();
     }
     // this.transmission('New transmision-A problem occured during the material transfer on planet.-All items are scattered on the planet.');

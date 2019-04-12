@@ -18,6 +18,7 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
     this.body.setSize(20, 20);
     this.state.directionY = Math.sin(300 + Math.PI / 4);
     this.getFired = false;
+    this.waspFX = this.scene.sound.add('guepe', { volume: 0.2 });
   }
 
   preUpdate(time, delta) {
@@ -57,7 +58,9 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
 
   playSound() {
     if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) <= 150) {
-      this.scene.sound.play('guepe', { volume: 0.2 });
+      if (!this.waspFX.isPlaying) {
+        this.waspFX.play();
+      }
     }
   }
 
