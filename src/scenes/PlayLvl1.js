@@ -104,6 +104,7 @@ import melo from '../assets/sounds/melo1.ogg';
 import playerDead from '../assets/sounds/playerdead.ogg';
 import shake from '../assets/sounds/shake3.ogg';
 import shake2 from '../assets/sounds/shake4.ogg';
+import guepeFX from '../assets/sounds/guepe.ogg';
 
 // import boss1 sounds fx
 import cri1 from '../assets/sounds/boss1/cri-001.ogg';
@@ -115,7 +116,6 @@ import LetsPlayWithTheDemon from '../assets/music/LetsPlayWithTheDemon.ogg';
 // import music
 import ambient1 from '../assets/music/ambient1.ogg';
 import ambient2 from '../assets/music/ambient2.ogg';
-
 
 export default class playLvl1 extends Scene {
   constructor() {
@@ -217,6 +217,7 @@ export default class playLvl1 extends Scene {
     this.load.audio('playerDead', playerDead);
     this.load.audio('shake', shake);
     this.load.audio('shake2', shake2);
+    this.load.audio('guepe', guepeFX);
 
     // sounds boss1
     this.load.audio('cri1', cri1);

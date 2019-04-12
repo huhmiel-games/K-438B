@@ -115,7 +115,7 @@ const config = {
       debugShowStaticBody: false,
     },
   },
-  scene: [ endGame, bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, gameOver, Huhmiel],
+  scene: [bootGame, Intro, Options, LoadSavedGame, playLvl1, DashBoard, gameOver, endGame, Huhmiel],
 };
 
 const game = new Phaser.Game(config);

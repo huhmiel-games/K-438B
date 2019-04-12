@@ -29,9 +29,11 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
       // gauche ou droite et fait demi tour quand bloqué
       if (this.body.blocked.left || this.body.touching.left) {
         this.state.directionX = 100;
+        this.playSound();
       }
       if (this.body.blocked.right || this.body.touching.right) {
         this.state.directionX = -100;
+        this.playSound();
       }
       if (this.state.directionY > 0) {
         this.state.directionY += 2;
@@ -40,14 +42,22 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
       }
       if (this.body.blocked.down || this.state.directionY > 120) {
         this.state.directionY = -1;
+        // this.playSound();
       } else if (this.body.blocked.up || this.state.directionY < -120) {
         this.state.directionY = 2;
+        // this.playSound();
       }
       if (this.state.directionX > 0) {
         this.flipX = true;
       } else {
         this.flipX = false;
       }
+    }
+  }
+
+  playSound() {
+    if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) <= 150) {
+      this.scene.sound.play('guepe', { volume: 0.2 });
     }
   }
 
