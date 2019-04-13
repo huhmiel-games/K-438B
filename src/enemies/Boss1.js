@@ -105,7 +105,7 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
       if (this.state.life < 500) {
         animationName = 'boss1attack';
         this.jump();
-        this.playRoar('cri1');
+        //this.playRoar('cri1');
       }
       // flip et anim play
       if (this.body.velocity.x > 0) {
@@ -203,7 +203,6 @@ export default class Boss1 extends Phaser.GameObjects.Sprite {
 
   playRoar(cri) {
     if (!this.roar) {
-      console.log(cri)
       this.roar = true;
       this.scene.sound.play(cri);
       this.scene.time.addEvent({

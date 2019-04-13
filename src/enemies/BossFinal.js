@@ -4,7 +4,7 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
 
     this.scene = scene;
     this.state = {
-      life: 100,
+      life: 10000,
       damage: 100,
       directionX: -550,
       directionY: 0,
@@ -36,8 +36,10 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
     super.preUpdate(time, delta);
     let animationName;
     if (this.isDead) {
-      console.log('boss is dead')
       this.body.setVelocityY(500);
+    }
+    if (this.state.life < 10000 && !this.battleStarted) {
+      this.scene.bossFinalBattleStart();
     }
 
     if (this.active && this.scene.bossFinalstarted && !this.isDead) {
@@ -63,11 +65,9 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
         } else {
           this.state.directionY = 0;
         }
-        //animationName = 'bossFinalFly';
       }
       if (this.isAttacking) {
         if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) >= 200 && !this.isFireAttacking) {
-          console.log('isAttacking');
           const dx = this.scene.player.x - this.x;
           const dy = this.scene.player.y - this.y;
           const angle = Math.atan2(dy, dx);
@@ -97,7 +97,6 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
   }
 
   startBattle() {
-    console.log('battleStarted');
     this.battleStarted = true;
     this.attack();
   }
@@ -136,7 +135,6 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
     this.fireFlame(time);
     if (!this.isFireAttacking && this.isAttacking && Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) < 200) {
       this.isFireAttacking = true;
-      // flip control
       if (this.x < this.scene.player.x) {
         this.flipX = true;
       } else {
@@ -145,14 +143,13 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
       this.state.directionX = 0;
       this.state.directionY = -300;
       this.playRoar('cri2');
-      
+
       this.scene.time.addEvent({
         delay: 300,
         callback: () => {
           if (this.active) {
             this.isFireAttacking = false;
             this.state.directionY = 300;
-            console.log('launch fire ball');
           }
         },
       });
@@ -175,9 +172,8 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
         flame.setDepth(99);
         const rad = Phaser.Math.Angle.Between(this.x, this.y, this.scene.player.x, this.scene.player.y);
         flame.rotation = rad + Math.PI / 2;
-        // flame sound
+        // flame sound to add
         // this.scene.sound.play('flame', { volume: 0.08 });
-        //    flame ORIENTATION    ////
         this.scene.physics.moveTo(flame, this.scene.player.x, this.scene.player.y, 100, 0);
       }
     }
@@ -203,7 +199,6 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
 
   playRoar(cri) {
     if (!this.roar) {
-      console.log(cri)
       this.roar = true;
       this.scene.sound.play(cri);
       this.scene.time.addEvent({
@@ -218,10 +213,12 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
   playBossMusic() {
     if (!this.musicOn && this.active) {
       this.musicOn = true;
-      if (this.scene.ambient1.isPlaying) {
-        this.scene.ambient1.stop();
+      if (this.scene.ambient2.isPlaying) {
+        this.scene.ambient2.stop();
       }
-      this.scene.bossMusic.play({ volume: 0.5 });
+      if (!this.scene.bossMusic.isPlaying) {
+        this.scene.bossMusic.play();
+      }
     }
     if (this.scene.bossMusic.seek > 97) {
       this.musicOn = false;

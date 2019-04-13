@@ -449,25 +449,25 @@ export default class Player extends Phaser.GameObjects.Sprite {
           // swell.body.setSize(18, 4);
           // swell.setAngle(0);
           swell.flipX = false;
-          swell.body.velocity.x = -400;
+          swell.body.velocity.x = -450;
         }
         if (this.state.bulletOrientationX === 'right') {
           // swell.body.setSize(18, 4);
           // swell.setAngle(0);
           swell.flipX = true;
-          swell.body.velocity.x = 400;
+          swell.body.velocity.x = 450;
         }
         if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
           // swell.body.setSize(4, 18);
           // swell.setAngle(90);
           // swell.flipX = false;
-          swell.body.velocity.y = -400;
+          swell.body.velocity.y = -450;
           swell.body.velocity.x = 0;
         } else if (this.state.bulletOrientationY === 'normal') {
           swell.body.velocity.y = 0;
         }
         this.scene.time.addEvent({
-          delay: 1000,
+          delay: 2000,
           callback: () => {
             swell.destroy();
           },
@@ -497,25 +497,25 @@ export default class Player extends Phaser.GameObjects.Sprite {
           missile.body.setSize(18, 4);
           missile.setAngle(0);
           missile.flipX = false;
-          missile.body.velocity.x = -400;
+          missile.body.velocity.x = -450;
         }
         if (this.state.bulletOrientationX === 'right') {
           missile.body.setSize(18, 4);
           missile.setAngle(0);
           missile.flipX = true;
-          missile.body.velocity.x = 400;
+          missile.body.velocity.x = 450;
         }
         if (this.state.bulletOrientationY === 'up' && this.body.blocked.down && !(this.keys.left.isDown || this.keys.right.isDown)) {
           missile.body.setSize(4, 18);
           missile.setAngle(90);
           missile.flipX = false;
-          missile.body.velocity.y = -400;
+          missile.body.velocity.y = -450;
           missile.body.velocity.x = 0;
         } else if (this.state.bulletOrientationY === 'normal') {
           missile.body.velocity.y = 0;
         }
         this.scene.time.addEvent({
-          delay: 1000,
+          delay: 2000,
           callback: () => {
             missile.destroy();
           },

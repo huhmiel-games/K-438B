@@ -58,7 +58,6 @@ export default class DashBoard extends Scene {
       if (this.mainScene.player.inventory.swell) {
         this.swell.alpha = 1;
       }
-      // this.setDepth(3000);
     });
 
     this.mainScene.events.on('setHealth', (elm) => {

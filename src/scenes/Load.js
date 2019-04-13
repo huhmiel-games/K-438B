@@ -21,7 +21,7 @@ export default class LoadSavedGame extends Scene {
   }
 
   create() {
-    this.position = [128, 256];
+    this.position = [128, 256, 384];
     this.lastPosition = 0;
 
     this.background = this.add.image(0, 0, 'background');
@@ -32,6 +32,7 @@ export default class LoadSavedGame extends Scene {
 
     if (localStorage.getItem('k438b')) {
       this.loadGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' Load Game ', 48, 1);
+      this.deleteSavedGame = this.add.bitmapText(U.WIDTH / 4, this.position[2], 'atomic', ' Delete Game ', 48, 1);
     } else {
       this.newGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' New Game ', 48, 1);
     }
@@ -63,16 +64,13 @@ export default class LoadSavedGame extends Scene {
 
     // fading the scene from black
     this.cameras.main.fadeIn(500);
-
-    // this.scene.stop('bootGame');
-  // this.scene.start('playLvl1'); //start lvl while developping
   }
 
   choose() {
-    if (this.lastPosition === 1) {
+    if (this.lastPosition === 2) {
       this.lastPosition = 0;
     } else {
-      this.lastPosition = 1;
+      this.lastPosition += 1;
     }
     this.head.y = this.position[this.lastPosition];
   }
@@ -87,6 +85,13 @@ export default class LoadSavedGame extends Scene {
     }
     if (this.lastPosition === 1) {
       this.scene.start('Options');
+    }
+    if (this.lastPosition === 2) {
+      localStorage.removeItem('k438b');
+      localStorage.removeItem('d');
+      localStorage.removeItem('e');
+      localStorage.removeItem('time');
+      window.location.reload(false);
     }
   }
 }

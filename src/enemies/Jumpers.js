@@ -19,7 +19,8 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     this.scene.add.existing(this);
     this.body.allowGravity = true;
     this.body.setGravityY(300);
-    this.body.setSize(20, 20);
+    this.body.setSize(31, 23);
+    this.body.setOffset(8, 8);
     this.flag = false;
     this.getFired = false;
   }
@@ -58,6 +59,9 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
         delay: this.delay * 10,
         callback: () => {
           if (this.active) {
+            if (Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, this.x, this.y) <= 250) {
+              this.scene.sound.play('jumpers', { volume: 0.6 });
+            }
             this.body.setVelocityX(this.side);
             this.body.setVelocityY(-this.delay);
             this.flag = false;

@@ -105,6 +105,7 @@ import playerDead from '../assets/sounds/playerdead.ogg';
 import shake from '../assets/sounds/shake3.ogg';
 import shake2 from '../assets/sounds/shake4.ogg';
 import guepeFX from '../assets/sounds/guepe.ogg';
+import grog from '../assets/sounds/grog.ogg';
 
 // import boss1 sounds fx
 import cri1 from '../assets/sounds/boss1/cri-001.ogg';
@@ -117,6 +118,7 @@ import LetsPlayWithTheDemon from '../assets/music/LetsPlayWithTheDemon.ogg';
 import ambient1 from '../assets/music/ambient1.ogg';
 import ambient2 from '../assets/music/ambient2.ogg';
 import waterAmbient from '../assets/music/waterAmbiance.ogg';
+import ambient3 from '../assets/music/grotte.ogg';
 
 export default class playLvl1 extends Scene {
   constructor() {
@@ -219,6 +221,7 @@ export default class playLvl1 extends Scene {
     this.load.audio('shake', shake);
     this.load.audio('shake2', shake2);
     this.load.audio('guepe', guepeFX);
+    this.load.audio('jumpers', grog);
 
     // sounds boss1
     this.load.audio('cri1', cri1);
@@ -229,6 +232,7 @@ export default class playLvl1 extends Scene {
     // music
     this.load.audio('ambient1', ambient1);
     this.load.audio('ambient2', ambient2);
+    this.load.audio('ambient3', ambient3);
     this.load.audio('waterAmbient', waterAmbient);
   }
 
@@ -244,10 +248,10 @@ export default class playLvl1 extends Scene {
 
     this.playerFlashTween = null;
     // test
-    // this.test = this.add.image(0, 0, 'test');
-    // this.test.setOrigin(0, 0);
-    // this.test.displayWidth = 2048;
-    // this.test.displayHeight = 2048;
+    this.test = this.add.image(0, 0, 'test');
+    this.test.setOrigin(0, 0);
+    this.test.displayWidth = 2048;
+    this.test.displayHeight = 3072;
 
     // this.mapSol = this.add.image(0, 0, 'mapSol');
     // this.mapSol.setOrigin(0, 0);
@@ -261,9 +265,9 @@ export default class playLvl1 extends Scene {
     // ====================================================================
     // LAYERS
 
-    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
-    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
-    this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
+    // this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
+    // this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
+    // this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
     this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0);
     this.statue.setDepth(98);
     this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
@@ -275,7 +279,7 @@ export default class playLvl1 extends Scene {
 
     // ====================================================================
     // player in water effect
-    this.waterAmbientMusic = this.sound.add('waterAmbient');
+    this.waterAmbientMusic = this.sound.add('waterAmbient', { volume: 0.6 });
     this.solLayer.setTileLocationCallback(2, 34, 26, 18, (e) => {
       if (e === this.player) {
         this.player.onWater = true;
@@ -300,6 +304,7 @@ export default class playLvl1 extends Scene {
     // AMBIENT MUSIC
     this.ambient1 = this.sound.add('ambient1', { volume: 0.2 });
     this.ambient2 = this.sound.add('ambient2', { volume: 0.1 });
+    this.ambient3 = this.sound.add('ambient3', { volume: 0.1 });
 
     // ====================================================================
     // accessible keys during pause
@@ -672,7 +677,6 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.enemyGroup = [];
-    console.log(this.map.objects);
     // the crabs
     this.map.objects[1].objects.forEach((element) => {
       this[element.name] = new Crabes(this, element.x, element.y - 16, {
@@ -702,7 +706,6 @@ export default class playLvl1 extends Scene {
         life: element.properties.life,
         damage: element.properties.damage,
       });
-      this[element.name].body.setSize(31, 23);
       this[element.name].setScale(2, 2);
       this.enemyGroup.push(this[element.name]);
     });
@@ -779,7 +782,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.boss1started = false;
-    this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.4 });
+    this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.2 });
     if (!this.player.inventory.boss1) {
       this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
         if (!this.boss1started && e === this.player && !this.player.inventory.boss1) {
@@ -895,6 +898,7 @@ export default class playLvl1 extends Scene {
     // LAVA RISE
     this.lavaRiseFlag = false;
     this.onSismic = false;
+    this.isTheEnd = false;
 
     // ====================================================================
     // WATER FALL
@@ -1058,20 +1062,12 @@ export default class playLvl1 extends Scene {
     }
     if (this.modalText) {
       this.modalText.x = this.player.x;
-      this.modalText.y = this.player.y - 120;
+      this.modalText.y = this.player.y - 100;
     }
-    // enemies part
-    // this.enemyGroup.forEach((enemy) => {
-    //   if (enemy.active && enemy.body.velocity.x > 0) {
-    //     enemy.flipX = true;
-    //   } else {
-    //     enemy.flipX = false;
-    //   }
-    // });
   }
 
   playMusic() {
-    if (this.player.y <= 1268) {
+    if (this.player.y <= 1024 && !this.isTheEnd) {
       if (this.ambient2.isPlaying) {
         this.ambient2.stop();
       }
@@ -1079,12 +1075,21 @@ export default class playLvl1 extends Scene {
         this.ambient1.play();
       }
     }
-    if (this.player.y <= 2164 && this.player.y > 1268) {
-      if (this.ambient1.isPlaying) {
+    if (this.player.y <= 2080 && this.player.y > 1024) {
+      if (this.ambient1.isPlaying || this.ambient3.isPlaying) {
         this.ambient1.stop();
+        this.ambient3.stop();
       }
       if (!this.ambient2.isPlaying) {
         this.ambient2.play();
+      }
+    }
+    if (this.player.y <= 3056 && this.player.y > 2080) {
+      if (this.ambient2.isPlaying) {
+        this.ambient2.stop();
+      }
+      if (!this.ambient3.isPlaying && !this.bossMusic.isPlaying) {
+        this.ambient3.play();
       }
     }
   }
@@ -1093,9 +1098,9 @@ export default class playLvl1 extends Scene {
     if (!this.onSismic) {
       this.onSismic = true;
       const rdm = Phaser.Math.Between(2000, 5000);
-      this.shakeCamera(2000);
+      this.shakeCamera(1000);
       this.sound.play('shake', { volume: 0.5 });
-      this.sound.play('shake2', { volume: 0.5 });
+      // this.sound.play('shake2', { volume: 0.5 });
       this.time.addEvent({
         delay: rdm,
         callback: () => {
@@ -1131,28 +1136,34 @@ export default class playLvl1 extends Scene {
   }
 
   endMission() {
-    this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel');
-    this.round.setOrigin(0.5, 0.5);
-    this.round.setDepth(1000);
-    this.round.displayWidth = 4096;
-    this.round.displayHeight = 4096;
-    this.round.alpha = 0;
-    this.countTime();
-    this.tween = this.tweens.add({
-      targets: this.round,
-      ease: 'Sine.easeInOut',
-      duration: 500,
-      delay: 0,
-      repeat: 0,
-      yoyo: false,
-      alpha: {
-        getStart: () => 0,
-        getEnd: () => 1,
-      },
-      onComplete: () => {
-        this.scene.start('endGame'); // original set to 'bootGame'
-      },
-    });
+    if (!this.isTheEnd) {
+      this.isTheEnd = true;
+      this.round = this.add.sprite(this.player.x, this.player.y, 'whitePixel');
+      this.round.setOrigin(0.5, 0.5);
+      this.round.setDepth(1000);
+      this.round.displayWidth = 4096;
+      this.round.displayHeight = 4096;
+      this.round.alpha = 0;
+      this.countTime();
+      this.ambient1.stop();
+      this.tween = this.tweens.add({
+        targets: this.round,
+        ease: 'Sine.easeInOut',
+        duration: 1500,
+        delay: 0,
+        repeat: 0,
+        yoyo: false,
+        alpha: {
+          getStart: () => 0,
+          getEnd: () => 1,
+        },
+        onComplete: () => {
+          this.lavaRise = null;
+          this.ambient1.stop();
+          this.scene.start('endGame'); // original set to 'bootGame'
+        },
+      });
+    }
   }
 
   stopLavaRise() {
@@ -1227,7 +1238,6 @@ export default class playLvl1 extends Scene {
   // ====================================================================
   pauseGame() {
     if (!this.player.state.pause) {
-      console.log(this.player.x, this.player.y)
       this.countTime();
       this.player.state.pause = true;
       this.physics.pause();
@@ -1394,7 +1404,13 @@ export default class playLvl1 extends Scene {
     d += 1;
     localStorage.setItem('d', d);
     this.bossMusic.stop();
+    this.ambient1.stop();
+    this.ambient2.stop();
+    this.ambient3.stop();
     this.countTime();
+    if (this.lavaRise) {
+      this.lavaRise = null;
+    }
     this.scene.start('gameOver');
   }
 
@@ -1448,8 +1464,6 @@ export default class playLvl1 extends Scene {
     }
     if (el.state.life < 0) {
       el.clearTint();
-      // give life to player
-
       // kill the enemy
       if (el === this.rhino1 || el === this.rhino2 || el === this.rhino3) {
         this.giveLife = this.physics.add.staticSprite(el.x, el.y, 'powerUp');
@@ -1458,6 +1472,7 @@ export default class playLvl1 extends Scene {
         this.giveLife.body.setSize(23, 21);
         this.giveLife.anims.play('powerUp');
         this.giveLifeGroup.push(this.giveLife);
+        this.countDeadEnemies();
         this.player.state.rhinoCount += 1;
         if (this.player.state.rhinoCount === 3) {
           this.player.inventory.rhino = true;
@@ -1509,6 +1524,7 @@ export default class playLvl1 extends Scene {
             this.bossExplode(this.boss1.x + 50, Phaser.Math.Between(this.boss1.y - 50, this.boss1.y + 50));
           },
         });
+        this.countDeadEnemies();
         this.boss1.anims.pause(this.boss1.anims.currentFrame);
         this.boss1.body.setEnable(false);
         this.boss1.setDepth(0);
@@ -1595,6 +1611,7 @@ export default class playLvl1 extends Scene {
                   getEnd: () => 0,
                 },
                 onComplete: () => {
+                  this.countDeadEnemies();
                   this.giveLife = this.physics.add.staticSprite(this.bossFinal.x, this.bossFinal.y, 'powerUp');
                   this.giveLife.setDepth(105);
                   this.giveLife.health = el.state.giveLife;
@@ -1608,10 +1625,22 @@ export default class playLvl1 extends Scene {
                   };
                   const bossFinalTiles = this.solLayer.getTilesWithinWorldXY(this.bossFinal.x, this.bossFinal.y + 48, 48, 16, filteringOptions);
                   bossFinalTiles.forEach((e) => {
-                    if (e.properties.destructible) {
+                    if (e.properties.boss) {
                       this.solLayer.removeTileAt(e.x, e.y, true, true);
                     }
                   });
+                  this.enemyExplode(117 * 16, 186 * 16);
+                  this.solLayer.removeTileAt(117, 186, true, true);
+                  this.enemyExplode(117 * 16, 187 * 16);
+                  this.solLayer.removeTileAt(117, 187, true, true);
+                  this.enemyExplode(117 * 16, 188 * 16);
+                  this.solLayer.removeTileAt(117, 188, true, true);
+                  this.enemyExplode(118 * 16, 186 * 16);
+                  this.solLayer.removeTileAt(118, 186, true, true);
+                  this.enemyExplode(118 * 16, 187 * 16);
+                  this.solLayer.removeTileAt(118, 187, true, true);
+                  this.enemyExplode(118 * 16, 188 * 16);
+                  this.solLayer.removeTileAt(118, 188, true, true);
                   this.startLavaRise();
                   this.player.inventory.bossFinal = true;
                   this.bossFinal.destroy();
@@ -1633,12 +1662,16 @@ export default class playLvl1 extends Scene {
     }
   }
 
-  enemyDestroy(e) {
-    e.destroy();
+  countDeadEnemies() {
     let en = localStorage.getItem('e');
     en = JSON.parse(en);
     en += 1;
     localStorage.setItem('e', en);
+  }
+
+  enemyDestroy(e) {
+    e.destroy();
+    this.countDeadEnemies();
   }
 
   bossExplode(x, y) {
@@ -1751,30 +1784,34 @@ export default class playLvl1 extends Scene {
     this.boss1dead = this.add.image(1200, 3010, 'boss1dead');
     this.solLayer.setTileLocationCallback(62, 188, 1, 6, (e) => {
       if (e === this.player && !this.player.inventory.bossFinal && !this.bossFinalstarted) {
-        this.bossFinal.playBossMusic();
-        this.bossFinal.playRoar('cri1');
-        this.time.addEvent({
-          delay: 700,
-          callback: () => {
-            this.bossFinal.animate('bossFinalAttack');
-            if (this.bossFinal.y < 2810) {
-              this.bossFinal.body.velocity.y = 0;
-            } else if (this.bossFinal.y > 2900) {
-              this.bossFinal.body.velocity.y = -300;
-            } else {
-              this.bossFinal.body.velocity.y = 0;
-            }
-          },
-        });
-        this.time.addEvent({
-          delay: 3000,
-          callback: () => {
-            this.bossFinalstarted = true;
-          },
-        });
+        this.bossFinalBattleStart();
       }
     }, this);
     this.solLayer.setTileLocationCallback(70, 127, 8, 1, null);
     this.solLayer.setTileLocationCallback(1, 188, 116, 1, null);
+  }
+
+  bossFinalBattleStart() {
+    this.bossFinal.playBossMusic();
+    this.bossFinal.playRoar('cri1');
+    this.time.addEvent({
+      delay: 700,
+      callback: () => {
+        this.bossFinal.animate('bossFinalAttack');
+        if (this.bossFinal.y < 2810) {
+          this.bossFinal.body.velocity.y = 0;
+        } else if (this.bossFinal.y > 2900) {
+          this.bossFinal.body.velocity.y = -300;
+        } else {
+          this.bossFinal.body.velocity.y = 0;
+        }
+      },
+    });
+    this.time.addEvent({
+      delay: 3000,
+      callback: () => {
+        this.bossFinalstarted = true;
+      },
+    });
   }
 }

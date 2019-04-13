@@ -6,7 +6,7 @@ import background from '../assets/menuBackgound.png';
 import bip2 from '../assets/sounds/piou.ogg';
 import bip1 from '../assets/sounds/walk.ogg';
 import bip3 from '../assets/sounds/noname.ogg';
-import melP from '../assets/music/LesRestesDeNiourk_melP.ogg'
+import melP from '../assets/music/LesRestesDeNiourk_melP.ogg';
 
 export default class EndGame extends Scene {
   constructor() {
@@ -23,16 +23,15 @@ export default class EndGame extends Scene {
   }
 
   create() {
+    this.mainScene = this.scene.get('playLvl1');
     let en = localStorage.getItem('e');
     en = JSON.parse(en);
-
     let d = localStorage.getItem('d');
     d = JSON.parse(d);
-
-    let invent = localStorage.getItem('k438b');
-    invent = JSON.parse(invent);
-    const arr = invent.powerUp.filter(e => e === 1);
-    const percent = arr.length * 100 / 22;
+    // let invent = localStorage.getItem('k438b');
+    // invent = JSON.parse(invent);
+    const arr = this.mainScene.player.inventory.powerUp.filter(e => e === 1);
+    const percent = Math.floor(arr.length * 100 / 22);
 
     let t = localStorage.getItem('time');
     t = JSON.parse(t);
@@ -44,30 +43,23 @@ export default class EndGame extends Scene {
     this.background.displayWidth = U.WIDTH;
     this.background.displayHeight = U.HEIGHT;
 
-    this.text = `
-    New transmision-
-    As your transmitted data seems promising,-
-    we sended a space ship colonise K438b.-
-    Our colons will build a landing station-
-    for future missions.-
-    You can now take holidays... we'll call you soon...-
-    to be continued`;
-    this.count = 0;
-    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
-    this.chief.setOrigin(0.5, 0.5);
+    this.trans = "New transmision-As your transmitted data seems promising,-we sended a space ship colonise K438b.-Our colons will build a landing station-for future missions.-You can now take holidays... we'll call you soon...-to be continued";
+    this.cnt = 0;
+    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
+    this.transDisplay.setOrigin(0.5, 0.5);
 
     this.time.addEvent({
       delay: 100,
-      repeat: this.text.length - 1,
+      repeat: this.trans.length - 1,
       callback: () => {
-        if (this.text[this.count] === '-') {
-          this.chief.text += '\n';
+        if (this.trans[this.cnt] === '-') {
+          this.transDisplay.text += '\n';
           this.sound.play('bip3', { volume: 0.5 });
-          this.count += 1;
+          this.cnt += 1;
         } else {
-          this.chief.text += this.text[this.count];
+          this.transDisplay.text += this.trans[this.cnt];
           this.sound.play('bip1', { volume: 1 });
-          this.count += 1;
+          this.cnt += 1;
         }
       },
     });
@@ -75,8 +67,8 @@ export default class EndGame extends Scene {
     this.time.addEvent({
       delay: 25000,
       callback: () => {
-        this.tween = this.tweens.add({
-          targets: [this.chief],
+        this.twe = this.tweens.add({
+          targets: [this.transDisplay],
           ease: 'Sine.easeInOut',
           duration: 2000,
           delay: 1000,
@@ -87,7 +79,7 @@ export default class EndGame extends Scene {
             getEnd: () => 0,
           },
           onComplete: () => {
-            this.sound.play('melP');
+            this.sound.play('melP', { volume: 0.5 });
             this.congrat = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 4, 'atomic', 'Congratulation !!\nMission complete', 30, 1);
             this.congrat.setOrigin(0.5, 0.5);
             this.congrat.setAlpha(0);
@@ -104,7 +96,7 @@ export default class EndGame extends Scene {
             this.timeGame = this.add.bitmapText(40, U.HEIGHT / 4 + 150, 'atomic', `Total time: ${totalTime}`, 20, 0);
             this.timeGame.setAlpha(0);
 
-            this.tween = this.tweens.add({
+            this.twee = this.tweens.add({
               targets: [this.congrat, this.enemiesKilled, this.death, this.items, this.timeGame],
               ease: 'Sine.easeInOut',
               duration: 2000,
@@ -124,7 +116,7 @@ export default class EndGame extends Scene {
     this.time.addEvent({
       delay: 38000,
       callback: () => {
-        this.tween = this.tweens.add({
+        this.tweene = this.tweens.add({
           targets: [this.congrat, this.enemiesKilled, this.death, this.items, this.timeGame],
           ease: 'Sine.easeInOut',
           duration: 2000,
@@ -141,25 +133,26 @@ export default class EndGame extends Scene {
         });
       },
     });
+    this.cameras.main.fadeIn(5000);
   }
 
   credits() {
-    this.text = 'Credits---Designer:-Philippe Pereira---Graphics:-Luis Zuno---Boss Graphics:-Mobile Game Graphics---Programming:-Philippe Pereira---Game Engine:-Phaser 3---Sound Programming:-Philippe Pereira---Music:-sonniss-Mel P---Boss Music:-Patrick de Arteaga-- -- -- -- -- -- -- -- --Thanks for playing-- -- -- -- -- -- -- -- -- -- --THE END-- -- -- -- -- -- -- -- --';
-    this.count = 0;
-    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
-    this.chief.setOrigin(0.5, 0.8);
-    this.chief.alpha = 1;
+    this.trans = 'Credits---Designer:-Philippe Pereira---Graphics:-Luis Zuno---Boss Graphics:-Mobile Game Graphics---Programming:-Philippe Pereira---Game Engine:-Phaser 3---Sound Programming:-Philippe Pereira---Music:-sonniss-Mel P---Boss Music:-Patrick de Arteaga-- -- -- -- -- -- -- -- --Thanks for playing-- -- -- -- -- -- -- -- -- -- --THE END-- -- -- -- -- -- -- -- --';
+    this.cnt = 0;
+    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
+    this.transDisplay.setOrigin(0.5, 0.8);
+    this.transDisplay.alpha = 1;
 
     this.time.addEvent({
       delay: 80,
-      repeat: this.text.length - 1,
+      repeat: this.trans.length - 1,
       callback: () => {
-        if (this.text[this.count] === '-') {
-          this.chief.text += '\n';
-          this.count += 1;
+        if (this.trans[this.cnt] === '-') {
+          this.transDisplay.text += '\n';
+          this.cnt += 1;
         } else {
-          this.chief.text += this.text[this.count];
-          this.count += 1;
+          this.transDisplay.text += this.trans[this.cnt];
+          this.cnt += 1;
         }
       },
     });
