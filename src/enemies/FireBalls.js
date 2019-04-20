@@ -20,22 +20,36 @@ export default class FireBalls extends Phaser.GameObjects.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    let animationName;
-    if (this.active) {
-      if (this.body.blocked.down) {
-        this.state.directionX = 0;
-        this.fireJump();
+    if (this.isInside()) {
+      if (this.active) {
+        if (this.body.blocked.down) {
+          this.state.directionX = 0;
+          this.fireJump();
+        }
+      }
+      if (this.body.velocity.y > 0) {
+        this.flipY = true;
+      } else {
+        this.flipY = false;
       }
     }
-    if (this.body.velocity.y > 0) {
-      this.flipY = true;
-    } else {
-      this.flipY = false;
+    // if (this.lastAnim !== animationName) {
+    //   this.lastAnim = animationName;
+    //   this.animate(animationName, true);
+    // }
+  }
+
+  isInside() {
+    return true;
+    const { x, y } = this.scene.cameras.main.midPoint;
+    const x1 = x - 400;
+    const x2 = x + 400;
+    const y1 = y - 256;
+    const y2 = y + 256;
+    if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
+      return true;
     }
-    if (this.lastAnim !== animationName) {
-      this.lastAnim = animationName;
-      this.animate(animationName, true);
-    }
+    return false;
   }
 
   fireJump() {

@@ -1,5 +1,7 @@
 body {
   background-color: #111111;
+  margin: 0;
+  padding: 0;
 }
 
 div {
@@ -8,6 +10,10 @@ div {
 }
 
 button {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 10;
   border:solid 4px #3B1157;
   border-radius: 5px;
   background-color: #3B1157;
@@ -21,10 +27,22 @@ button:hover {
 }
 
 canvas{
-  margin-top: 10px;
-  margin-right: auto;
-  margin-left: auto;
-  display: block;
+  margin: 0 !important;
+  /* display:block; */
+  /* width: 800px;
+  height: 512px; */
+  /* margin: 0; */
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated; */
+  /* margin-top: 10px; */
+  /* margin-right: auto;
+  margin-left: auto; */
+  /* display: block; */
 }
 
 img{

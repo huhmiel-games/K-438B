@@ -1,69 +1,69 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
-import background from '../assets/menuBackgound.png';
+import background from '../assets/menuBackgound3.png';
 import atomicsc from '../assets/atomicsc.png';
 import atomicscXML from '../assets/atomicsc.xml';
 import bip2 from '../assets/sounds/piou.ogg';
 import ambient2 from '../assets/music/ambient2.ogg';
 
-let tween;
-let image;
-let fromColors;
-let toColors;
+// let tween;
+// let image;
+// let fromColors;
+// let toColors;
 
-function getRandomVertexColors() {
-  // Create a random color for each vertex.
-  // RandomRGB returns a Phaser.Display.Color object with random RGB values.
-  const { RandomRGB } = Phaser.Display.Color;
-  return {
-    topLeft: RandomRGB(),
-    topRight: RandomRGB(),
-    bottomLeft: RandomRGB(),
-    bottomRight: RandomRGB(),
-  };
-}
+// function getRandomVertexColors() {
+//   // Create a random color for each vertex.
+//   // RandomRGB returns a Phaser.Display.Color object with random RGB values.
+//   const { RandomRGB } = Phaser.Display.Color;
+//   return {
+//     topLeft: RandomRGB(),
+//     topRight: RandomRGB(),
+//     bottomLeft: RandomRGB(),
+//     bottomRight: RandomRGB(),
+//   };
+// }
 
-function getTintColor(vertex) {
-  // Interpolate between the fromColor and toColor of the current vertex,
-  // using the current tween value.
-  const tint = Phaser.Display.Color.Interpolate.ColorWithColor(
-    fromColors[vertex],
-    toColors[vertex],
-    100,
-    tween.getValue(),
-  );
-  // Interpolate.ColorWithColor returns a Javascript object with
-  // interpolated RGB values. We convert it to a Phaser.Display.Color object
-  // in order to get the integer value of the tint color.
-  return Phaser.Display.Color.ObjectToColor(tint).color;
-}
+// function getTintColor(vertex) {
+//   // Interpolate between the fromColor and toColor of the current vertex,
+//   // using the current tween value.
+//   const tint = Phaser.Display.Color.Interpolate.ColorWithColor(
+//     fromColors[vertex],
+//     toColors[vertex],
+//     100,
+//     tween.getValue(),
+//   );
+//   // Interpolate.ColorWithColor returns a Javascript object with
+//   // interpolated RGB values. We convert it to a Phaser.Display.Color object
+//   // in order to get the integer value of the tint color.
+//   return Phaser.Display.Color.ObjectToColor(tint).color;
+// }
 
-function tintTween(fromColors, toColors, callback) {
-  tween = this.tweens.addCounter({
-    from: 0,
-    to: 100,
-    duration: 5000,
-    onUpdate: () => {
-      image.setTint(
-        getTintColor('topLeft'),
-        getTintColor('topRight'),
-        getTintColor('bottomLeft'),
-        getTintColor('bottomRight'),
-      );
-    },
-    onComplete: callback,
-  });
-}
+// function tintTween(fromColors, toColors, callback) {
+//   tween = this.tweens.addCounter({
+//     from: 0,
+//     to: 100,
+//     duration: 5000,
+//     onUpdate: () => {
+//       image.setTint(
+//         getTintColor('topLeft'),
+//         getTintColor('topRight'),
+//         getTintColor('bottomLeft'),
+//         getTintColor('bottomRight'),
+//       );
+//     },
+//     onComplete: callback,
+//   });
+// }
 
-function initTweens() {
-  fromColors = toColors || fromColors;
-  toColors = getRandomVertexColors();
-  tintTween(
-    fromColors,
-    toColors,
-    initTweens,
-  );
-}
+// function initTweens() {
+//   fromColors = toColors || fromColors;
+//   toColors = getRandomVertexColors();
+//   tintTween(
+//     fromColors,
+//     toColors,
+//     initTweens,
+//   );
+// }
 
 export default class bootGame extends Scene {
   constructor() {
@@ -71,15 +71,12 @@ export default class bootGame extends Scene {
   }
 
   init() {
-    const { canvas } = this.sys.game;
-    const { fullscreen } = this.sys.game.device;
-    if (!fullscreen.available) {
-      return;
-    }
+    // --> FULLSCREEN MODE
     const startBtn = document.getElementById('fullscreen');
     startBtn.addEventListener('click', () => {
-      if (document.fullscreenElement) { return; }
-      canvas[fullscreen.request]();
+      if (!this.scale.isFullscreen) {
+        this.scale.startFullscreen();
+      }
     });
   }
 
@@ -91,22 +88,29 @@ export default class bootGame extends Scene {
   }
 
   create() {
-    image = this.add.image(0, 0, 'background');
-    image.setOrigin(0, 0);
-    image.displayWidth = U.WIDTH;
-    image.displayHeight = U.HEIGHT;
-    fromColors = getRandomVertexColors();
-    image.setTint(
-      fromColors.topLeft.color,
-      fromColors.topRight.color,
-      fromColors.bottomLeft.color,
-      fromColors.bottomRight.color,
-    );
+    // this.input.keyboard.on('keydown_SPACE', () => {
+    //   if (!this.scale.isFullscreen) {
+    //     this.scale.startFullscreen();
+    //   }
+    // }, this);
+    this.bgimage = this.add.image(0, 0, 'background');
+    this.bgimage.setOrigin(0, 0);
+    this.bgimage.displayWidth = U.WIDTH;
+    this.bgimage.displayHeight = U.HEIGHT;
+
+
+    // fromColors = getRandomVertexColors();
+    // image.setTint(
+    //   fromColors.topLeft.color,
+    //   fromColors.topRight.color,
+    //   fromColors.bottomLeft.color,
+    //   fromColors.bottomRight.color,
+    // );
 
     // Bind the scope to tintTween so we can use this.tweens inside it.
-    tintTween = tintTween.bind(this);
+    // tintTween = tintTween.bind(this);
 
-    initTweens();
+    // initTweens();
 
     this.ambient2 = this.sound.add('ambient2', { volume: 0.5 });
 
@@ -138,7 +142,7 @@ export default class bootGame extends Scene {
     this.input.keyboard.once('keydown', () => {
       this.sound.play('bip2', { volume: 0.1 });
       this.ambient2.stop();
-      this.scene.start('intro'); //loadSavedGame
+      this.scene.start('intro');
     });
 
     this.tween = this.tweens.add({

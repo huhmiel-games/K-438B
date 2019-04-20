@@ -55,15 +55,15 @@ export default class Options extends Scene {
     this.keySelect = this.add.bitmapText(U.WIDTH / 4 - 120, this.position[7], 'atomic', ' Select Weapon ', 15, 1);
     this.keyPause = this.add.bitmapText(U.WIDTH / 4 - 120, this.position[8], 'atomic', ' Pause ', 15, 1);
 
-    this.selectedKey0 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[0], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey1 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[1], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey2 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[2], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey3 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[3], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey4 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[4], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey5 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[5], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey6 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[6], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey7 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[7], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
-    this.selectedKey8 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[8], 'atomic', ' Not assigned, press enter and press a key ', 15, 1);
+    this.selectedKey0 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[0], 'atomic', ' LEFT, press enter to change ', 15, 1);
+    this.selectedKey1 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[1], 'atomic', ' RIGHT, press enter to change ', 15, 1);
+    this.selectedKey2 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[2], 'atomic', ' UP, press enter to change ', 15, 1);
+    this.selectedKey3 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[3], 'atomic', ' DOWN, press enter to change ', 15, 1);
+    this.selectedKey4 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[4], 'atomic', ' ENTER, press enter to change ', 15, 1);
+    this.selectedKey5 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[5], 'atomic', ' SPACE, press enter to change ', 15, 1);
+    this.selectedKey6 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[6], 'atomic', ' SHIFT, press enter to change ', 15, 1);
+    this.selectedKey7 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[7], 'atomic', ' S, press enter to change ', 15, 1);
+    this.selectedKey8 = this.add.bitmapText(U.WIDTH / 4 + 90, this.position[8], 'atomic', ' P, press enter to change ', 15, 1);
 
     this.saveOptions = this.add.bitmapText(U.WIDTH / 4 - 120, this.position[9], 'atomic', ' Save Options ', 15, 1);
     this.quitOptions = this.add.bitmapText(U.WIDTH / 4 - 120, this.position[10], 'atomic', ' Quit Options ', 15, 1);
@@ -131,7 +131,8 @@ export default class Options extends Scene {
     const regex6 = /ControlRight/gm;
     this[`selectedKey${pos}`].text = ' Press a key ';
     this.input.keyboard.once('keydown', (e) => {
-      let str = e.code.replace(regex, '');
+      console.log(e)
+      let str = e.key.replace(regex, '');
       str = str.replace(regex2, '');
       str = str.replace(regex3, 'SHIFT');
       str = str.replace(regex4, 'SHIFT');

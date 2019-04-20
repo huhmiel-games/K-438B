@@ -83,34 +83,44 @@ import endGame from './scenes/EndGame';
 
 const config = {
   type: Phaser.AUTO,
-  parent: 'gamecanvas',
+  // parent: 'gamecanvas',
   width: U.WIDTH,
   height: U.HEIGHT,
-  mode: Phaser.DOM.NO_ZOOM, // FIT,
   roundPixels: false, // seems to not work
+  // antialias: false,
   pixelArt: true, // just a test but seems very good
-  input: {
-    keyboard: {
-      target: window,
-    },
-    mouse: {
-      target: null,
-      capture: false,
-    },
-    activePointers: 1,
-    touch: {
-      target: null,
-      capture: false,
-    },
-    smoothFactor: 0,
-    gamepad: true,
+  // mode: Phaser.DOM.NO_ZOOM,
+  scale: {
+    parent: 'gamecanvas',
+    // width: U.WIDTH,
+    // height: U.HEIGHT,
+    // zoom: Phaser.Scale.Zoom.NO_ZOOM,
+    mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+    autoRound: true,
+    autoCenter: Phaser.DOM.CENTER_BOTH,
   },
+  // input: {
+  //   keyboard: {
+  //     target: window,
+  //   },
+  //   mouse: {
+  //     target: null,
+  //     capture: false,
+  //   },
+  //   activePointers: 1,
+  //   touch: {
+  //     target: null,
+  //     capture: false,
+  //   },
+  //   smoothFactor: 0,
+  //   gamepad: false,
+  // },
   physics: {
     default: 'arcade',
     arcade: {
       tileBias: 20,
       gravity: { y: 100 }, // will affect our player sprite
-      debug: true, // change if you need
+      debug: false, // change if you need
       debugShowBody: true,
       debugShowStaticBody: false,
     },

@@ -35,15 +35,15 @@ export default class Player extends Phaser.GameObjects.Sprite {
       canJump: false,
       stopJump: false,
       onJump: false,
-      jumpDelay: 400,
+      jumpDelay: 500,
       onRun: false,
       onWalk: true,
       onMorphingBall: false,
       jumpBoost: false,
       onJumpBoost: false,
-      speed: 250,
-      runSpeed: 350,
-      maxSpeed: 250,
+      speed: 165,
+      runSpeed: 285,
+      maxSpeed: 285,
       selectedWeapon: 'bullet',
       lastFired: 0,
       bulletOrientationX: 'right',
@@ -63,6 +63,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.bombTimer = null;
     this.lavaOverlap = false;
     this.selectWeaponFlag = false;
+    this.chooseDone = false;
     this.setDepth(105);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
@@ -110,13 +111,13 @@ export default class Player extends Phaser.GameObjects.Sprite {
       },
     );
     this.scene.input.keyboard.on('keycombomatch', (keyCombo) => {
-      if (keyCombo.keyCodes[0] === 40 && keyCombo.keyCodes[1] === 40) {
+      if (keyCombo.keyCodes[0] === this.keys.down.keyCode && keyCombo.keyCodes[1] === this.keys.down.keyCode) {
         morph = true;
         if (this.inventory.morphing) {
           this.scene.sound.play('morph', { volume: 0.3 });
         }
       }
-      if (keyCombo.keyCodes[0] === 40 && keyCombo.keyCodes[1] === 32) {
+      if (keyCombo.keyCodes[0] === this.keys.down.keyCode && keyCombo.keyCodes[1] === this.keys.jump.keyCode) {
         jumpB = true;
       }
     });
@@ -166,6 +167,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else {
           animationName = 'walkShoot';
         }
+        this.body.setSize(10, 35, true);
         // marche vers la droite
       } else if (keys.right.isDown && !keys.run.isDown && !this.state.onMorphingBall) {
         this.body.setVelocityX(this.state.speed);
@@ -175,6 +177,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else {
           animationName = 'walkShoot';
         }
+        this.body.setSize(10, 35, true);
         // cours vers la gauche
       } else if (keys.left.isDown && keys.run.isDown && !this.state.onMorphingBall) {
         this.body.setVelocityX(-this.state.speed);
@@ -184,6 +187,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else {
           animationName = 'runShoot';
         }
+        this.body.setSize(10, 35, true);
         // cours vers la droite
       } else if (keys.right.isDown && keys.run.isDown && !this.state.onMorphingBall) {
         this.body.setVelocityX(this.state.speed);
@@ -193,6 +197,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         } else {
           animationName = 'runShoot';
         }
+        this.body.setSize(10, 35, true);
         // saut droit et chute libre
       } else if (!this.body.blocked.down
         && !(keys.left.isDown || keys.right.isDown)
@@ -207,22 +212,36 @@ export default class Player extends Phaser.GameObjects.Sprite {
         && !(keys.left.isDown || keys.right.isDown)
         && !this.state.onMorphingBall) {
         animationName = 'jumpBoost';
+        //this.body.setSize(10, 50, true);
+        //this.body.setSize(10, 35, true);
         // position baissée
-      } else if (keys.down.isDown && !this.state.onMorphingBall) {
+      } else if (keys.down.isDown && !this.state.onMorphingBall && !(keys.left.isDown || keys.right.isDown)) {
         this.body.setVelocityX(0);
         this.state.bulletPositionY = 10;
         animationName = 'duck';
+        this.body.velocity.y = -0.5;
+        this.body.setSize(10, 23, 8, 10);
         // morphing ball
       } else if (this.state.onMorphingBall) {
         animationName = 'morphingBall';
+        this.body.setSize(12, 12, true);
+        this.body.setOffset(14, 20);
         if (!(keys.left.isDown || keys.right.isDown)) {
+          if (this.lastAnim !== 'morphingBall') {
+            animationName = 'morphingBallIdle';
+          }
           this.body.setVelocityX(0);
+          if (this.anims.isPlaying) {
+            this.anims.pause(this.anims.currentFrame);
+          }
         } else if (keys.left.isDown) {
           this.body.setVelocityX(-150);
           this.state.bulletOrientationX = 'left';
+          this.anims.resume(this.anims.currentFrame);
         } else if (keys.right.isDown) {
           this.body.setVelocityX(150);
           this.state.bulletOrientationX = 'right';
+          this.anims.resume(this.anims.currentFrame);
         }
         this.state.bulletPositionY = 10;
         // tire vers le haut
@@ -238,6 +257,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       } else {
         this.body.setVelocityX(0);
         animationName = 'stand';
+        this.body.setSize(10, 35, true);
       }
       // positionne la hauteur du tir en marchant //ptet en courant aussi a verifier
       if (!keys.down.isDown && (keys.left.isDown || keys.right.isDown)) {
@@ -289,16 +309,29 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (this.onWater) {
         this.state.speed = 70;
       } else {
-        this.state.speed = 250;
+        this.state.speed = 165;
       }
-      // fullscreen mode
-      // if (keys.debug.isDown) {
-      //   console.log(this.x, this.y);
-      // }
+      // flip player animation and bullets positions
+      if (this.body.velocity.x < 0) {
+        this.flipX = true;
+        this.state.bulletOrientationX = 'left';
+        this.state.bulletPositionX = 1;
+      } else if (this.body.velocity.x > 0) {
+        this.flipX = false;
+        this.state.bulletOrientationX = 'right';
+        this.state.bulletPositionX = 9;
+      }
+      // pause
       if (keys.pause.isDown) {
         this.scene.pauseGame();
       }
-      this.displaySonar();
+    } else if (this.state.pause) {
+      if (!this.chooseDone && (keys.down.isDown || keys.up.isDown)) {
+        this.scene.choose();
+      }
+      if (!this.chooseDone && keys.fire.isDown) {
+        this.scene.launch();
+      }
     }
   }
 
@@ -326,7 +359,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       && !this.onWater) {
       this.state.speed = this.state.runSpeed;
     } else if (!this.keys.run.isDown && (this.keys.left.isDown || this.keys.right.isDown) && !this.onWater) {
-      this.state.speed = 200;
+      this.state.speed = 165;
     }
   }
 
@@ -355,7 +388,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.lastFired = time + this.inventory.fireRate;
         laser.visible = true;
         // laser.anims.play('bull', true);
-        laser.setDepth(99);
+        if (this.onWater) {
+          laser.setDepth(98);
+        } else {
+          laser.setDepth(102);
+        }
         this.scene.sound.play('laser', { volume: 0.3 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
@@ -391,6 +428,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
   laserKill(e) {
     this.scene.sound.play('explo2', { volume: 0.2 });
     e.setVelocity(0, 0);
+    if (this.onWater) {
+      e.setDepth(98);
+    } else {
+      e.setDepth(102);
+    }
     e.anims.play('enemyExplode', true);
     e.on('animationcomplete', () => { e.destroy(); });
   }
@@ -400,12 +442,16 @@ export default class Player extends Phaser.GameObjects.Sprite {
       const bomb = this.bombs.getFirstDead(true, this.body.x + 6, this.body.y + 10, 'bomb', null, true);
       if (bomb) {
         this.state.lastFired = time + this.inventory.fireRate;
-        bomb.displayWidth = 7;
-        bomb.displayHeight = 7;
+        bomb.displayWidth = 10;
+        bomb.displayHeight = 10;
         bomb.visible = true;
         bomb.setImmovable();
         bomb.anims.play('bomb', true);
-        bomb.setDepth(101);
+        if (this.onWater) {
+          bomb.setDepth(98);
+        } else {
+          bomb.setDepth(106);
+        }
         bomb.body.enabled = false;
         bomb.body.setSize(16, 16);
         //    BOMB EXPLODE TIMER    //
@@ -426,6 +472,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
             });
             bomb.body.enabled = true;
             this.scene.sound.play('impact', { volume: 0.4 });
+            bomb.displayWidth = 16;
+            bomb.displayHeight = 16;
             bomb.anims.play('impactBomb', true).on('animationcomplete', () => bomb.destroy());
           },
         });
@@ -442,7 +490,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         // swell.displayHeight = 12;
         swell.visible = true;
         swell.anims.play('swell', true);
-        swell.setDepth(99);
+        if (this.onWater) {
+          swell.setDepth(98);
+        } else {
+          swell.setDepth(102);
+        }
         this.scene.sound.play('swell', { volume: 0.15 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
@@ -479,6 +531,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
   swellKill(e) {
     this.scene.sound.play('impact', { volume: 0.4 });
     e.setVelocity(0, 0);
+    if (this.onWater) {
+      e.setDepth(98);
+    } else {
+      e.setDepth(102);
+    }
     e.anims.play('impact', true);
     e.on('animationcomplete', () => { e.destroy(); });
   }
@@ -490,7 +547,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.lastFired = time + this.inventory.fireRate;
         missile.visible = true;
         missile.anims.play('missile', true);
-        missile.setDepth(99);
+        if (this.onWater) {
+          missile.setDepth(98);
+        } else {
+          missile.setDepth(102);
+        }
         this.scene.sound.play('missile', { volume: 0.5 });
         //    BULLET ORIENTATION    ////
         if (this.state.bulletOrientationX === 'left') {
@@ -526,6 +587,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   missileKill(e) {
     e.setVelocity(0, 0);
+    if (this.onWater) {
+      e.setDepth(98);
+    } else {
+      e.setDepth(102);
+    }
     this.scene.sound.play('explo2', { volume: 0.4 });
     if (e.texture.key === 'missile') {
       e.anims.play('enemyExplode', true).on('animationcomplete', () => { e.destroy(); });
@@ -541,7 +607,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.lastFired = time + this.inventory.fireRate;
         bullet.visible = true;
         bullet.anims.play('bull', true);
-        bullet.setDepth(99);
+        if (this.onWater) {
+          bullet.setDepth(98);
+        } else {
+          bullet.setDepth(102);
+        }
         // bullet sound
         this.scene.sound.play('bullet', { volume: 0.08 });
         //    BULLET ORIENTATION    ////
@@ -569,6 +639,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   bulletKill(e) {
     e.setVelocity(0, 0);
+    if (this.onWater) {
+      e.setDepth(98);
+    } else {
+      e.setDepth(102);
+    }
     e.anims.play('impact', true);
     this.scene.sound.play('impact', { volume: 0.4 });
     e.on('animationcomplete', () => { e.destroy(); });
@@ -643,7 +718,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
         count = -1;
       }
       this.state.selectedWeapon = this.inventory.selectableWeapon[count + 1];
-      // console.log(this.state.selectedWeapon);
       this.scene.events.emit('selectWeapon', { selectedWeapon: this.state.selectedWeapon });
       this.scene.sound.play('select', { volume: 0.1 });
       this.scene.time.addEvent({
@@ -726,18 +800,5 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.sound.play('getLife', { volume: 0.05 });
     l.destroy();
     this.scene.events.emit('setHealth', { life: this.inventory.life });
-  }
-
-  displaySonar() {
-    if (!this.inventory.morphingSonar) {
-      return;
-    }
-    if (this.state.onMorphingBall) {
-      // this.scene.mask.setMask(this.scene.mask);
-    }
-    // if (!this.state.onMorphingBall) {
-    //   console.log(this.scene.frontLayer)
-    //   this.scene.frontLayer.mask.clearMask();
-    // }
   }
 }

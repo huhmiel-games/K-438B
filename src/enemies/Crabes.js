@@ -13,7 +13,7 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
       hited: false,
       giveLife: config.life / 10,
     };
-    this.setDepth(104);
+    this.setDepth(101);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
@@ -26,7 +26,6 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
     if (this.active) {
       this.body.setVelocityX(this.state.directionX);
       this.body.setVelocityY(this.state.directionY);
-
       // gauche ou droite et fait demi tour quand bloqué
       if (this.body.blocked.left) {
         this.state.directionX = 30;
@@ -47,6 +46,18 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
         this.flipX = false;
       }
     }
+  }
+
+  isInside() {
+    const { x, y } = this.scene.cameras.main.midPoint;
+    const x1 = x - 200;
+    const x2 = x + 200;
+    const y1 = y - 128;
+    const y2 = y + 128;
+    if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
+      return true;
+    }
+    return false;
   }
 
   animate(str) {

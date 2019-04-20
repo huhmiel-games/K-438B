@@ -12,7 +12,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
       type: config.key,
       giveLife: config.life / 10,
     };
-
+    this.name = config.name;
     this.lastAnim = null;
     this.setDepth(101);
     this.scene.physics.world.enable(this);
@@ -27,22 +27,38 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
-    let animationName;
-    if (this.active) {
-      if (this.body.blocked.down) {
-        this.state.directionX = 0;
-        this.jumperJump();
+    if (this.isInside()) {
+      let animationName;
+      if (this.active) {
+        if (this.body.blocked.down) {
+          this.state.directionX = 0;
+          this.jumperJump();
+        }
+        if (!this.body.blocked.down) {
+          animationName = `${this.state.type}Jump`;
+        } else {
+          animationName = `${this.state.type}Idle`;
+        }
       }
-      if (!this.body.blocked.down) {
-        animationName = `${this.state.type}Jump`;
-      } else {
-        animationName = `${this.state.type}Idle`;
+      if (this.lastAnim !== animationName) {
+        this.lastAnim = animationName;
+        this.animate(animationName, true);
       }
     }
-    if (this.lastAnim !== animationName) {
-      this.lastAnim = animationName;
-      this.animate(animationName, true);
+  }
+
+  isInside() {
+    return true;
+    const { x, y } = this.scene.cameras.main.midPoint;
+    const x1 = x - 450;
+    const x2 = x + 450;
+    const y1 = y - 280;
+    const y2 = y + 280;
+    if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
+      console.log('INSIDE', this);
+      return true;
     }
+    return false;
   }
 
   jumperJump() {

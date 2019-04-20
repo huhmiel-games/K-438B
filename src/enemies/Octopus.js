@@ -11,7 +11,7 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
     };
 
     this.lastAnim = null;
-    this.setDepth(0);
+    this.setDepth(97);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;

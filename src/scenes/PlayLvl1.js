@@ -16,16 +16,16 @@ import WaterFall from '../utils/WaterFalls';
 import U from '../utils/usefull';
 
 // Player
-import playerRun from '../assets/run.png';
-import playerRunShoot from '../assets/runShoot.png';
-import idle from '../assets/idle.png';
-import stand from '../assets/stand.png';
-import jump from '../assets/jump.png';
-import jumpVertical from '../assets/jumpVertical.png';
-import duck from '../assets/duck.png';
-import shootUp from '../assets/shootUp.png';
-import morphingBall from '../assets/morphingBall.png';
-import hurt from '../assets/hurt.png';
+import playerRun from '../assets/spritesheets/player/run.png';
+import playerRunShoot from '../assets/spritesheets/player/runShoot.png';
+import idle from '../assets/spritesheets/player/idle.png';
+import stand from '../assets/spritesheets/player/stand.png';
+import jump from '../assets/spritesheets/player/jump.png';
+import jumpVertical from '../assets/spritesheets/player/jumpVertical.png';
+import duck from '../assets/spritesheets/player/duck.png';
+import shootUp from '../assets/spritesheets/player/shootUp.png';
+import morphingBall from '../assets/spritesheets/player/morphingBall.png';
+// import hurt from '../assets/hurt.png';
 
 // Power Up
 import powerupBlue from '../assets/powerupBleu.png';
@@ -36,28 +36,27 @@ import powerUp from '../assets/spritesheets/Fx/power-up.png';
 
 // Enemies
 import crabe from '../assets/spritesheets/enemies/crab-walk.png';
-import guepe from '../assets/guepe.png';
-import guepe2 from '../assets/guepe2.png';
+import guepe from '../assets/spritesheets/enemies/guepe.png';
+import guepe2 from '../assets/spritesheets/enemies/guepe2.png';
 import jumper from '../assets/spritesheets/enemies/jumper-idle.png';
 import jumper2 from '../assets/spritesheets/enemies/jumper-idle2.png';
 import enemyExplode from '../assets/spritesheets/Fx/enemy-death.png';
 import octopus from '../assets/spritesheets/enemies/octopus.png';
 import fireballs from '../assets/fire-ball.png';
-import rhinoBeetle from '../assets/rhinoBeetle.png';
+import rhinoBeetle from '../assets/spritesheets/enemies/rhinoBeetle.png';
 
 // boss 1
 import boss1wallfront from '../assets/boss1wallfront.png';
-import boss1Walk from '../assets/boss1walk.png';
-import boss1Run from '../assets/boss1run.png';
-import boss1Crouch from '../assets/boss1crouch.png';
+import boss1Walk from '../assets/spritesheets/enemies/boss1walk.png';
+import boss1Run from '../assets/spritesheets/enemies/boss1run.png';
+import boss1Crouch from '../assets/spritesheets/enemies/boss1crouch.png';
 import boss1Attack from '../assets/spritesheets/enemies/boss1attack.png';
 import boss1Jump from '../assets/spritesheets/enemies/boss1jump.png';
 import boss1Hit from '../assets/spritesheets/enemies/boss1hit.png';
 
 // final boss
-import bosstest from '../../../bossAttack.png';
-import bosstest2 from '../../../bossFly.png';
-
+import bosstest from '../assets/spritesheets/enemies/bossAttack.png';
+import bosstest2 from '../assets/spritesheets/enemies/bossFly.png';
 // Map
 import tiles from '../assets/environment/layers/tilesets.png';
 import map from '../maps/map1.json';
@@ -83,6 +82,11 @@ import boss1dead from '../assets/boss1dead.png';
 
 import test from '../maps/map1.png';
 import mapSol from '../maps/mapSol.png';
+
+// parralax
+import paraMiddleground from '../assets/environment/layers/para_middleground.png';
+import paraBackground from '../assets/environment/layers/background.png';
+import bgLava from '../assets/bgLava.png';
 
 // import sounds fx
 import bulletFX from '../assets/sounds/bullet.ogg';
@@ -146,13 +150,13 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('jump', jump, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('jumpVertical', jumpVertical, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('morphingBall', morphingBall, { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('hurt', hurt, { frameWidth: 40, frameHeight: 40 });
+    // this.load.spritesheet('hurt', hurt, { frameWidth: 40, frameHeight: 40 });
 
     // player bullets
     this.load.spritesheet('bullet', bullet, { frameWidth: 6, frameHeight: 4 });
     this.load.spritesheet('impact', impact, { frameWidth: 12, frameHeight: 12 });
     this.load.spritesheet('missile', missile, { frameWidth: 18, frameHeight: 10 });
-    this.load.spritesheet('bomb', bomb, { frameWidth: 11, frameHeight: 11 });
+    this.load.spritesheet('bomb', bomb, { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('swell', swell, { frameWidth: 12, frameHeight: 12 });
     this.load.image('laser', laser);
 
@@ -199,6 +203,11 @@ export default class playLvl1 extends Scene {
     this.load.image('whitePixel', whitePixel);
     this.load.image('lavaPixel', lavaPixel);
     this.load.image('boss1dead', boss1dead);
+
+    // parralax
+    this.load.image('para_middle', paraMiddleground);
+    this.load.image('para_back', paraBackground);
+    this.load.image('bgLava', bgLava);
 
     // sounds
     this.load.audio('bullet', bulletFX);
@@ -247,35 +256,51 @@ export default class playLvl1 extends Scene {
     }
 
     this.playerFlashTween = null;
-    // test
-    this.test = this.add.image(0, 0, 'test');
-    this.test.setOrigin(0, 0);
-    this.test.displayWidth = 2048;
-    this.test.displayHeight = 3072;
 
-    // this.mapSol = this.add.image(0, 0, 'mapSol');
-    // this.mapSol.setOrigin(0, 0);
-    // this.mapSol.displayWidth = 2048;
-    // this.mapSol.displayHeight = 2048;
-    // this.mapSol.setDepth(100);
+    this.para_back = this.add.image(0, 0, 'para_back')
+      .setDepth(0)
+      .setScrollFactor(0.1)
+      .setOrigin(0, 0);
+    this.para_back.displayWidth = 800;
+    this.para_back.displayHeight = 512;
+
+    this.para_middle = this.add.image(0, 0, 'para_middle')
+      .setDepth(3)
+      .setScrollFactor(0.5)
+      .setOrigin(0, 0);
+    this.para_middle.displayWidth = 2048;
+    this.para_middle.displayHeight = 1024;
+
+    this.para_lava = this.add.image(0, 880, 'bgLava')
+      .setDepth(5)
+      .setScrollFactor(0.5)
+      .setOrigin(0, 0);
+    this.para_lava.displayWidth = 1600;
+    this.para_lava.displayHeight = 1200;
 
     // ====================================================================
     // GAMEPAD SUPPORT
+    // no support yet, use qjoypad
 
     // ====================================================================
     // LAYERS
 
-    // this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0);
-    // this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0);
-    // this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0);
-    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0);
+    this.backLayer = this.map.createDynamicLayer('back', this.tileset, 0, 0)
+      .setDepth(4);
+    this.middleLayer = this.map.createDynamicLayer('middle', this.tileset, 0, 0);
+    this.middleLayer.setDepth(5);
+    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0);
+    this.middleLayer2.setDepth(10);
+    this.statue = this.map.createDynamicLayer('statue', this.tileset, 0, 0);
     this.statue.setDepth(98);
-    this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0);
+    this.eau = this.map.createDynamicLayer('eau', this.tileset, 0, 0);
     this.eau.setDepth(99);
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0);
     this.solLayer.setDepth(100);
+    // this.solLayer.alpha = 0;
     this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0);
     this.frontLayer.setDepth(106);
+    // this.frontLayer.alpha = 0;
 
     // ====================================================================
     // player in water effect
@@ -307,24 +332,13 @@ export default class playLvl1 extends Scene {
     this.ambient3 = this.sound.add('ambient3', { volume: 0.1 });
 
     // ====================================================================
-    // accessible keys during pause
-    this.input.keyboard.on('keydown', (event) => {
-      if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
-        this.choose();
-      }
-      if (event.code === 'Enter') {
-        this.launch();
-      }
-    });
-
-    // need testing without
-    this.cursors = this.input.keyboard.createCursorKeys();
 
     // ====================================================================
     // PLAYER SECTION
     this.player = new Player(this, 1924, 158, { key: 'player' });
     this.playerHurt = false;
     this.player.body.setSize(15, 35, 6, 11);
+    // this.player.body.allowGravity = false;
 
     this.anims.create({
       key: 'walk',
@@ -334,7 +348,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'walkShoot',
-      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 10, first: 0 }),
+      frames: this.anims.generateFrameNumbers('playerShoot', { start: 0, end: 9, first: 0 }),
       frameRate: 15,
       repeat: -1,
     });
@@ -364,7 +378,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'jump',
-      frames: this.anims.generateFrameNumbers('jump', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('jump', { start: 0, end: 5, first: 0 }),
       frameRate: 15,
       repeat: -1,
     });
@@ -388,16 +402,22 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'morphingBall',
-      frames: this.anims.generateFrameNumbers('morphingBall', { start: 0, end: 4, first: 0 }),
+      frames: this.anims.generateFrameNumbers('morphingBall', { start: 0, end: 3, first: 0 }),
       frameRate: 16,
       repeat: -1,
     });
     this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('hurt', { start: 0, end: 2, first: 0 }),
-      frameRate: 16,
-      repeat: 0,
+      key: 'morphingBallIdle',
+      frames: this.anims.generateFrameNumbers('morphingBall', { start: 0, end: 0, first: 0 }),
+      frameRate: 1,
+      repeat: -1,
     });
+    // this.anims.create({
+    //   key: 'hurt',
+    //   frames: this.anims.generateFrameNumbers('hurt', { start: 0, end: 2, first: 0 }),
+    //   frameRate: 16,
+    //   repeat: 0,
+    // });
 
     // player walk and run sounds
     this.walkplay = false;
@@ -454,7 +474,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'missile',
-      frames: this.anims.generateFrameNumbers('missile', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('missile', { start: 0, end: 2, first: 0 }),
       frameRate: 10,
       repeat: -1,
     });
@@ -468,7 +488,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'swell',
-      frames: this.anims.generateFrameNumbers('swell', { start: 0, end: 8, first: 0 }),
+      frames: this.anims.generateFrameNumbers('swell', { start: 0, end: 7, first: 0 }),
       frameRate: 24,
       repeat: -1,
     });
@@ -507,36 +527,35 @@ export default class playLvl1 extends Scene {
       this.loadGame();
     }
     if (!localStorage.getItem('k438b')) {
-      this.transmission('New transmision-A problem occured during-the material transfer on planet-Items are scattered on planet');
+      this.transmission('New transmision-A problem occured during-the material transfer on planet-Sorry for inconvenience.');
       this.saveGame();
     }
-    // this.transmission('New transmision-A problem occured during the material transfer on planet.-All items are scattered on the planet.');
     // ====================================================================
     // SECTION POWER-UP
     this.anims.create({
       key: 'powerupYellow',
-      frames: this.anims.generateFrameNumbers('powerupYellow', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('powerupYellow', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupBlue',
-      frames: this.anims.generateFrameNumbers('powerupBlue', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('powerupBlue', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupRed',
-      frames: this.anims.generateFrameNumbers('powerupRed', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('powerupRed', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'powerupGreen',
-      frames: this.anims.generateFrameNumbers('powerupGreen', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('powerupGreen', { start: 0, end: 5, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
@@ -594,56 +613,56 @@ export default class playLvl1 extends Scene {
     // anims enemies
     this.anims.create({
       key: 'crabe',
-      frames: this.anims.generateFrameNumbers('crabe', { start: 0, end: 4, first: 0 }),
+      frames: this.anims.generateFrameNumbers('crabe', { start: 0, end: 3, first: 0 }),
       frameRate: 8,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'guepe',
-      frames: this.anims.generateFrameNumbers('guepe', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('guepe', { start: 0, end: 2, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'guepe2',
-      frames: this.anims.generateFrameNumbers('guepe2', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('guepe2', { start: 0, end: 2, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'jumper1Idle',
-      frames: this.anims.generateFrameNumbers('jumper', { start: 0, end: 4, first: 0 }),
+      frames: this.anims.generateFrameNumbers('jumper', { start: 0, end: 3, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'jumper1Jump',
-      frames: this.anims.generateFrameNumbers('jumper', { start: 5, end: 5, first: 4 }),
+      frames: this.anims.generateFrameNumbers('jumper', { start: 4, end: 4, first: 4 }),
       frameRate: 10,
       yoyo: false,
       repeat: 0,
     });
     this.anims.create({
       key: 'jumper2Idle',
-      frames: this.anims.generateFrameNumbers('jumper2', { start: 0, end: 4, first: 0 }),
+      frames: this.anims.generateFrameNumbers('jumper2', { start: 0, end: 3, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
     });
     this.anims.create({
       key: 'jumper2Jump',
-      frames: this.anims.generateFrameNumbers('jumper2', { start: 5, end: 5, first: 4 }),
+      frames: this.anims.generateFrameNumbers('jumper2', { start: 4, end: 4, first: 4 }),
       frameRate: 10,
       yoyo: false,
       repeat: 0,
     });
     this.anims.create({
       key: 'octopus',
-      frames: this.anims.generateFrameNumbers('octopus', { start: 0, end: 4, first: 0 }),
+      frames: this.anims.generateFrameNumbers('octopus', { start: 0, end: 3, first: 0 }),
       frameRate: 10,
       yoyo: false,
       repeat: -1,
@@ -657,7 +676,7 @@ export default class playLvl1 extends Scene {
     });
     this.anims.create({
       key: 'fireball',
-      frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 2, first: 0 }),
       frameRate: 5,
       yoyo: false,
       repeat: -1,
@@ -805,13 +824,6 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.anims.create({
-      key: 'bossFinalFly',
-      frames: this.anims.generateFrameNumbers('bossFinal2', { start: 0, end: 3, first: 3 }),
-      frameRate: 16,
-      yoyo: true,
-      repeat: -1,
-    });
-    this.anims.create({
       key: 'bossFinalIntro',
       frames: this.anims.generateFrameNumbers('bossFinal2', { start: 3, end: 3, first: 3 }),
       frameRate: 1,
@@ -852,7 +864,7 @@ export default class playLvl1 extends Scene {
     // LAVA
     this.anims.create({
       key: 'lava',
-      frames: this.anims.generateFrameNumbers('lava', { start: 0, end: 6, first: 0 }),
+      frames: this.anims.generateFrameNumbers('lava', { start: 0, end: 2, first: 0 }),
       frameRate: 2,
       yoyo: false,
       repeat: -1,
@@ -862,15 +874,14 @@ export default class playLvl1 extends Scene {
       this[element.name] = new Lava(this, element.x, element.y, {
         key: element.properties.key,
       });
-      // this[element.name].displayWidth = 48;
-      // this[element.name].displayHeight = 16;
       this[element.name].animate(element.properties.key, true);
+      this[element.name].setDepth(11);
       this.lavaGroup.push(this[element.name]);
     });
     // lava fall, same group as lava
     this.anims.create({
       key: 'lavaFall',
-      frames: this.anims.generateFrameNumbers('lavaFall', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('lavaFall', { start: 0, end: 2, first: 0 }),
       frameRate: 3,
       yoyo: false,
       repeat: -1,
@@ -891,20 +902,20 @@ export default class playLvl1 extends Scene {
       this[element.name] = new FireBalls(this, element.x + 16, element.y - 8, {
         key: element.properties.key,
       });
-      this[element.name].animate(element.properties.key, true);
+      // this[element.name].animate(element.properties.key, true);
       this.lavaGroup.push(this[element.name]);
     });
 
     // LAVA RISE
     this.lavaRiseFlag = false;
     this.onSismic = false;
-    this.isTheEnd = false;
+    this.isTheEnd = false; // My only friend, the end
 
     // ====================================================================
     // WATER FALL
     this.anims.create({
       key: 'waterFall',
-      frames: this.anims.generateFrameNumbers('waterFall', { start: 0, end: 3, first: 0 }),
+      frames: this.anims.generateFrameNumbers('waterFall', { start: 0, end: 2, first: 0 }),
       frameRate: 6,
       yoyo: false,
       repeat: -1,
@@ -948,16 +959,22 @@ export default class playLvl1 extends Scene {
     });
 
     // ====================================================================
+
+    // ====================================================================
     // CAMERA
     // set bounds so the camera won't go outside the game world
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     // make the camera follow the player
+    // this.cameraDolly = new Phaser.Geom.Point(this.player.x, this.player.y);
+    // this.cameras.main.startFollow(this.cameraDolly, true);
     this.cameras.main.startFollow(this.player, true, 0.4, 0.1);
+    this.cameras.main.transparent = true;
+    // this.cameras.main.setPipeline('GL_LINES')
     // set background color, so the sky is not black
     // this.cameras.main.setBackgroundColor('#3B1158');
 
     this.cameras.main.setZoom(2);
-    this.cameras.main.fadeIn(1000);
+    // this.cameras.main.fadeIn(1000);
 
     // ====================================================================
     //    COLLIDERS
@@ -969,12 +986,12 @@ export default class playLvl1 extends Scene {
     this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
     this.physics.add.collider(this.lavaGroup, this.solLayer, null);
 
-    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player.bullets);
-    this.physics.add.collider(this.player.swells, this.solLayer, this.player.bulletKill, null, this.player.swells);
-    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player.missiles);
-    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player.lasers);
+    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player);
+    this.physics.add.collider(this.player.swells, this.solLayer, this.player.bulletKill, null, this.player);
+    this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
+    this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
 
-    this.physics.add.collider(this.player.bombs, this.player, () => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
+    // this.physics.add.collider(this.player.bombs, this.player, () => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
     this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
     this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
     this.physics.add.collider(this.player.swells, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.lasers);
@@ -1020,45 +1037,43 @@ export default class playLvl1 extends Scene {
       this.mask.x = -300;
       this.mask.y = -300;
     }
-    // player part
-    if (!this.player.state.pause || !this.playerDead) {
-      if (this.player.body.velocity.x < 0) {
-        this.player.flipX = true;
-        this.player.state.bulletOrientationX = 'left';
-        this.player.state.bulletPositionX = 1;
-      } else if (this.player.body.velocity.x > 0) {
-        this.player.flipX = false;
-        this.state.bulletOrientationX = 'right';
-        this.player.state.bulletPositionX = 9;
-      }
-      // bodysize for duck
-      if (
-        this.cursors.down.isDown
-        && !(this.cursors.left.isDown || this.cursors.right.isDown)
-        && !this.player.state.onMorphingBall
-        && !this.player.state.jumpBoost) {
-        this.player.body.velocity.y = -0.5;
-        this.player.body.setSize(10, 23, 8, 10);
-        // body size for morphing
-      } else if (this.player.state.onMorphingBall) {
-        this.player.body.setSize(12, 12, true);
-        this.player.body.setOffset(15, 20);
-        // body size for jumpBooster
-      } else if (this.player.state.jumpBoost) {
-        this.player.body.setSize(10, 50, true);
-        // body size for others
-      } else {
-        // this.player.body.setSize(10, 35, 8, 10);
-        this.player.body.setSize(10, 35, true);
-        // this.player.body.setOffset(8, 2);
-      }
-    }
+    // player part --> probably not necessary anymore
+    // if (!this.player.state.pause || !this.playerDead) {
+    //   // if (this.player.body.velocity.x < 0) {
+    //   //   this.player.flipX = true;
+    //   //   this.player.state.bulletOrientationX = 'left';
+    //   //   this.player.state.bulletPositionX = 1;
+    //   // } else if (this.player.body.velocity.x > 0) {
+    //   //   this.player.flipX = false;
+    //   //   this.state.bulletOrientationX = 'right';
+    //   //   this.player.state.bulletPositionX = 9;
+    //   // }
+    //   // bodysize for duck
+    //   if (
+    //     this.player.keys.down.isDown
+    //     && !(this.player.keys.left.isDown || this.player.keys.right.isDown)
+    //     && !this.player.state.onMorphingBall
+    //     && !this.player.state.jumpBoost) {
+    //     // this.player.body.velocity.y = -0.5;
+    //     // this.player.body.setSize(10, 23, 8, 10);
+    //     // body size for morphing
+    //   } else if (this.player.state.onMorphingBall) {
+    //     // this.player.body.setSize(12, 12, true);
+    //     // this.player.body.setOffset(14, 20);
+    //     // body size for jumpBooster
+    //   } else if (this.player.state.jumpBoost) {
+    //     // this.player.body.setSize(10, 50, true);
+    //     // body size for others
+    //   } else {
+    //     // this.player.body.setSize(10, 35, 8, 10);
+    //     // this.player.body.setSize(10, 35, true);
+    //     // this.player.body.setOffset(8, 2);
+    //   }
+    // }
 
     if (this.state.displayPowerUpMsg) {
       this.msgtext.x = this.player.x;
       this.msgtext.y = this.player.y - 60;
-      this.msg.x = this.player.x + 150;
-      this.msg.y = this.player.y - 20;
     }
     if (this.modalText) {
       this.modalText.x = this.player.x;
@@ -1205,12 +1220,6 @@ export default class playLvl1 extends Scene {
     }
     this.sound.play('powerUp');
     this.player.inventory.powerUp[elm.state.id] = 1;
-    this.msg = this.add.image(0, 0, 'blackPixel');
-    this.msg.setOrigin(0.5, 0.5);
-    this.msg.displayWidth = 300;
-    this.msg.displayHeight = 80;
-    this.msg.setAlpha(1);
-    this.msg.setDepth(200);
 
     this.msgtext = this.add.bitmapText(0, 0, 'atomic', elm.state.text, 12, 1);
     this.msgtext.setOrigin(0.5, 0.5);
@@ -1219,7 +1228,7 @@ export default class playLvl1 extends Scene {
     elm.destroy();
 
     this.fadingTween = this.tweens.add({
-      targets: [this.msg, this.msgtext],
+      targets: [this.msgtext],
       ease: 'Sine.easeInOut',
       duration: 2000,
       delay: 3000,
@@ -1279,6 +1288,7 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   choose() {
+    this.player.chooseDone = true;
     if (this.player.state.pause) {
       if (this.lastPosition === 1) {
         this.lastPosition = 0;
@@ -1286,11 +1296,18 @@ export default class playLvl1 extends Scene {
         this.lastPosition += 1;
       }
       this.head.y = this.position[this.lastPosition];
+      this.time.addEvent({
+        delay: 300,
+        callback: () => {
+          this.player.chooseDone = false;
+        },
+      });
     }
   }
 
   // ====================================================================
   launch() {
+    this.player.chooseDone = true;
     if (this.player.state.pause) {
       if (this.lastPosition === 0) {
         this.player.state.pause = false;
@@ -1302,9 +1319,21 @@ export default class playLvl1 extends Scene {
         this.saveGameBtn.destroy();
         this.head.destroy();
         this.firstTimestamp = new Date().getTime();
+        this.time.addEvent({
+          delay: 300,
+          callback: () => {
+            this.player.chooseDone = false;
+          },
+        });
       }
       if (this.lastPosition === 1) {
         this.saveGame();
+        this.time.addEvent({
+          delay: 300,
+          callback: () => {
+            this.player.chooseDone = false;
+          },
+        });
       }
     }
   }

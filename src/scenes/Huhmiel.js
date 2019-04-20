@@ -8,6 +8,22 @@ export default class Huhmiel extends Scene {
     super('huhmiel');
   }
 
+  init() {
+    const { canvas } = this.sys.game;
+    const { fullscreen } = this.sys.game.device;
+    if (!fullscreen.available) {
+      return;
+    }
+    const startBtn = document.getElementById('fullscreen');
+    startBtn.addEventListener('click', () => {
+      if (!this.scale.isFullscreen) {
+        this.scale.startFullscreen();
+      }
+      // if (document.fullscreenElement) { return; }
+      //canvas[fullscreen.request]();
+    });
+  }
+
   preload() {
     this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
