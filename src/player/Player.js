@@ -315,11 +315,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (this.body.velocity.x < 0) {
         this.flipX = true;
         this.state.bulletOrientationX = 'left';
-        this.state.bulletPositionX = 1;
+        this.state.bulletPositionX = 3;
       } else if (this.body.velocity.x > 0) {
         this.flipX = false;
         this.state.bulletOrientationX = 'right';
-        this.state.bulletPositionX = 9;
+        this.state.bulletPositionX = 7;
       }
       // pause
       if (keys.pause.isDown) {

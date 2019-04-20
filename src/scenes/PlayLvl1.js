@@ -986,27 +986,27 @@ export default class playLvl1 extends Scene {
     this.physics.add.collider(this.enemyGroup, this.doorGroup, null);
     this.physics.add.collider(this.lavaGroup, this.solLayer, null);
 
-    this.physics.add.collider(this.player.bullets, this.solLayer, this.player.bulletKill, null, this.player);
-    this.physics.add.collider(this.player.swells, this.solLayer, this.player.bulletKill, null, this.player);
+    this.physics.add.collider([this.player.bullets, this.player.swells], this.solLayer, this.player.bulletKill, null, this.player);
+    // this.physics.add.collider(this.player.swells, this.solLayer, this.player.bulletKill, null, this.player);
     this.physics.add.collider(this.player.missiles, this.solLayer, this.player.missileKill, null, this.player);
     this.physics.add.collider(this.player.lasers, this.solLayer, this.player.laserKill, null, this.player);
 
     // this.physics.add.collider(this.player.bombs, this.player, () => this.player.body.setVelocityY(-this.player.state.speed), null, this.player.bullets);
-    this.physics.add.collider(this.player.bullets, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
+    this.physics.add.collider([this.player.bullets, this.player.swells], this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.bullets);
     this.physics.add.collider(this.player.lasers, this.doorGroup, (bull, d) => this.player.laserKill(d), null, this.player.lasers);
-    this.physics.add.collider(this.player.swells, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.lasers);
+    // this.physics.add.collider(this.player.swells, this.doorGroup, (bull, d) => this.player.bulletKill(d), null, this.player.lasers);
     this.physics.add.collider(this.player.missiles, this.doorGroup, (d, miss) => this.openDoor(d, miss), null, this);
-    this.physics.add.collider(this.elevatorGroup, this.player, elm => elm.handleElevator(this.player), null, this);
-    this.physics.add.collider(this.elevatorGroup, this.player.bullets, elm => elm.handleElevator(this.player), null, this);
+    this.physics.add.collider(this.elevatorGroup, [this.player, this.player.bullets], elm => elm.handleElevator(this.player), null, this);
+    // this.physics.add.collider(this.elevatorGroup, this.player.bullets, elm => elm.handleElevator(this.player), null, this);
     this.physics.add.overlap(this.lavaGroup, this.player, () => this.player.handleLava(), null, this.player);
     this.physics.add.overlap(this.giveLifeGroup, this.player, elm => this.player.getLife(elm), null, this.player);
 
     this.physics.add.overlap(this.powerups, this.player, elm => this.getPowerUp(elm), null, this);
     this.physics.add.overlap(this.enemyGroup, this.player, elm => this.playerIsHit(elm), null, this);
-    this.physics.add.overlap(this.player.bullets, this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
-    this.physics.add.overlap(this.player.missiles, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    this.physics.add.overlap(this.player.lasers, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
-    this.physics.add.overlap(this.player.swells, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    this.physics.add.overlap([this.player.bullets, this.player.swells, this.player.missiles, this.player.lasers], this.enemyGroup, (elm, bull) => this.enemyIsHit(bull, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.missiles, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.lasers, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
+    // this.physics.add.overlap(this.player.swells, this.enemyGroup, (elm, miss) => this.enemyIsHit(miss, elm, this.player), null, this.player);
 
     // ====================================================================
 
@@ -1705,7 +1705,8 @@ export default class playLvl1 extends Scene {
 
   bossExplode(x, y) {
     this.bossMusic.stop();
-    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
+    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true)
+      .setDepth(107);
     this.sound.play('explo2', { volume: 0.3 });
     if (exp) {
       exp.anims.play('bossExplode').on('animationrepeat', () => {
@@ -1717,7 +1718,8 @@ export default class playLvl1 extends Scene {
   }
 
   enemyExplode(x, y) {
-    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true);
+    const exp = this.explodeSprite.getFirstDead(true, x, y, 'enemyExplode', null, true)
+      .setDepth(107);
     // this.explosion = this.add.sprite(x, y, 'whitePixel');
     exp.anims.play('enemyExplode').on('animationcomplete', () => {
       exp.destroy();
