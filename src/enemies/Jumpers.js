@@ -14,7 +14,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     };
     this.name = config.name;
     this.lastAnim = null;
-    this.setDepth(101);
+    this.setDepth(101).setScale(2, 2);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.body.allowGravity = true;
@@ -47,15 +47,14 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
     }
   }
 
+  // isInside check if this is near player
   isInside() {
-    return true;
     const { x, y } = this.scene.cameras.main.midPoint;
     const x1 = x - 450;
     const x2 = x + 450;
     const y1 = y - 280;
     const y2 = y + 280;
     if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
-      console.log('INSIDE', this);
       return true;
     }
     return false;

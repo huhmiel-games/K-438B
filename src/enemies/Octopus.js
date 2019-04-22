@@ -10,15 +10,13 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       giveLife: config.life / 10,
     };
 
-    this.lastAnim = null;
-    this.setDepth(97);
+    this.setDepth(97).setScale(2, 2);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = true;
-    this.body.setGravityY(100);
-    this.body.setSize(20, 20);
+    this.body.setAllowGravity().setGravityY(100).setSize(12, 22).setOffset(8, 8);
     this.flag = false;
     this.getFired = false;
+    this.lastAnim = null;
   }
 
   preUpdate(time, delta) {
@@ -72,8 +70,8 @@ export default class Octopus extends Phaser.GameObjects.Sprite {
       Math.cos(angle) * speed,
       Math.sin(angle) * speed,
     );
-    if (this.body.blocked.right && this.body.velocity.x < 100) {
-      this.body.velocity.y -= 10;
+    if (this.body.blocked.right) {
+      this.body.velocity.y -= 100;
     }
   }
 

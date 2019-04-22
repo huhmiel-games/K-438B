@@ -1,8 +1,5 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
-import background from '../assets/menuBackgound.png';
-import atomicsc from '../assets/atomicsc.png';
-import atomicscXML from '../assets/atomicsc.xml';
 import bip2 from '../assets/sounds/piou.ogg';
 import bip1 from '../assets/sounds/walk.ogg';
 import bip3 from '../assets/sounds/noname.ogg';
@@ -12,37 +9,21 @@ export default class Intro extends Scene {
     super('intro');
   }
 
-  // init() {
-  //   const { canvas } = this.sys.game;
-  //   const { fullscreen } = this.sys.game.device;
-  //   if (!fullscreen.available) {
-  //     return;
-  //   }
-  //   const startBtn = document.getElementById('fullscreen');
-  //   startBtn.addEventListener('click', () => {
-  //     if (document.fullscreenElement) { return; }
-  //     canvas[fullscreen.request]();
-  //   });
-  // }
-
   preload() {
-    this.load.image('background', background);
-    this.load.bitmapFont('atomic', atomicsc, atomicscXML);
     this.load.audio('bip2', bip2);
     this.load.audio('bip1', bip1);
     this.load.audio('bip3', bip3);
   }
 
   create() {
-    this.background = this.add.image(0, 0, 'background');
-    this.background.setOrigin(0, 0);
-    this.background.displayWidth = U.WIDTH;
-    this.background.displayHeight = U.HEIGHT;
+    this.background = this.add.image(0, 0, 'background')
+      .setOrigin(0, 0)
+      .setDisplaySize(U.WIDTH, U.HEIGHT);
 
     this.text = 'New transmision-A new planet has been discovered-K438 B-We need information about-living organisms and potential threats-More information on site-Good luck!!';
     this.count = 0;
-    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
-    this.chief.setOrigin(0.5, 0.5);
+    this.chief = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1)
+      .setOrigin(0.5, 0.5);
 
     this.time.addEvent({
       delay: 100,
@@ -61,8 +42,8 @@ export default class Intro extends Scene {
     });
 
 
-    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT - 100, 'atomic', 'press enter to skip', 24, 1);
-    this.start.setOrigin(0.5, 0.5);
+    this.start = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT - 100, 'atomic', 'press any key to skip', 24, 1)
+      .setOrigin(0.5, 0.5);
 
     this.input.keyboard.once('keydown', () => {
       this.sound.play('bip2', { volume: 0.1 });

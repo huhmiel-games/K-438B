@@ -9,13 +9,14 @@ export default class Elevators extends Phaser.GameObjects.Sprite {
       position: config.position,
       isMoving: false,
     };
-    this.setDepth(50);
+    this.setDepth(50).setDisplaySize(48, 16);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = false;
-    this.body.setImmovable(true);
-    this.body.setVelocity(0, 0);
-    this.body.mass = 20;
+    this.body.setAllowGravity(false)
+      .setSize(64, 16)
+      .setImmovable(true)
+      .setVelocity(0, 0)
+      .setMass(20);
   }
 
   preUpdate(time, delta) {

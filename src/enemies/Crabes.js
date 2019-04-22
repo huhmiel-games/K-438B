@@ -1,5 +1,3 @@
-// import PlaySound from '../utils/PlaySound';
-
 export default class Crabe extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, config) {
     super(scene, x, y, config.key);
@@ -16,8 +14,8 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
     this.setDepth(101);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = true;
-    this.body.setGravityY(500);
+    // this.body.allowGravity = true;
+    this.body.setAllowGravity().setGravityY(500).setSize(16, 16);
     this.getFired = false;
   }
 
@@ -48,24 +46,11 @@ export default class Crabe extends Phaser.GameObjects.Sprite {
     }
   }
 
-  isInside() {
-    const { x, y } = this.scene.cameras.main.midPoint;
-    const x1 = x - 200;
-    const x2 = x + 200;
-    const y1 = y - 128;
-    const y2 = y + 128;
-    if ((x1 <= this.x) && (this.x <= x2) && (y1 <= this.y) && (this.y <= y2)) {
-      return true;
-    }
-    return false;
-  }
-
   animate(str) {
     this.anims.play(str, true);
   }
 
   looseLife(e) {
-    // PlaySound(this.scene, 'enemyHit');
     this.scene.sound.play('enemyHit');
     this.state.life = this.state.life - e;
   }

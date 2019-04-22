@@ -22,54 +22,50 @@ export default class DashBoard extends Scene {
 
     // loading
     this.mainScene.events.on('loadingDone', () => {
-      this.dashBord = this.add.image(0, 448, 'blackpixel');
-      this.dashBord.setOrigin(0, 0);
-      this.dashBord.displayWidth = U.WIDTH;
-      this.dashBord.displayHeight = 64;
+      this.dashBord = this.add.image(0, 448, 'blackpixel')
+        .setOrigin(0, 0)
+        .setDisplaySize(U.WIDTH, 64);
 
-      this.lifeText = this.add.bitmapText(16, 448, 'atomic', 'H e a l t h');
-      this.lifeText.setFontSize(16);
+      this.lifeText = this.add.bitmapText(16, 448, 'atomic', 'H e a l t h')
+        .setFontSize(16);
 
-      this.Health = this.add.bitmapText(16, 464, 'atomic', '');
-      this.Health.setFontSize(32);
-      this.Health.text = `${this.mainScene.player.inventory.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`;
+      this.Health = this.add.bitmapText(16, 464, 'atomic', '')
+        .setFontSize(32)
+        .setText(`${this.mainScene.player.inventory.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`);
 
-      this.swell = this.add.image(400, 480, 'iconSwell');
-      this.swell.displayWidth = 36;
-      this.swell.displayHeight = 40;
-      this.swell.alpha = 0;
+      this.swell = this.add.image(400, 480, 'iconSwell')
+        .setAlpha(0)
+        .setDisplaySize(36, 40);
 
-      this.missile = this.add.image(450, 480, 'iconMissile');
-      this.missile.displayWidth = 36;
-      this.missile.displayHeight = 40;
-      this.missile.alpha = 0;
+      this.missile = this.add.image(450, 480, 'iconMissile')
+        .setAlpha(0)
+        .setDisplaySize(36, 40);
 
-      this.laser = this.add.image(500, 480, 'iconLaser');
-      this.laser.displayWidth = 36;
-      this.laser.displayHeight = 40;
-      this.laser.alpha = 0;
+      this.laser = this.add.image(500, 480, 'iconLaser')
+        .setAlpha(0)
+        .setDisplaySize(36, 40);
 
       if (this.mainScene.player.inventory.missile) {
-        this.missile.alpha = 1;
+        this.missile.setAlpha(1);
       }
       if (this.mainScene.player.inventory.laser) {
-        this.laser.alpha = 1;
+        this.laser.setAlpha(1);
       }
       if (this.mainScene.player.inventory.swell) {
-        this.swell.alpha = 1;
+        this.swell.setAlpha(1);
       }
     });
 
     this.mainScene.events.on('setHealth', (elm) => {
-      this.Health.text = `${elm.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`;
+      this.Health.setText(`${elm.life}/${this.mainScene.player.inventory.lifeEnergyBlock * 100}`);
     });
 
     this.mainScene.events.on('addEnergyPack', (elm) => {
-      this.Health.text = elm.life;
+      this.Health.setText(elm.life);
     });
 
     this.mainScene.events.on('addWeapon', (elm) => {
-      this[elm.Weapon].alpha = 1;
+      this[elm.Weapon].setAlpha(1);
     });
 
     this.mainScene.events.on('selectWeapon', (elm) => {
@@ -77,7 +73,7 @@ export default class DashBoard extends Scene {
       this.laser.clearTint();
       this.swell.clearTint();
       if (this[elm.selectedWeapon]) {
-        this[elm.selectedWeapon].tint = 0xFF3B00;
+        this[elm.selectedWeapon].setTint(0xFF3B00);
       }
     });
   }

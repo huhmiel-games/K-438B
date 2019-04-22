@@ -14,10 +14,8 @@ export default class RhinoBeetles extends Phaser.GameObjects.Sprite {
     this.setDepth(104);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = true;
-    this.body.setGravityY(300);
+    this.body.setGravityY(300).setAllowGravity().setSize(55, 32, true);
     this.getFired = false;
-    this.body.setSize(55, 32, true);
     this.isRolling = false;
     this.isStunned = false;
     this.vulnerable = false;
@@ -27,8 +25,8 @@ export default class RhinoBeetles extends Phaser.GameObjects.Sprite {
     super.preUpdate(time, delta);
     let animationName;
     if (this.active) {
-      this.body.setVelocityX(this.state.directionX);
-      this.body.setVelocityY(this.state.directionY);
+      this.body.setVelocityX(this.state.directionX)
+        .setVelocityY(this.state.directionY);
 
       if (this.isRolling) {
         animationName = 'rhinoBall';

@@ -33,24 +33,22 @@ export default class EndGame extends Scene {
     let d = localStorage.getItem('d');
     d = JSON.parse(d);
 
-    // const arr = this.mainScene.player.inventory.powerUp.filter(e => e === 1);
-    // const percent = Math.floor(arr.length * 100 / 22);
-    const percent = 100;
+    const arr = this.mainScene.player.inventory.powerUp.filter(e => e === 1);
+    const percent = Math.floor(arr.length * 100 / 22);
 
     let t = localStorage.getItem('time');
     t = JSON.parse(t);
     const totalTime = new Date(t).toISOString().substr(11, 8);
 
 
-    this.background = this.add.image(0, 0, 'background');
-    this.background.setOrigin(0, 0);
-    this.background.displayWidth = U.WIDTH;
-    this.background.displayHeight = U.HEIGHT;
+    this.background = this.add.image(0, 0, 'background')
+      .setOrigin(0, 0)
+      .setDisplaySize(U.WIDTH, U.HEIGHT);
 
     this.trans = "New transmision-As your transmitted data seems promising,-we sended a space ship colonise K438b.-Our colons will build a landing station-for future missions.-You can now take holidays... we'll call you soon...-to be continued";
     this.cnt = 0;
-    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
-    this.transDisplay.setOrigin(0.5, 0.5);
+    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1)
+      .setOrigin(0.5, 0.5);
 
     this.time.addEvent({
       delay: 100,
@@ -84,34 +82,32 @@ export default class EndGame extends Scene {
           },
           onComplete: () => {
             this.sound.play('melP', { volume: 0.5 });
-            this.congrat = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 4, 'atomic', 'Congratulation !!\nMission complete', 30, 1);
-            this.congrat.setOrigin(0.5, 0.5);
-            this.congrat.setAlpha(0);
+            this.congrat = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 4, 'atomic', 'Congratulation !!\nMission complete', 30, 1)
+              .setOrigin(0.5, 0.5)
+              .setAlpha(0);
 
-            this.enemiesKilled = this.add.bitmapText(40, U.HEIGHT / 4 + 60, 'atomic', `Enemies killed: ${en}`, 20, 0);
-            this.enemiesKilled.setAlpha(0);
+            this.enemiesKilled = this.add.bitmapText(40, U.HEIGHT / 4 + 60, 'atomic', `Enemies killed: ${en}`, 20, 0)
+              .setAlpha(0);
 
-            this.death = this.add.bitmapText(40, U.HEIGHT / 4 + 90, 'atomic', `Death: ${d}`, 20, 0);
-            this.death.setAlpha(0);
+            this.death = this.add.bitmapText(40, U.HEIGHT / 4 + 90, 'atomic', `Death: ${d}`, 20, 0)
+              .setAlpha(0);
 
-            this.items = this.add.bitmapText(40, U.HEIGHT / 4 + 120, 'atomic', `Collected items: ${percent}%`, 20, 0);
-            this.items.setAlpha(0);
+            this.items = this.add.bitmapText(40, U.HEIGHT / 4 + 120, 'atomic', `Collected items: ${percent}%`, 20, 0)
+              .setAlpha(0);
 
-            this.timeGame = this.add.bitmapText(40, U.HEIGHT / 4 + 150, 'atomic', `Total time: ${totalTime}`, 20, 0);
-            this.timeGame.setAlpha(0);
+            this.timeGame = this.add.bitmapText(40, U.HEIGHT / 4 + 150, 'atomic', `Total time: ${totalTime}`, 20, 0)
+              .setAlpha(0);
 
             this.dinan = null;
             if (percent === 100 && t < 1800000) {
-              this.dinan = this.add.image(650, U.HEIGHT / 2 + 5, 'dinan2');
-              this.dinan.displayWidth = 512;
-              this.dinan.displayHeight = 512;
-              this.dinan.setAlpha(0);
+              this.dinan = this.add.image(650, U.HEIGHT / 2 + 5, 'dinan2')
+                .setDisplaySize(512, 512)
+                .setAlpha(0);
             }
             if (percent === 100 && t < 900000) {
-              this.dinan = this.add.image(720, U.HEIGHT / 2 + 5, 'dinan');
-              this.dinan.displayWidth = 512;
-              this.dinan.displayHeight = 512;
-              this.dinan.setAlpha(0);
+              this.dinan = this.add.image(720, U.HEIGHT / 2 + 5, 'dinan')
+                .setDisplaySize(512, 512)
+                .setAlpha(0);
             }
             this.twee = this.tweens.add({
               targets: [this.congrat, this.enemiesKilled, this.death, this.items, this.timeGame, this.dinan],
@@ -156,9 +152,9 @@ export default class EndGame extends Scene {
   credits() {
     this.trans = 'Credits---Designer:-Philippe Pereira---Graphics:-Luis Zuno---Boss Graphics:-Mobile Game Graphics---Programming:-Philippe Pereira---Game Engine:-Phaser 3---Sound Programming:-Philippe Pereira---Music:-sonniss-Mel P---Boss Music:-Patrick de Arteaga-- -- -- -- -- -- -- -- --Thanks for playing-- -- -- -- -- -- -- -- -- -- --THE END-- -- -- -- -- -- -- -- --';
     this.cnt = 0;
-    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1);
-    this.transDisplay.setOrigin(0.5, 0.8);
-    this.transDisplay.alpha = 1;
+    this.transDisplay = this.add.bitmapText(U.WIDTH / 2, U.HEIGHT / 2 - 70, 'atomic', '', 20, 1)
+      .setOrigin(0.5, 0.8)
+      .setAlpha(1);
 
     this.time.addEvent({
       delay: 80,

@@ -40,7 +40,6 @@ export default class FireBalls extends Phaser.GameObjects.Sprite {
   }
 
   isInside() {
-    return true;
     const { x, y } = this.scene.cameras.main.midPoint;
     const x1 = x - 400;
     const x2 = x + 400;

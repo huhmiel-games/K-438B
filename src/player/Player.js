@@ -1,3 +1,5 @@
+import getConfigKeys from '../utils/getConfigKeys';
+
 let morph;
 let jumpB;
 
@@ -43,7 +45,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       onJumpBoost: false,
       speed: 165,
       runSpeed: 285,
-      maxSpeed: 285,
+      maxSpeed: 300,
+      morphingSpeed: 140,
       selectedWeapon: 'bullet',
       lastFired: 0,
       bulletOrientationX: 'right',
@@ -51,6 +54,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       bulletPositionY: 10,
       bulletPositionX: 10,
       pause: false,
+      dead: false,
       fullScreen: false,
       rhinoCount: 0,
       e: 0,
@@ -68,18 +72,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
 
-    let keysOptions = [];
-    if (!localStorage.getItem('Options')) {
-      const def = ['LEFT', 'RIGHT', 'UP', 'DOWN', 'ENTER', 'SPACE', 'SHIFT', 'S', 'P'];
-      const s = JSON.stringify(def);
-      localStorage.setItem('Options', s);
-    }
-    const l = localStorage.getItem('Options');
-    keysOptions = JSON.parse(l);
-    // const {
-    //   LEFT, RIGHT, UP, DOWN, SPACE, SHIFT, ENTER, TAB, P,
-    // } = Phaser.Input.Keyboard.KeyCodes;
-
+    const keysOptions = getConfigKeys();
     this.keys = this.scene.input.keyboard.addKeys({
       left: Phaser.Input.Keyboard.KeyCodes[keysOptions[0]],
       right: Phaser.Input.Keyboard.KeyCodes[keysOptions[1]],
@@ -128,7 +121,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     const { keys } = this;
     let animationName;
     // if not game pause
-    if (!this.state.pause) {
+    if (!this.state.pause && !this.state.dead) {
       // check morphing ball ability active
       if (this.inventory.morphing) {
         this.state.onMorphingBall = morph;
@@ -147,10 +140,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
       } else {
         this.state.bulletOrientationY = 'normal';
       }
-      if (keys.up.isDown && !this.scene.solLayer.hasTileAtWorldXY(this.body.x, this.body.y - 12) && morph) {
-        this.state.bulletOrientationY = 'up';
-        this.state.onMorphingBall = false;
-        morph = false;
+      if (keys.up.isDown && this.state.onMorphingBall && this.scene.solLayer.getTileAtWorldXY(this.body.x + 6, this.body.y - 16, true)) {
+        if (!this.scene.solLayer.getTileAtWorldXY(this.body.x + 6, this.body.y - 16, true).properties.collides) {
+          this.state.bulletOrientationY = 'up';
+          this.state.onMorphingBall = false;
+          morph = false;
+        }
       }
       // call run speed
       this.isRunning();
@@ -212,8 +207,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
         && !(keys.left.isDown || keys.right.isDown)
         && !this.state.onMorphingBall) {
         animationName = 'jumpBoost';
-        //this.body.setSize(10, 50, true);
-        //this.body.setSize(10, 35, true);
         // position baissée
       } else if (keys.down.isDown && !this.state.onMorphingBall && !(keys.left.isDown || keys.right.isDown)) {
         this.body.setVelocityX(0);
@@ -235,11 +228,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
             this.anims.pause(this.anims.currentFrame);
           }
         } else if (keys.left.isDown) {
-          this.body.setVelocityX(-150);
+          this.body.setVelocityX(-this.state.morphingSpeed);
           this.state.bulletOrientationX = 'left';
           this.anims.resume(this.anims.currentFrame);
         } else if (keys.right.isDown) {
-          this.body.setVelocityX(150);
+          this.body.setVelocityX(this.state.morphingSpeed);
           this.state.bulletOrientationX = 'right';
           this.anims.resume(this.anims.currentFrame);
         }
@@ -308,8 +301,12 @@ export default class Player extends Phaser.GameObjects.Sprite {
       // player on water
       if (this.onWater) {
         this.state.speed = 70;
+        this.state.morphingSpeed = 55;
+        this.state.jumpDelay = 300;
       } else {
         this.state.speed = 165;
+        this.state.morphingSpeed = 140;
+        this.state.jumpDelay = 500;
       }
       // flip player animation and bullets positions
       if (this.body.velocity.x < 0) {
@@ -758,7 +755,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
       });
     }
     if (this.inventory.life <= 0) {
-      this.scene.player.dead = true;
+      this.state.dead = true;
       this.playerDead = true;
       this.scene.physics.pause();
       this.scene.events.emit('setHealth', { life: 0 });

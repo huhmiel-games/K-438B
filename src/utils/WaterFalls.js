@@ -3,14 +3,8 @@ export default class WaterFalls extends Phaser.GameObjects.Sprite {
     super(scene, x, y, config.key);
 
     this.scene = scene;
-    this.setDepth(50);
-    this.scene.physics.world.enable(this);
+    this.setDepth(50).setDisplaySize(32, 16).setAlpha(0.5);
     this.scene.add.existing(this);
-    this.body.allowGravity = false;
-    this.body.setImmovable(true);
-    this.body.setVelocity(0, 0);
-    this.body.mass = 20;
-    this.alpha = 0.5;
   }
 
   animate(str) {

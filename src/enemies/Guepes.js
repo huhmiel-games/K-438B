@@ -14,8 +14,7 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
     this.setDepth(101);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.body.allowGravity = false;
-    this.body.setSize(20, 20);
+    this.body.setAllowGravity(false).setSize(20, 28).setOffset(10, 20);
     this.state.directionY = Math.sin(300 + Math.PI / 4);
     this.getFired = false;
     this.waspFX = this.scene.sound.add('guepe', { volume: 0.2 });
@@ -58,9 +57,9 @@ export default class Guepes extends Phaser.GameObjects.Sprite {
     }
   }
 
+  // isInside check if this is near player
   isInside() {
-    return true;
-    const { x, y } = this.scene.cameras.main.midPoint;
+    const { x, y } = this.scene.camPosition; // this.scene.cameras.main.midPoint;
     const x1 = x - 400;
     const x2 = x + 400;
     const y1 = y - 256;

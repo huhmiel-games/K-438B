@@ -15,13 +15,10 @@ export default class BossFinal extends Phaser.GameObjects.Sprite {
     this.setDepth(104);
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
+    this.body.setSize(180, 80, true).setOffset(100, 220);
     this.body.allowGravity = false;
     this.getFired = false;
     this.lastAnim = null;
-    this.displayWidth = 384;
-    this.displayHeight = 480;
-    this.body.setSize(90, 40, true);
-    this.body.setOffset(50, 110);
     this.isAttacking = false;
     this.isFlying = false;
     this.isFireAttacking = false;

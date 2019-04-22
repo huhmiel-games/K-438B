@@ -1,11 +1,8 @@
 import { Scene } from 'phaser';
 import U from '../utils/usefull';
-import background from '../assets/menuBackgound.png';
+import getConfigKeys from '../utils/getConfigKeys';
 import head from '../assets/head.png';
 import bip from '../assets/sounds/bip.ogg';
-// import bip2 from '../assets/sounds/piou.wav';
-// import atomicsc from '../assets/atomicsc.png';
-// import atomicscXML from '../assets/atomicsc.xml';
 
 export default class LoadSavedGame extends Scene {
   constructor() {
@@ -13,27 +10,24 @@ export default class LoadSavedGame extends Scene {
   }
 
   preload() {
-    this.load.image('background', background);
     this.load.image('head', head);
     this.load.audio('bip', bip);
-    // this.load.audio('bip2', bip2);
-    // this.load.bitmapFont('atomic', atomicsc, atomicscXML);
   }
 
   create() {
-    this.position = [128, 256, 384];
+    this.position = [];
     this.lastPosition = 0;
 
-    this.background = this.add.image(0, 0, 'background');
-    this.background.setOrigin(0, 0);
-    this.background.displayWidth = U.WIDTH;
-    this.background.displayHeight = U.HEIGHT;
-    this.background.alpha = 0.5;
+    this.background = this.add.image(0, 0, 'background')
+      .setOrigin(0, 0)
+      .setDisplaySize(U.WIDTH, U.HEIGHT);
 
     if (localStorage.getItem('k438b')) {
+      this.position = [128, 256, 384];
       this.loadGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' Load Game ', 48, 1);
       this.deleteSavedGame = this.add.bitmapText(U.WIDTH / 4, this.position[2], 'atomic', ' Delete Game ', 48, 1);
     } else {
+      this.position = [128, 256];
       this.newGame = this.add.bitmapText(U.WIDTH / 4, this.position[0], 'atomic', ' New Game ', 48, 1);
     }
     if (!localStorage.getItem('d')) {
@@ -43,20 +37,28 @@ export default class LoadSavedGame extends Scene {
       localStorage.setItem('e', '0');
     }
 
+    const keysOptions = getConfigKeys();
+
+    this.keys = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes[keysOptions[2]],
+      down: Phaser.Input.Keyboard.KeyCodes[keysOptions[3]],
+      fire: Phaser.Input.Keyboard.KeyCodes[keysOptions[4]],
+    });
+
     this.options = this.add.bitmapText(U.WIDTH / 4, this.position[1], 'atomic', ' Options ', 48, 1);
 
-    this.head = this.add.image(U.WIDTH / 4 - 50, this.position[0], 'head');
-    this.head.setOrigin(0, 0);
-    this.head.displayWidth = 50;
-    this.head.displayHeight = 50;
-    this.head.setAlpha(1);
+    this.head = this.add.image(U.WIDTH / 4 - 50, this.position[0], 'head')
+      .setOrigin(0, 0)
+      .setDisplaySize(50, 50);
 
     this.input.keyboard.on('keydown', (event) => {
-      if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+      if (this.keys.down.isDown && event.key === this.keys.down.originalEvent.key) {
         this.sound.play('bip', { volume: 0.2 });
-        this.choose();
-      }
-      if (event.code === 'Enter') {
+        this.choose(1);
+      } else if (this.keys.up.isDown && event.key === this.keys.up.originalEvent.key) {
+        this.sound.play('bip', { volume: 0.2 });
+        this.choose(-1);
+      } else if (this.keys.fire.isDown && event.key === this.keys.fire.originalEvent.key) {
         this.sound.play('bip2', { volume: 0.1 });
         this.launch();
       }
@@ -66,11 +68,13 @@ export default class LoadSavedGame extends Scene {
     this.cameras.main.fadeIn(500);
   }
 
-  choose() {
-    if (this.lastPosition === 2) {
+  choose(count) {
+    if (this.lastPosition === this.position.length - 1 && count > 0) {
       this.lastPosition = 0;
+    } else if (this.lastPosition === 0 && count < 0) {
+      this.lastPosition = this.position.length - 1;
     } else {
-      this.lastPosition += 1;
+      this.lastPosition += count;
     }
     this.head.y = this.position[this.lastPosition];
   }
@@ -91,6 +95,7 @@ export default class LoadSavedGame extends Scene {
       localStorage.removeItem('d');
       localStorage.removeItem('e');
       localStorage.removeItem('time');
+      this.sound.play('bip2', { volume: 0.1 });
       window.location.reload(false);
     }
   }
