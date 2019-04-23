@@ -10,12 +10,17 @@ export default class Huhmiel extends Scene {
 
   init() {
     // --> FULLSCREEN MODE
-    const startBtn = document.getElementById('fullscreen');
-    startBtn.addEventListener('click', () => {
-      if (!this.scale.isFullscreen) {
-        this.scale.startFullscreen();
+    // const startBtn = document.getElementById('fullscreen');
+    // startBtn.addEventListener('click', () => {
+    //   if (!this.scale.isFullscreen) {
+    //     this.scale.startFullscreen();
+    //   }
+    // });
+    document.onfullscreenchange = () => {
+      if (document.fullscreenElement === null) {
+        this.scale.stopFullscreen();
       }
-    });
+    };
   }
 
   preload() {

@@ -9,12 +9,16 @@
     <link href="./styles.css" rel="stylesheet" media="all" type="text/css">
   </head>
   <body>
-      <button id="fullscreen">Start Fullscreen</button>
-      <div id="gamecanvas" />
-    <!-- <div>
-      
-      <img src="./logo-10.png" alt="Not recommended under ten years" />
-    </div> -->
-    
+    <!-- <button id="fullscreen">Start Fullscreen</button> -->
+    <div id="gamecanvas" />
+    <script>
+      // --> leave fullscreen
+      nw.App.registerGlobalHotKey(new nw.Shortcut({
+        key: "Escape",
+        active: function () {
+          nw.Window.get().leaveFullscreen();
+        }
+      }));
+    </script>
   </body>
 </html>

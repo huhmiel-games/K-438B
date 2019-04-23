@@ -217,8 +217,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
         // morphing ball
       } else if (this.state.onMorphingBall) {
         animationName = 'morphingBall';
-        this.body.setSize(12, 12, true);
-        this.body.setOffset(14, 20);
+        this.body.setSize(10, 10, true);
+        this.body.setOffset(15, 22);
         if (!(keys.left.isDown || keys.right.isDown)) {
           if (this.lastAnim !== 'morphingBall') {
             animationName = 'morphingBallIdle';
@@ -246,6 +246,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         this.state.bulletPositionY = 8;
         animationName = 'stand';
         this.body.setVelocityX(0);
+        this.body.setSize(10, 35, true);
         // reste immobile
       } else {
         this.body.setVelocityX(0);

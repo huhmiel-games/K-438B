@@ -4,6 +4,7 @@ import blackPixel from '../assets/blackPixel.png';
 import iconMissile from '../assets/iconMissile.png';
 import iconLaser from '../assets/iconLaser.png';
 import iconSwell from '../assets/iconSwell.png';
+import iconFullscreen from '../assets/iconFullscreen.png';
 
 export default class DashBoard extends Scene {
   constructor() {
@@ -15,6 +16,7 @@ export default class DashBoard extends Scene {
     this.load.image('iconMissile', iconMissile);
     this.load.image('iconLaser', iconLaser);
     this.load.image('iconSwell', iconSwell);
+    this.load.image('iconFullscreen', iconFullscreen);
   }
 
   create() {
@@ -44,6 +46,13 @@ export default class DashBoard extends Scene {
       this.laser = this.add.image(500, 480, 'iconLaser')
         .setAlpha(0)
         .setDisplaySize(36, 40);
+
+      this.fullscreenBtn = this.add.image(750, 480, 'iconFullscreen')
+        .setDisplaySize(64, 64)
+        .setInteractive()
+        .on('pointerdown', () => {
+          this.scale.toggleFullscreen();
+        }, this);
 
       if (this.mainScene.player.inventory.missile) {
         this.missile.setAlpha(1);

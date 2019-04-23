@@ -251,6 +251,11 @@ export default class playLvl1 extends Scene {
 
     this.playerFlashTween = null;
 
+    this.leaveFullscreenKey = this.input.keyboard.addKey('ESC')
+      .on('down', () => {
+        this.scale.stopFullscreen();
+      });
+
     // parralax backgrounds
     this.para_back = this.add.image(0, 0, 'para_back')
       .setDepth(0)
@@ -1371,6 +1376,7 @@ export default class playLvl1 extends Scene {
     this.ambient1.stop();
     this.ambient2.stop();
     this.ambient3.stop();
+    this.waterAmbientMusic.stop();
     this.countTime();
     if (this.lavaRise) {
       this.lavaRise = null;
@@ -1659,7 +1665,6 @@ export default class playLvl1 extends Scene {
     this.boss1started = true;
     this.solLayer.setTileLocationCallback(78, 77, 1, 3, null);
     this.boss1wallfront = this.add.image(1912, 1340, 'boss1wallfront')
-      .setDisplaySize(352, 352)
       .setDepth(2000)
       .setVisible(true);
 

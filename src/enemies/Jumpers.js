@@ -49,7 +49,7 @@ export default class Jumpers extends Phaser.GameObjects.Sprite {
 
   // isInside check if this is near player
   isInside() {
-    const { x, y } = this.scene.cameras.main.midPoint;
+    const { x, y } = this.scene.camPosition;
     const x1 = x - 450;
     const x2 = x + 450;
     const y1 = y - 280;
