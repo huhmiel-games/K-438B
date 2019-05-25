@@ -1,4 +1,3 @@
-![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
 # A metroid/super-metroid like game made with phaser3
 
 https://github.com/BlunT76/K-438B/releases/download/v0.2.0/k438b_0.2_amd64.deb
