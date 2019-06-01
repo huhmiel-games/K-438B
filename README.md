@@ -1,3 +1,13 @@
+# A metroid/super-metroid like game made with phaser3
+
+Play it online at https://blunt76.itch.io/k-438b
+
+Install it on Ubuntu with https://github.com/BlunT76/K-438B/releases/download/v0.2.0/k438b_0.2_amd64.deb
+
+![screenshot](http://huhmiel.free.fr/screen_K438B.png)
+
+
+
 # Phaser 3 Webpack Project Template
 
 A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Webpack 4](https://webpack.js.org/)
