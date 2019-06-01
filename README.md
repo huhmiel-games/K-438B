@@ -2,7 +2,7 @@
 
 Play it online at https://blunt76.itch.io/k-438b
 
-Install it on Ubuntu with https://github.com/BlunT76/K-438B/releases/download/v0.2.0/k438b_0.2_amd64.deb
+Install it on Ubuntu with https://github.com/BlunT76/K-438B/releases/download/v0.0.4/k438b_0.0.4_amd64.deb
 
 ![screenshot](http://huhmiel.free.fr/screen_K438B.png)
 
