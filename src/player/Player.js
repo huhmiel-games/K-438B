@@ -265,8 +265,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       }
       // saute
       if (keys.jump.isDown && this.body.blocked.down && this.state.canJump) {
-        this.body.setVelocityY(-this.state.speed);
-        this.body.velocity.normalize().scale(this.state.maxSpeed);
+        this.body.setVelocityY(-this.state.maxSpeed);
+        // this.body.velocity.normalize().scale(this.state.maxSpeed);
         this.state.onJump = true;
         this.isJumping();
         this.state.canJump = false;
@@ -385,7 +385,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       if (laser) {
         this.state.lastFired = time + this.inventory.fireRate;
         laser.visible = true;
-        // laser.anims.play('bull', true);
         if (this.onWater) {
           laser.setDepth(98);
         } else {
@@ -451,7 +450,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
           bomb.setDepth(106);
         }
         bomb.body.enabled = false;
-        bomb.body.setSize(16, 16);
+        bomb.body.setSize(20, 20);
         //    BOMB EXPLODE TIMER    //
         this.bombTimer = this.scene.time.addEvent({
           delay: 1500,
@@ -461,7 +460,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
               isColliding: true,
               // hasInterestingFace: false
             };
-            const tiles = this.scene.solLayer.getTilesWithinWorldXY(bomb.body.x || bomb.body.x - 8 || bomb.body.x + 8, bomb.body.y - 4, 16, 16, filteringOptions);
+            const tiles = this.scene.solLayer.getTilesWithinWorldXY(bomb.body.x || bomb.body.x - 8 || bomb.body.x + 8, bomb.body.y - 6, 16, 16, filteringOptions);
             tiles.forEach((e) => {
               if (e.properties.destructible) {
                 this.scene.solLayer.removeTileAt(e.x, e.y, true, true);

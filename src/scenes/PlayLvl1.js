@@ -120,6 +120,7 @@ import ambient2 from '../assets/music/ambient2.ogg';
 import waterAmbient from '../assets/music/waterAmbiance.ogg';
 import ambient3 from '../assets/music/grotte.ogg';
 
+
 export default class playLvl1 extends Scene {
   constructor() {
     super('playLvl1');
@@ -133,10 +134,8 @@ export default class playLvl1 extends Scene {
     // map
     this.load.image('tiles', tiles);
     this.load.tilemapTiledJSON('map', map);
-    // this.load.image('test', test);
 
     // player animation
-    // this.load.spritesheet('player', playerRun, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('playerShoot', playerRunShoot, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('idle', idle, { frameWidth: 40, frameHeight: 55 });
     this.load.spritesheet('stand', stand, { frameWidth: 40, frameHeight: 40 });
@@ -145,7 +144,6 @@ export default class playLvl1 extends Scene {
     this.load.spritesheet('jump', jump, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('jumpVertical', jumpVertical, { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('morphingBall', morphingBall, { frameWidth: 40, frameHeight: 40 });
-    // this.load.spritesheet('hurt', hurt, { frameWidth: 40, frameHeight: 40 });
 
     // player bullets
     this.load.spritesheet('bullet', bullet, { frameWidth: 6, frameHeight: 4 });
@@ -282,16 +280,21 @@ export default class playLvl1 extends Scene {
     // ====================================================================
     // LAYERS
 
-    this.backLayer = this.map.createDynamicLayer('back', this.tileset, 0, 0)
+    this.backLayer = this.map.createStaticLayer('back', this.tileset, 0, 0)
       .setDepth(4);
-    this.middleLayer = this.map.createDynamicLayer('middle', this.tileset, 0, 0)
+    // .setPipeline('Light2D');
+    this.middleLayer = this.map.createStaticLayer('middle', this.tileset, 0, 0)
       .setDepth(5);
-    this.middleLayer2 = this.map.createDynamicLayer('middle2', this.tileset, 0, 0)
+    // .setPipeline('Light2D');
+    this.middleLayer2 = this.map.createStaticLayer('middle2', this.tileset, 0, 0)
       .setDepth(10);
-    this.statue = this.map.createDynamicLayer('statue', this.tileset, 0, 0)
+    // .setPipeline('Light2D');
+    this.statue = this.map.createStaticLayer('statue', this.tileset, 0, 0)
       .setDepth(98);
-    this.eau = this.map.createDynamicLayer('eau', this.tileset, 0, 0)
+    // .setPipeline('Light2D');
+    this.eau = this.map.createStaticLayer('eau', this.tileset, 0, 0)
       .setDepth(99);
+    // .setPipeline('Light2D');
     this.solLayer = this.map.createDynamicLayer('sol', this.tileset, 0, 0)
       .setDepth(100);
     this.frontLayer = this.map.createDynamicLayer('front', this.tileset, 0, 0)
@@ -769,6 +772,7 @@ export default class playLvl1 extends Scene {
       repeat: -1,
     });
     this.boss1started = false;
+    this.boss1BattlePreventSave = false;
     this.bossMusic = this.sound.add('LetsPlayWithTheDemon', { volume: 0.2 });
     if (!this.player.inventory.boss1) {
       this.solLayer.setTileLocationCallback(78, 77, 1, 3, (e) => {
@@ -800,6 +804,7 @@ export default class playLvl1 extends Scene {
     });
     this.bossFinalReady = false;
     this.bossFinalstarted = false;
+    this.bossFinalBattlePreventSave = false;
     if (!this.player.inventory.bossFinal) {
       this.solLayer.setTileLocationCallback(70, 127, 8, 1, (e) => {
         if (!this.bossFinalReady && e === this.player && !this.player.inventory.bossFinal) {
@@ -825,6 +830,10 @@ export default class playLvl1 extends Scene {
       });
       this.elevatorGroup.push(this[element.name]);
     });
+
+    // ====================================================================
+    //  LIGHTS
+    // to do
 
     // ====================================================================
     // LAVA
@@ -987,39 +996,6 @@ export default class playLvl1 extends Scene {
       this.mask.x = -300;
       this.mask.y = -300;
     }
-    // player part --> probably not necessary anymore
-    // if (!this.player.state.pause || !this.playerDead) {
-    //   // if (this.player.body.velocity.x < 0) {
-    //   //   this.player.flipX = true;
-    //   //   this.player.state.bulletOrientationX = 'left';
-    //   //   this.player.state.bulletPositionX = 1;
-    //   // } else if (this.player.body.velocity.x > 0) {
-    //   //   this.player.flipX = false;
-    //   //   this.state.bulletOrientationX = 'right';
-    //   //   this.player.state.bulletPositionX = 9;
-    //   // }
-    //   // bodysize for duck
-    //   if (
-    //     this.player.keys.down.isDown
-    //     && !(this.player.keys.left.isDown || this.player.keys.right.isDown)
-    //     && !this.player.state.onMorphingBall
-    //     && !this.player.state.jumpBoost) {
-    //     // this.player.body.velocity.y = -0.5;
-    //     // this.player.body.setSize(10, 23, 8, 10);
-    //     // body size for morphing
-    //   } else if (this.player.state.onMorphingBall) {
-    //     // this.player.body.setSize(12, 12, true);
-    //     // this.player.body.setOffset(14, 20);
-    //     // body size for jumpBooster
-    //   } else if (this.player.state.jumpBoost) {
-    //     // this.player.body.setSize(10, 50, true);
-    //     // body size for others
-    //   } else {
-    //     // this.player.body.setSize(10, 35, 8, 10);
-    //     // this.player.body.setSize(10, 35, true);
-    //     // this.player.body.setOffset(8, 2);
-    //   }
-    // }
 
     if (this.state.displayPowerUpMsg) {
       this.msgtext.x = this.player.x;
@@ -1280,6 +1256,9 @@ export default class playLvl1 extends Scene {
 
   // ====================================================================
   saveGame() {
+    if (this.boss1BattlePreventSave || this.bossFinalBattlePreventSave) {
+      return;
+    }
     this.player.inventory.savedPositionX = this.player.x;
     this.player.inventory.savedPositionY = this.player.y;
     const s = JSON.stringify(this.player.inventory);
@@ -1494,6 +1473,7 @@ export default class playLvl1 extends Scene {
         this.boss1.anims.pause(this.boss1.anims.currentFrame);
         this.boss1.body.setEnable(false);
         this.boss1.setDepth(0);
+        this.boss1BattlePreventSave = false;
         this.time.addEvent({
           delay: 600,
           callback: () => {
@@ -1680,6 +1660,7 @@ export default class playLvl1 extends Scene {
     if (!this.boss1started) {
       this.boss1BattlePrep();
     }
+    this.boss1BattlePreventSave = true;
     this.solLayer.setTileLocationCallback(109, 86, 3, 3, null);
     this.boss1.body.setEnable();
     this.physics.add.collider(this.boss1, this.solLayer, null);
@@ -1752,6 +1733,7 @@ export default class playLvl1 extends Scene {
   }
 
   bossFinalBattleStart() {
+    this.bossFinalBattlePreventSave = true;
     this.bossFinal.playBossMusic();
     this.bossFinal.playRoar('cri1');
     this.time.addEvent({

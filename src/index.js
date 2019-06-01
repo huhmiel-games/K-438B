@@ -12,7 +12,7 @@ import Intro from './scenes/Intro';
 import endGame from './scenes/EndGame';
 
 const config = {
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: U.WIDTH,
   height: U.HEIGHT,
   pixelArt: true,
